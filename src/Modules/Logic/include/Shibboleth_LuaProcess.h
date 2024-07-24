@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_CommonHelpers.h>
 #include <Shibboleth_LuaResource.h>
+#include <Shibboleth_ResourcePtr.h>
 #include <Esprit_IProcess.h>
 
 NS_SHIBBOLETH
@@ -39,7 +40,7 @@ public:
 private:
 	TableState _table_state;
 
-	LuaResourcePtr _script;
+	ResourcePtr<LuaResource> _script;
 	LuaManager* _lua_mgr = nullptr;
 	bool _log_error = true;
 

@@ -37,6 +37,14 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachineResource)
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::StateMachineResource)
 
+namespace
+{
+	static bool CompareRefHash(const Refl::IReflectionDefinition* lhs, Gaff::Hash64 rhs)
+	{
+		return lhs->getReflectionInstance().getNameHash() < rhs;
+	}
+}
+
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(StateMachineResource)
@@ -147,7 +155,7 @@ void StateMachineResource::load(const ISerializeReader& reader, uintptr_t /*thre
 											const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type);
 											reader.freeString(type);
 
-											const auto it = Gaff::LowerBound(*process_bucket, type_hash, ReflectionManager::CompareRefHash);
+											const auto it = Gaff::LowerBound(*process_bucket, type_hash, CompareRefHash);
 
 											if (it != process_bucket->end() && (*it)->getReflectionInstance().getNameHash() == type_hash) {
 												ref_def = *it;
@@ -268,7 +276,7 @@ void StateMachineResource::load(const ISerializeReader& reader, uintptr_t /*thre
 											const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type);
 											reader.freeString(type);
 
-											const auto it = Gaff::LowerBound(*cond_bucket, type_hash, ReflectionManager::CompareRefHash);
+											const auto it = Gaff::LowerBound(*cond_bucket, type_hash, CompareRefHash);
 
 											if (it != cond_bucket->end() && (*it)->getReflectionInstance().getNameHash() == type_hash) {
 												ref_def = *it;

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_EntityResource.h>
+#include <Shibboleth_ResourcePtr.h>
 
 NS_SHIBBOLETH
 
@@ -34,7 +35,7 @@ private:
 	static bool Load(const ISerializeReader& reader, LayerEntityData& instance);
 	static void Save(ISerializeWriter& writer, const LayerEntityData& instance);
 
-	EntityResourcePtr _entity_resource;
+	ResourcePtr<EntityResource> _entity_resource;
 	// Modifier operations
 
 	SHIB_REFLECTION_CLASS_DECLARE(LayerEntityData);

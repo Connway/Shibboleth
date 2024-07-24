@@ -129,12 +129,12 @@ TEST_CASE("shibboleth_reflection_class")
 
 	Refl::Reflection<Derived>::Init();
 	Refl::Reflection<Base>::Init();
-	Derived test;
 
+	Derived test;
 	Base& base = test;
 	Base2& base2 = test;
-	Derived* ref_result = Refl::ReflectionCast<Derived>(base);
-	Base2* ref_result2 = REFLECTION_CAST_PTR(Base2, &base);
+	Derived* const ref_result = Refl::ReflectionCast<Derived>(&base);
+	Base2* const ref_result2 = REFLECTION_CAST(Base2, &base);
 
 	REQUIRE(ref_result == &test);
 	REQUIRE(ref_result2 == &base2);
@@ -147,9 +147,9 @@ TEST_CASE("shibboleth_reflection_class")
 	printf("Version Hash: %llu\n", hash.getHash());
 #endif
 
-	int test_get_func_ref = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
+	const int test_get_func_ref = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
 	//int test_get_func = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);
-	int test_get = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("c"))->getDataT<int>(*ref_result);
+	const int test_get = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("c"))->getDataT<int>(*ref_result);
 
 	printf(
 		"GetFuncRef: %i\n"
@@ -164,7 +164,7 @@ TEST_CASE("shibboleth_reflection_class")
 	//REQUIRE(test_get_func == ref_result->c);
 	REQUIRE(test_get == ref_result->c);
 
-	auto* ref_var = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("a"));
+	auto* const ref_var = Refl::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("a"));
 	int test_base_get = ref_var->getDataT<int>(*ref_result);
 	printf("GetBase: %i\n", test_base_get);
 
@@ -177,7 +177,6 @@ TEST_CASE("shibboleth_reflection_class")
 	REQUIRE(test_base_get == base.a);
 	REQUIRE(test_base_get == 20);
 }
-
 template <class T>
 class Test1 : public Refl::IReflectionObject
 {
@@ -235,8 +234,8 @@ TEST_CASE("shibboleth_reflection_template_class")
 class VecTest : public Refl::IReflectionObject
 {
 	Shibboleth::Vector<uint32_t> vec;
-	float arr[4] = { 0.0f, 1.0f, 2.0f, 3.0f };
-	Base base[2];
+	eastl::array<float, 4> arr = { 0.0f, 1.0f, 2.0f, 3.0f };
+	eastl::array<Base, 2> base;
 
 	SHIB_REFLECTION_CLASS_DECLARE(VecTest);
 };
@@ -355,7 +354,6 @@ TEST_CASE("shibboleth_reflection_array_vector")
 	printf("SetElement Base Array[1]: %i\n", base_var->getElementT<Base>(base_ptr, 1).a);
 }
 
-
 class CtorTest : public Refl::IReflectionObject
 {
 public:
@@ -378,8 +376,8 @@ SHIB_REFLECTION_DEFINE_END(CtorTest)
 TEST_CASE("shibboleth_factory")
 {
 	Refl::Reflection<CtorTest>::Init();
-	CtorTest* test_a = Refl::Reflection<CtorTest>::GetReflectionDefinition().template createT<CtorTest>();
-	CtorTest* test_b = Refl::Reflection<CtorTest>::GetReflectionDefinition().template createT<CtorTest>(100);
+	CtorTest* test_a = Refl::Reflection<CtorTest>::GetReflectionDefinition().template createT<CtorTest>(Shibboleth::ProxyAllocator::GetGlobal());
+	CtorTest* test_b = Refl::Reflection<CtorTest>::GetReflectionDefinition().template createT<CtorTest>(Shibboleth::ProxyAllocator::GetGlobal(), 100);
 
 	REQUIRE(test_a->a == 200);
 	REQUIRE(test_b->a == 100);

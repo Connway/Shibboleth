@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IDebugManager.h"
-#include <Shibboleth_ModelResource.h>
+#include <Model/Shibboleth_ModelResource.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_JobPool.h>
 #include <Gleam_ShaderResourceView.h>

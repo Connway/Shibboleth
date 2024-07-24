@@ -35,6 +35,7 @@ local GenerateProject = function()
 			"MainLoop",
 			"Player",
 			"Resource",
+			"DevDebug",
 
 			--"GLFW"
 		}
@@ -49,6 +50,7 @@ local LinkDependencies = function()
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Player")
 	table.insert(deps, "Resource")
+	table.insert(deps, "DevDebug")
 	--table.insert(deps, "GLFW")
 
 	dependson(deps)

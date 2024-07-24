@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_PhysicsMaterialResource.h"
+#include <Shibboleth_ResourcePtr.h>
 
 // namespace physx
 // {
@@ -54,7 +55,7 @@ private:
 		Success
 	};
 
-	PhysicsMaterialResourcePtr _material;
+	ResourcePtr<PhysicsMaterialResource> _material;
 	// physx::PxShape* _shape = nullptr;
 
 	LoadResult loadCapsule(const ISerializeReader& reader, PhysicsManager& phys_mgr);

@@ -22,8 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_PhysicsManager.h"
 #include "Shibboleth_RigidBodyComponent.h"
-//#include <Shibboleth_ECSComponentCommon.h>
-//#include <Shibboleth_ECSManager.h>
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_JobPool.h>
 #include <Gaff_IncludeTracy.h>
@@ -46,8 +45,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsManager)
 	.var(
 		"Debug Flags",
 		&Shibboleth::PhysicsManager::_debug_flags,
-		Shibboleth::DebugMenuItemAttribute(u8"Physics"),
-		Shibboleth::NoSerializeAttribute()
+		Shibboleth::DebugMenuItemAttribute{ u8"Physics" },
+		Shibboleth::NoSerializeAttribute{}
 	)
 #endif
 SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsManager)

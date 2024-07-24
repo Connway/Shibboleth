@@ -79,11 +79,11 @@ void PhysicsShapeResource::load(const ISerializeReader& reader, uintptr_t /*thre
 	{
 		const auto guard = reader.enterElementGuard(u8"material");
 
-		if (!Refl::Reflection<PhysicsMaterialResourcePtr>::GetInstance().load(reader, _material)) {
+		/*if (!Refl::Reflection< ResourcePtr<PhysicsMaterialResource> >::GetInstance().load(reader, _material)) {
 			// $TODO: Log error.
 			failed();
 			return;
-		}
+		}*/
 	}
 
 	PhysicsManager& phys_mgr = GetManagerTFast<PhysicsManager>();

@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_StateMachineResource.h"
 #include <Shibboleth_EntityComponent.h>
+#include <Shibboleth_ResourcePtr.h>
 
 NS_SHIBBOLETH
 
@@ -38,7 +39,7 @@ public:
 
 private:
 	UniquePtr<Esprit::StateMachine::Instance> _instance;
-	StateMachineResourcePtr _resource;
+	ResourcePtr<StateMachineResource> _resource;
 
 	SHIB_REFLECTION_CLASS_DECLARE(StateMachineComponent);
 };
