@@ -22,8 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_HashString.h"
 #include "Gaff_SmartPtrs.h"
 #include "Gaff_Assert.h"
+#include "Gaff_VectorMap.h"
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"

@@ -106,5 +106,5 @@ private:
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::CameraPipelineData)
-SHIB_REFLECTION_DECLARE(Shibboleth::CameraRenderData)
-SHIB_REFLECTION_DECLARE(Shibboleth::GBuffer)
+//SHIB_REFLECTION_DECLARE(Shibboleth::CameraRenderData)
+//SHIB_REFLECTION_DECLARE(Shibboleth::GBuffer)

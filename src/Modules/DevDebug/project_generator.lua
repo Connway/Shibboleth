@@ -26,14 +26,18 @@ local GenerateProject = function()
 			source_dir .. "../../Modules/MainLoop/include",
 			source_dir .. "../../Modules/Resource/include",
 			source_dir .. "../../Modules/Graphics/include",
-			source_dir .. "../../Modules/Input/include",
-			source_dir .. "../../Modules/ECS/include"
+			source_dir .. "../../Modules/Input/include"
 		}
+
+		GleamRendererDefines()
 
 	DevModuleProject "DevDebugModule"
 		language "C++"
 
 		files { source_dir .. "Shibboleth_DevDebugModule.cpp" }
+
+		GleamRendererDefines()
+		GleamRendererLinks()
 
 		local deps =
 		{
@@ -47,11 +51,10 @@ local GenerateProject = function()
 
 			"Gleam",
 
-			"GraphicsBase",
+			"Graphics",
 			"MainLoop",
 			"Resource",
-			"Input",
-			"ECS"
+			"Input"
 		}
 
 		dependson(deps)
@@ -72,11 +75,14 @@ local LinkDependencies = function()
 
 	table.insert(deps, "Gleam")
 
-	table.insert(deps, "GraphicsBase")
+	table.insert(deps, "Graphics")
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
 	table.insert(deps, "Input")
-	table.insert(deps, "ECS")
+
+	for _,v in pairs(GleamRendererLinksArray()) do
+		table.insert(v)
+	end
 
 	dependson(deps)
 	links(deps)

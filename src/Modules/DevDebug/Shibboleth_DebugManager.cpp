@@ -23,11 +23,13 @@ THE SOFTWARE.
 #include "Shibboleth_DebugManager.h"
 #include "Shibboleth_DebugAttributes.h"
 #include <Shibboleth_RenderManager.h>
-#include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_InputManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_AppUtils.h>
 #include <Gleam_MeshGeneration.h>
+#include <Gleam_RenderOutput.h>
+#include <Gleam_Window.h>
+#include <Gaff_Function.h>
 #include <Gaff_Math.h>
 #include <gtx/euler_angles.hpp>
 #include <gtx/transform.hpp>
@@ -555,7 +557,9 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData&
 {
 	GAFF_ASSERT(job_data.type != DebugRenderType::Model || model);
 
-	const int32_t num_cameras = static_cast<int32_t>(job_data.debug_mgr->_camera.size());
+	GAFF_REF(thread_id_int, job_data, model, debug_data);
+
+/*	const int32_t num_cameras = static_cast<int32_t>(job_data.debug_mgr->_camera.size());
 	Gleam::Mat4x4 final_camera = glm::identity<Gleam::Mat4x4>();
 	ECSEntityID camera_id = ECSEntityID_None;
 
@@ -993,7 +997,7 @@ void DebugManager::RenderDebugShape(uintptr_t thread_id_int, DebugRenderJobData&
 		cmd.cmd_list.reset(job_data.cmd_list[job_data.debug_mgr->_render_cache_index][i].get());
 		cmd.owns_command = false;
 		cmds[i]->lock.Unlock();
-	}
+	}*/
 }
 
 void DebugManager::RenderDebugShape(uintptr_t thread_id_int, void* data)
@@ -1034,7 +1038,7 @@ DebugManager::~DebugManager(void)
 bool DebugManager::initAllModulesLoaded(void)
 {
 	_time = &GetManagerTFast<GameTimeManager>().getRealTime();
-	_render_mgr = &GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
+	_render_mgr = &GetManagerTFast<RenderManager>();
 	_input_mgr = &GetManagerTFast<InputManager>();
 	_main_output = _render_mgr->getOutput("main");
 	_main_window = _render_mgr->getWindow("main");
@@ -1048,14 +1052,14 @@ bool DebugManager::initAllModulesLoaded(void)
 		_main_window->addCloseCallback(Gaff::Func(HandleMainWindowClosed));
 	}
 
-	ECSQuery camera_query;
+/*	ECSQuery camera_query;
 	camera_query.add<Position>(_camera_position);
 	camera_query.add<Rotation>(_camera_rotation);
 	camera_query.add<Camera>(_camera);
 
 	_ecs_mgr = &GetManagerTFast<ECSManager>();
 	_ecs_mgr->registerQuery(std::move(camera_query));
-
+*/
 	return initDebugRender() && initImGui();
 }
 
@@ -1080,7 +1084,7 @@ void DebugManager::update(void)
 
 	constexpr Gaff::Hash32 k_debug_menu_toggle = Gaff::FNV1aHash32Const("Debug_Menu_Toggle");
 	constexpr Gaff::Hash32 k_debug_input_mode = Gaff::FNV1aHash32Const("Debug");
-	const float toggle = _input_mgr->getAliasValue(k_debug_menu_toggle, _input_mgr->getKeyboardMousePlayerID());
+/*	const float toggle = _input_mgr->getAliasValue(k_debug_menu_toggle, _input_mgr->getKeyboardMousePlayerID());
 
 	if (toggle > 0.0f) {
 		if (_flags.toggle(Flag::ShowDebugMenu)) {
@@ -1089,7 +1093,7 @@ void DebugManager::update(void)
 			_input_mgr->setModeToPrevious();
 		}
 	}
-
+*/
 	const Gleam::IVec2& size = _main_output->getSize();
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -1592,7 +1596,9 @@ void DebugManager::unregisterDebugMenuItems(void* object, const Refl::IReflectio
 
 void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 {
-	ImGui::Render();
+	GAFF_REF(thread_id_int);
+
+/*	ImGui::Render();
 	const ImDrawData* const draw_data = ImGui::GetDrawData();
 
 	// Avoid rendering when minimized
@@ -1783,7 +1789,7 @@ void DebugManager::renderPostCamera(uintptr_t thread_id_int)
 	auto& cmd = render_cmds.command_list.emplace_back();
 	cmd.cmd_list.reset(_cmd_list[_render_cache_index].get());
 	cmd.owns_command = false;
-	render_cmds.lock.Unlock();
+	render_cmds.lock.Unlock();*/
 }
 
 void DebugManager::renderPreCamera(uintptr_t /*thread_id_int*/)
@@ -1823,7 +1829,7 @@ void DebugManager::removeDebugRender(const DebugRenderHandle& handle)
 
 bool DebugManager::initDebugRender(void)
 {
-	const size_t renderer_index = static_cast<size_t>(_render_mgr->getRendererType());
+/*	const size_t renderer_index = static_cast<size_t>(_render_mgr->getRendererType());
 
 	// Init line shaders and program.
 	_debug_data.line_vertex_shader.reset(_render_mgr->createShader());
@@ -2095,14 +2101,14 @@ bool DebugManager::initDebugRender(void)
 				instance_data.mesh[j]->addBuffer(instance_data.vertices[j].get());
 			}
 		}
-	}
+	}*/
 
 	return true;
 }
 
 bool DebugManager::initImGui(void)
 {
-	IMGUI_CHECKVERSION();
+/*	IMGUI_CHECKVERSION();
 
 	if (!ImGui::CreateContext()) {
 		// $TODO: Log error.
@@ -2149,10 +2155,8 @@ bool DebugManager::initImGui(void)
 #endif
 
 	// Register for all the input callbacks.
-	const RenderManagerBase& render_mgr = GETMANAGERT(Shibboleth::RenderManagerBase, Shibboleth::RenderManager);
-
-	for (int32_t i = 0; i < render_mgr.getNumWindows(); ++i) {
-		Gleam::Window* const window = render_mgr.getWindow(i);
+	for (int32_t i = 0; i < _render_mgr.getNumWindows(); ++i) {
+		Gleam::Window* const window = _render_mgr.getWindow(i);
 
 		window->addCharacterCallback(Gaff::Func(HandleKeyboardCharacterInput));
 		window->addKeyCallback(Gaff::Func(HandleKeyboardInput));
@@ -2425,7 +2429,7 @@ bool DebugManager::initImGui(void)
 		return false;
 	}
 
-	_mesh->setTopologyType(Gleam::IMesh::TopologyType::TriangleList);
+	_mesh->setTopology(Gleam::IMesh::Topology::TriangleList);*/
 	return true;
 }
 

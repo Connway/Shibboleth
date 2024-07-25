@@ -58,7 +58,7 @@ public:
 	//physx::PxPhysics* getPhysics(void);
 
 #ifdef _DEBUG
-	void updateDebug(uintptr_t thread_id_int);
+	//void updateDebug(uintptr_t thread_id_int);
 #endif
 
 private:

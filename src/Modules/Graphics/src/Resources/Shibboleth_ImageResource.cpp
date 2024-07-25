@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceLogging.h>
 #include <Shibboleth_IFileSystem.h>
+#include <GLFW/glfw3.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ImageResource)
 	.classAttrs(
@@ -39,6 +40,8 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::ImageResource)
 
 NS_SHIBBOLETH
 
+SHIB_REFLECTION_CLASS_DEFINE(ImageResource)
+
 void ImageResource::load(const IFile& file, uintptr_t /*thread_id_int*/)
 {
 	const size_t index = getFilePath().getString().rfind('.');
@@ -51,6 +54,18 @@ void ImageResource::load(const IFile& file, uintptr_t /*thread_id_int*/)
 	}
 
 	succeeded();
+}
+
+void ImageResource::fillGLFWImage(GLFWimage& image) const
+{
+	image.width = _image.getWidth();
+	image.height = _image.getHeight();
+	image.pixels = const_cast<uint8_t*>(_image.getBuffer());
+}
+
+const Image& ImageResource::getImage(void) const
+{
+	return _image;
 }
 
 NS_END

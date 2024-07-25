@@ -26,6 +26,7 @@ THE SOFTWARE.
 //#include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_AppUtils.h>
+#include <Shibboleth_Math.h>
 #include <Esprit_StateMachine.h>
 #include <Gleam_Quaternion.h>
 #include <Gleam_Matrix3x3.h>

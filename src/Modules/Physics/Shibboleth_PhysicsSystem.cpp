@@ -47,7 +47,8 @@ bool PhysicsDebugSystem::init(void)
 
 void PhysicsDebugSystem::update(uintptr_t thread_id_int)
 {
-	_physics_mgr->updateDebug(thread_id_int);
+	GAFF_REF(thread_id_int);
+	//_physics_mgr->updateDebug(thread_id_int);
 }
 #endif
 
