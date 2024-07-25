@@ -16,7 +16,7 @@ premake.api.register {
 }
 
 --
--- Set the binary path. By default, its `qtpath .. "/bin"`. Use
+-- Set the binary path. By default, its `qtpath .. "/libexec"`. Use
 -- this command to override it.
 --
 premake.api.register {
@@ -211,7 +211,7 @@ premake.api.register {
 newoption
 {
 	trigger = "qt-force-libexec",
-	description = "When building Linux target, force using libexec directory instead of bin."
+	description = "When building Linux/Mac target, force using libexec directory instead of bin."
 }
 
 --
