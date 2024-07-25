@@ -17,6 +17,25 @@ function GleamRendererDefines()
 	filter {}
 end
 
+function GleamRendererLinksArray()
+	if os.target() == "windows" and (_OPTIONS["renderer"] == nil or _OPTIONS["renderer"] == "d3d11") then
+		return { "d3d11", "D3dcompiler", "dxgi", "dxguid" }
+	elseif os.target() == "windows" and _OPTIONS["renderer"] == "d3d12" then
+		return { "d3d12", "D3dcompiler", "dxgi", "dxguid" }
+	elseif os.target() == "linux" then
+		-- Vulkan
+		return {}
+	elseif os.target() == "macosx" then
+		return {}
+	end
+
+	return {}
+end
+
+function GleamRendererLinks()
+	links(GleamRendererLinksArray())
+end
+
 FrameworkProject "Gleam"
 	language "C++"
 

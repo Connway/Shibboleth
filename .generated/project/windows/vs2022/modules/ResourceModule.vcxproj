@@ -240,7 +240,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\ResourceM
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\Shibboleth_ResourceModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Resource\src\Shibboleth_ResourceModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\Memory.vcxproj">

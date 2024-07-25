@@ -194,7 +194,7 @@ const OptimizedHashString32<>& CheckVariableCondition::getVariableName(void) con
 	return _var_name;
 }
 
-void CheckVariableCondition::setVariableName(const HashStringView32<>& name)
+void CheckVariableCondition::setVariableName(const OptimizedHashString32<>& name)
 {
 	_var_name = name;
 }

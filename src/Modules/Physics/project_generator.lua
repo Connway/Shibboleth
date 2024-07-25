@@ -39,21 +39,6 @@ local GenerateProject = function()
 			"Gleam",
 			"mpack",
 
-			"LowLevel",
-			"LowLevelAABB",
-			"LowLevelDynamics",
-			"PhysXCharacterKinematic",
-			"PhysXFoundation",
-			"PhysXExtensions",
-			"PhysXVehicle",
-			"PhysXCooking",
-			"PhysXCommon",
-			"PhysXPvdSDK",
-			"PhysXTask",
-			"PhysX",
-			"SceneQuery",
-			"SimulationController",
-
 			"MainLoop",
 			"Resource",
 			"DevDebug"
@@ -73,21 +58,6 @@ local LinkDependencies = function()
 	local deps = ModuleDependencies("Physics")
 	table.insert(deps, "Gleam")
 	table.insert(deps, "mpack")
-
-	table.insert(deps, "LowLevel")
-	table.insert(deps, "LowLevelAABB")
-	table.insert(deps, "LowLevelDynamics")
-	table.insert(deps, "PhysXCharacterKinematic")
-	table.insert(deps, "PhysXFoundation")
-	table.insert(deps, "PhysXExtensions")
-	table.insert(deps, "PhysXVehicle")
-	table.insert(deps, "PhysXCooking")
-	table.insert(deps, "PhysXCommon")
-	table.insert(deps, "PhysXPvdSDK")
-	table.insert(deps, "PhysXTask")
-	table.insert(deps, "PhysX")
-	table.insert(deps, "SceneQuery")
-	table.insert(deps, "SimulationController")
 
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")

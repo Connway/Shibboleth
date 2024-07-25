@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include <Gleam_RasterState.h>
 #include <Gleam_BlendState.h>
 #include <Gleam_Transform.h>
+#include <Gleam_Texture.h>
 #include <Gleam_Program.h>
 #include <Gleam_Shader.h>
 #include <Gleam_Buffer.h>
@@ -44,7 +45,7 @@ THE SOFTWARE.
 #include <eathread/eathread_spinlock.h>
 
 NS_GLEAM
-	class IRenderOutput;
+	class RenderOutput;
 	class Window;
 
 	enum class MouseButton : uint8_t;
@@ -57,11 +58,11 @@ struct GLFWcursor;
 
 NS_SHIBBOLETH
 
-class RenderManagerBase;
+class RenderManager;
 class InputManager;
-class ECSManager;
 struct Time;
 
+// $TODO: Port from ECS.
 class DebugManager final : public IDebugManager
 {
 public:
@@ -251,13 +252,13 @@ private:
 	UniquePtr<Gleam::Program> _program;
 	UniquePtr<Gleam::Layout> _layout;
 
-	ECSQuery::Output _camera_position{ ProxyAllocator("Debug") };
-	ECSQuery::Output _camera_rotation{ ProxyAllocator("Debug") };
-	ECSQuery::Output _camera{ ProxyAllocator("Debug") };
+	//ECSQuery::Output _camera_position{ ProxyAllocator("Debug") };
+	//ECSQuery::Output _camera_rotation{ ProxyAllocator("Debug") };
+	//ECSQuery::Output _camera{ ProxyAllocator("Debug") };
 
 	Vector<DebugMenuEntry*> _update_functions{ ProxyAllocator("Debug") };
 
-	RenderManagerBase* _render_mgr = nullptr;
+	RenderManager* _render_mgr = nullptr;
 	InputManager* _input_mgr = nullptr;
 
 	DebugRenderData _debug_data;

@@ -33,9 +33,6 @@ class Shader;
 class Program: public IProgram
 {
 public:
-	Program(void);
-	~Program(void);
-
 	void attach(IShader* shader) override;
 	void detach(IShader::Type shader) override;
 

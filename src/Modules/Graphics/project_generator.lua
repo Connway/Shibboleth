@@ -6,7 +6,6 @@ local GenerateProject = function()
 		language "C++"
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
-		removefiles { source_dir .. "Shibboleth_GraphicsRenderer.cpp" }
 
 		IncludeDirs
 		{
@@ -32,36 +31,13 @@ local GenerateProject = function()
 	ModuleProject "GraphicsModule"
 		language "C++"
 
-		files { source_dir .. "Shibboleth_GraphicsModule.cpp" }
+		files { source_dir .. "src/Shibboleth_GraphicsModule.cpp" }
 
 		GleamRendererDefines()
-
-		filter { "system:windows", "options:not renderer or renderer=d3d11" }
-			links { "d3d11", "D3dcompiler", "dxgi", "dxguid" }
-
-		filter { "system:windows", "options:renderer=d3d12" }
-			links { "d3d12", "D3dcompiler", "dxgi", "dxguid" }
-
-		filter { "system:windows", "options:renderer=vulkan" }
-			--dependson {}
-			--links {}
-
-		filter { "system:linux" }
-			-- Vulkan
-			--dependson {}
-			--links {}
-
-		filter { "system:macosx" }
-			-- Metal
-			--dependson {}
-			--links {}
-
-		filter {}
-
+		GleamRendererLinks()
 
 		local deps =
 		{
-			"GraphicsBase",
 			"MainLoop",
 			"Resource",
 			"Gleam",
@@ -82,6 +58,22 @@ end
 
 local LinkDependencies = function()
 	local deps = ModuleDependencies("Graphics")
+	table.insert(deps, "MainLoop")
+	table.insert(deps, "Resource")
+	table.insert(deps, "DevDebug")
+	table.insert(deps, "Gleam")
+	table.insert(deps, "Entity")
+	table.insert(deps, "assimp")
+	table.insert(deps, "mpack")
+	table.insert(deps, "minizip-ng")
+	table.insert(deps, "zlib-ng")
+	table.insert(deps, "libpng")
+	table.insert(deps, "libtiff")
+	table.insert(deps, "GLFW")
+
+	for _,v in pairs(GleamRendererLinksArray()) do
+		table.insert(v)
+	end
 
 	dependson(deps)
 	links(deps)
