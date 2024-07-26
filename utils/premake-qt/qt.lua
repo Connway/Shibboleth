@@ -15,8 +15,34 @@ premake.extensions.qt = {
 	-- these are private, do not touch
 	--
 	enabled = false,
-	defaultpath = (function() if os.getenv("QTDIR") ~= nil then return "$(QTDIR)" elseif os.getenv("QT_DIR") ~= nil then return "$(QT_DIR)" end end)(),
-	major_version = "6"
+	major_version = "6",
+	defaultpath = (function()
+		local qt_dir = nil
+
+		if os.getenv("QTDIR") ~= nil then
+			qt_dir = "QTDIR"
+		elseif os.getenv("QT_DIR") ~= nil then
+			qt_dir = "QT_DIR"
+		elseif os.getenv("QTPATH") ~= nil then
+			qt_dir = "QTPATH"
+		elseif os.getenv("QT_PATH") ~= nil then
+			qt_dir = "QT_PATH"
+		end
+
+		if (_ACTION == "ninja" or _ACTION == "gmake2") and qt_dir ~= nil then
+			if os.target() == "macosx" then
+				qt_dir = os.getenv(qt_dir)
+
+				if qt_dir:sub(1, 1) == "~" and _OPTIONS["home-path"] ~= nil then
+					qt_dir = _OPTIONS["home-path"] .. qt_dir:sub(2)
+				end
+			end
+		else
+			qt_dir = "$(" .. qt_dir .. ")"
+		end
+
+		return qt_dir
+	end)()
 }
 
 -- include list of modules
@@ -476,8 +502,9 @@ function premake.extensions.qt.findTool(tool_name, fcfg)
 		local bin_path = fcfg.config.qtbinpath
 
 		if bin_path:sub(1, 1) == "$" then
+			local opening_paren_index = bin_path:findlast("(", true)
 			local closing_paren_index = bin_path:findlast(")", true)
-			bin_path = bin_path:sub(3, closing_paren_index - 1)
+			bin_path = bin_path:sub(opening_paren_index + 1, closing_paren_index - 1)
 			bin_path = os.getenv(bin_path) .. fcfg.config.qtbinpath:sub(closing_paren_index + 1)
 
 			if not os.isfile(bin_path .. "/" .. tool_name) then
