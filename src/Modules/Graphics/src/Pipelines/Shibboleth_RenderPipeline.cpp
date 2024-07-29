@@ -245,6 +245,34 @@ bool RenderPipeline::Load(const ISerializeReader& reader, RenderPipeline& object
 		} else if (reader.isString()) {
 			if (k_add_stage(reader, object)) {
 				++group_count;
+			} else {
+				success = false;
+			}
+
+		} else if (reader.isObject()) {
+			IRenderPipelineStage* stage = nullptr;
+
+			{
+				const auto guard = reader.enterElementGuard(u8"pipeline_class");
+
+				if (!gaurd.isString()) {
+					// $TODO: Log error. Malformed pipeline object.
+					success = false;
+				}
+
+				if (k_add_stage(reader, object)) {
+					stage = &object._stages.back();
+					++group_count;
+
+				} else {
+					success = false;
+				}
+			}
+
+			if (stage) {
+				if (!stage->getReflectionDefinition().load(reader, stage->getBasePointer())) {
+					success = false;
+				}
 			}
 
 		} else {
