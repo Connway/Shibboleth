@@ -126,35 +126,39 @@ void RenderGBufferStage::update(uintptr_t thread_id_int)
 	Gleam::RenderDevice& device = *job_data.device;
 	RenderCommandList& cmd_list = job_data.rgbs->_render_commands.getCommandList(device, cache_index);
 
-	GAFF_REF(thread_id);
+	Gleam::RenderDevice* const deferred_device = job_data.rgbs->_render_mgr->getDeferredDevice(device, thread_id);
 
+	job_data.raster_state->bind(*deferred_device);
+	job_data.program->bind(*deferred_device);
+
+	// $TODO: If camera_render_data is not dirty, we don't need to regenerate the command list.
 	// $TODO: Need a dynamic way of determining camera render order.
-	for (const CameraRenderData& data : camera_render_data) {
-		const GBuffer& g_buffer = data.g_buffers.at_key(&device);
+	for (CameraRenderData& data : camera_render_data) {
+		const auto it = data.g_buffers.find(&device);
 
-		//g_buffer.to_output_render_target
+		if (it == data.g_buffers.end()) {
+			continue;
+		}
 
-//				Gleam::IProgramBuffers& pb = *job_data.program_buffers;
-//				pb.clearResourceViews();
-//
-//				pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->diffuse_srv.get());
-//				pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->specular_srv.get());
-//				pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->normal_srv.get());
-//				pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->position_srv.get());
-//				pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->depth_srv.get());
-//
-//				pb.bind(*deferred_device);
-//
-//				if (g_buffer->final_render_target) {
-//					g_buffer->final_render_target->bind(*deferred_device);
-//				} else if (Gleam::IRenderOutput* const output = job_data.system->_render_mgr->getOutput(camera.device_tag)) {
-//					output->getRenderTarget().bind(*deferred_device);
-//				} else {
-//					// $TODO: Log error.
-//					return;
-//				}
-//
-//				deferred_device->renderNoVertexInput(6);
+		GBuffer& g_buffer = it->second;
+
+		Gleam::ProgramBuffers& pb = *job_data.program_buffers;
+		pb.clearResourceViews();
+
+		pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->diffuse_srv.get());
+		pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->specular_srv.get());
+		pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->normal_srv.get());
+		pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->position_srv.get());
+		pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->depth_srv.get());
+
+		pb.bind(*deferred_device);
+
+		g_buffer.to_output_render_target->bind(*deferred_device);
+		deferred_device->renderNoVertexInput(6);
+	}
+
+	if (!deferred_device->finishCommandList(*job_data.cmd_list)) {
+		// $TODO: Log error.
 	}
 }
 
