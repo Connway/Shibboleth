@@ -312,6 +312,16 @@ public:
 		return Iterator(*this, size());
 	}
 
+	const T& back(void) const
+	{
+		return const_cast<InstancedArray<T>*>(this)->back();
+	}
+
+	T& back(void)
+	{
+		return *at(size() - 1);
+	}
+
 	template <class U, class... Args>
 	U& pushT(Args&&... args)
 	{
