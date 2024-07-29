@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include "Resources/Shibboleth_BufferResource.h"
 #include "Model/Shibboleth_ModelPipelineData.h"
 #include "Shibboleth_RenderCommands.h"
-#include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Shibboleth_JobPool.h>
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_Matrix4x4.h>

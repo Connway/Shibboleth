@@ -57,6 +57,8 @@ struct GBuffer final
 	UniquePtr<Gleam::RenderTarget> final_render_target;
 	UniquePtr<Gleam::ShaderResourceView> final_srv;
 	UniquePtr<Gleam::Texture> final_image;
+
+	Gleam::RenderTarget* to_output_render_target = nullptr;
 };
 
 struct CameraRenderData final

@@ -20,30 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_RenderManagerSystems.h"
-#include "Shibboleth_RenderManager.h"
-#include <Shibboleth_AppUtils.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderManagerPipelineSystem)
-	.template base<Shibboleth::ISystem>()
-	.template ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderManagerPipelineSystem)
-
+#include <Reflection/Shibboleth_Reflection.h>
+#include <Shibboleth_ISystem.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(RenderManagerPipelineSystem)
+class RenderManager;
 
-bool RenderManagerPipelineSystem::init(void)
+class RenderPipelineSystem final : public ISystem
 {
-	_render_mgr = &GetManagerTFast<RenderManager>();
-	return true;
-}
+public:
+	bool init(void) override;
+	void update(uintptr_t thread_id_int) override;
 
-void RenderManagerPipelineSystem::update(uintptr_t thread_id_int)
-{
-	RenderPipeline& render_pipeline = _render_mgr->getRenderPipeline();
-	render_pipeline.update(thread_id_int);
-}
+private:
+	RenderManager* _render_mgr = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(RenderPipelineSystem);
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::RenderPipelineSystem)

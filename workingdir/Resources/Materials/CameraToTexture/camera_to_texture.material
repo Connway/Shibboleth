@@ -1,5 +1,0 @@
-{
-	"vertex": "Materials/CameraToTexture/camera_to_texture_vertex",
-	"pixel": "Materials/CameraToTexture/camera_to_texture_pixel",
-	"devices_tag": "all"
-}

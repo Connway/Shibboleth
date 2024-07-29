@@ -1,0 +1,5 @@
+{
+	"vertex": "Materials/RenderGBuffer/render_g_buffer_vertex",
+	"pixel": "Materials/RenderGBuffer/render_g_buffer_pixel",
+	"devices_tag": "all"
+}
