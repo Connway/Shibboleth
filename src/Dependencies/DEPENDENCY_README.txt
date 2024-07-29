@@ -19,15 +19,11 @@ Libraries Affected:
 	imgui
 		Fixed ImGui::DestroyContext() not checking for null.
 
-	Catch2
-		Added my own main function that lives next to Catch2 code.
-
 	zlib-ng
 		Fixed compilation error on Linux when compiling on a system that does not support AVX.
 		Fixing compilation errors.
 
 	premake-qt
-		Fixed unnecessarily adding links libs to StaticLib projects.
 		Added if QT_DIR or QTDIR environment variables are present, use $(QT_DIR) or $(QTDIR) as paths instead.
 
 	tracy
