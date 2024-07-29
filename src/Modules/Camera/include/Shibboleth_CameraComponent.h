@@ -22,13 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_CameraView.h"
+#include "Camera/Shibboleth_CameraView.h"
 #include <Shibboleth_EntitySceneComponent.h>
 #include <Shibboleth_Math.h>
 
 NS_SHIBBOLETH
 
-// $TODO: Move this into the Camera Module.
 class CameraComponent final : public EntitySceneComponent
 {
 public:
