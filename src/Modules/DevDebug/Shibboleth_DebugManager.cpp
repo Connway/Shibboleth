@@ -31,9 +31,11 @@ THE SOFTWARE.
 #include <Gleam_Window.h>
 #include <Gaff_Function.h>
 #include <Gaff_Math.h>
+#include <imgui.h>
+
+#define GLM_ENABLE_EXPERIMENTAL
 #include <gtx/euler_angles.hpp>
 #include <gtx/transform.hpp>
-#include <imgui.h>
 
 namespace
 {

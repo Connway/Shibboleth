@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #include "Gleam_Transform.h"
 #include <Gaff_Math.h>
+
+#define GLM_ENABLE_EXPERIMENTAL
 #include <gtx/euler_angles.hpp>
 
 NS_GLEAM

@@ -24,8 +24,11 @@ THE SOFTWARE.
 
 #include "Gleam_Defines.h"
 #include <detail/setup.hpp>
-#include <gtc/type_aligned.hpp>
 #include <vec3.hpp>
+
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wunused-parameter")
+#include <gtc/type_aligned.hpp>
+GCC_CLANG_DISABLE_WARNING_POP()
 
 NS_GLEAM
 	using IVec3SIMD = glm::aligned_ivec3;
