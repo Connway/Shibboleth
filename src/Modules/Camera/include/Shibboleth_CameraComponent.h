@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Camera/Shibboleth_CameraView.h"
+#include <Camera/Shibboleth_CameraView.h>
 #include <Shibboleth_EntitySceneComponent.h>
 #include <Shibboleth_Math.h>
 

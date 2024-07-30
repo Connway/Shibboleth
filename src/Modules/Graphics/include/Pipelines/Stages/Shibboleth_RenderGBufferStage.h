@@ -61,8 +61,9 @@ private:
 
 	RenderCommandData _render_commands;
 
-	const CameraPipelineData* _camera_data = nullptr;
+	CameraPipelineData* _camera_data = nullptr;
 	RenderManager* _render_mgr = nullptr;
+	JobPool* _job_pool = nullptr;
 
 	ResourcePtr<MaterialResource> _render_g_buffer_material;
 
@@ -70,7 +71,7 @@ private:
 	Vector<Gaff::JobData> _job_data_cache{ GRAPHICS_ALLOCATOR };
 	Gaff::Counter _job_counter = 0;
 
-	static void DeviceJob(uintptr_t id_int, void* data);
+	static void DeviceJob(uintptr_t thread_id_int, void* data);
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderGBufferStage);
 };

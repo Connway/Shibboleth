@@ -255,7 +255,7 @@ bool RenderPipeline::Load(const ISerializeReader& reader, RenderPipeline& object
 			{
 				const auto guard = reader.enterElementGuard(u8"pipeline_class");
 
-				if (!gaurd.isString()) {
+				if (!reader.isString()) {
 					// $TODO: Log error. Malformed pipeline object.
 					success = false;
 				}

@@ -22,7 +22,9 @@ local GenerateProject = function()
 			base_dir .. "../../Frameworks/Esprit/include",
 			source_dir .. "../../Modules/MainLoop/include",
 			source_dir .. "../../Modules/Resource/include",
-			source_dir .. "../../Modules/Input/include"
+			source_dir .. "../../Modules/Input/include",
+			source_dir .. "../../Modules/Graphics/include",
+			source_dir .. "../../Modules/Entity/include"
 		}
 
 	ModuleProject "CameraModule"
@@ -38,6 +40,8 @@ local GenerateProject = function()
 			"DevDebug",
 			"Resource",
 			"Input",
+			"Graphics",
+			"Entity"
 		}
 
 		dependson(deps)
@@ -52,6 +56,8 @@ local LinkDependencies = function()
 	table.insert(deps, "DevDebug")
 	table.insert(deps, "Resource")
 	table.insert(deps, "Input")
+	table.insert(deps, "Graphics")
+	table.insert(deps, "Entity")
 
 	dependson(deps)
 	links(deps)

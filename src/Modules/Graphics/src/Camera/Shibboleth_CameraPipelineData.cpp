@@ -74,10 +74,10 @@ bool CameraPipelineData::init(RenderManager& render_mgr)
 			return false;
 		}
 
-		Gleam::IRenderTarget* const render_target = output->getRenderTarget();
-		GAFF_ASSERT(render_target->getRendererType() == g_buffer.render_target->getRendererType());
+		Gleam::IRenderTarget& render_target = output->getRenderTarget();
+		GAFF_ASSERT(render_target.getRendererType() == g_buffer.render_target->getRendererType());
 
-		g_buffer.to_output_render_target = static_cast<Gleam::RenderTarget*>(render_target);
+		g_buffer.to_output_render_target = &static_cast<Gleam::RenderTarget&>(render_target);
 
 		render_data.g_buffers.emplace(device, std::move(g_buffer));
 		_render_data.emplace(std::move(render_data));

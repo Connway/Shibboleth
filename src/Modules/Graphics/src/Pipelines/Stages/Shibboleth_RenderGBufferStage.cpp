@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManager.h"
 #include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Shibboleth_ResourceManager.h>
+#include <Gleam_RenderDevice.h>
 #include <Gleam_Program.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderGBufferStage)
@@ -43,6 +44,7 @@ SHIB_REFLECTION_CLASS_DEFINE(RenderGBufferStage)
 bool RenderGBufferStage::init(RenderManager& render_mgr)
 {
 	_camera_data = render_mgr.getRenderPipeline().getOrAddRenderData<CameraPipelineData>();
+	_job_pool = &GetApp().getJobPool();
 
 	ManagerRef<ResourceManager> res_mgr;
 	res_mgr->waitForResource(*_render_g_buffer_material);
@@ -63,13 +65,13 @@ bool RenderGBufferStage::init(RenderManager& render_mgr)
 	for (auto& device : devices) {
 		DeviceJobData job_data;
 		job_data.device = device.get();
-		job_data.rbgs = this;
+		job_data.rgbs = this;
 
 		job_data.program_buffers.reset(SHIB_ALLOCT(Gleam::ProgramBuffers, allocator));
 		job_data.raster_state.reset(SHIB_ALLOCT(Gleam::RasterState, allocator));
 		job_data.sampler.reset(SHIB_ALLOCT(Gleam::SamplerState, allocator));
 
-		Gleam::IProgram* const program = job_data.system->_camera_material->getProgram(*device);
+		Gleam::IProgram* const program = _render_g_buffer_material->getProgram(*device);
 		GAFF_ASSERT(program->getRendererType() == job_data.program_buffers->getRendererType());
 
 		job_data.program = static_cast<Gleam::Program*>(program);
@@ -99,7 +101,7 @@ bool RenderGBufferStage::init(RenderManager& render_mgr)
 
 		job_data.program_buffers->addSamplerState(
 			Gleam::IShader::Type::Pixel,
-			_camera_job_data_cache[i].sampler.get()
+			*job_data.sampler
 		);
 
 		for (int32_t i = 0; i < k_cache_index_count; ++i) {
@@ -118,11 +120,30 @@ bool RenderGBufferStage::init(RenderManager& render_mgr)
 
 void RenderGBufferStage::update(uintptr_t thread_id_int)
 {
+	if (_job_data_cache.size() > 1) {
+		const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+
+		_job_pool->addJobs(_job_data_cache.data(), static_cast<int32_t>(_job_data_cache.size()), _job_counter);
+		_job_pool->helpWhileWaiting(thread_id, _job_counter);
+
+	// Only one device, just update in place.
+	} else if (_job_data_cache.size() == 1) {
+		DeviceJob(thread_id_int, _device_job_data_cache.data());
+	}
+}
+
+const RenderCommandData* RenderGBufferStage::getRenderCommands(void) const
+{
+	return &_render_commands;
+}
+
+void RenderGBufferStage::DeviceJob(uintptr_t thread_id_int, void* data)
+{
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 	DeviceJobData& job_data = *reinterpret_cast<DeviceJobData*>(data);
 
 	const int32_t cache_index = job_data.rgbs->_render_mgr->getRenderPipeline().getRenderCacheIndex();
-	const auto& camera_render_data = job_data.rgbs->_camera_data->getRenderData();
+	auto& camera_render_data = job_data.rgbs->_camera_data->getRenderData();
 	Gleam::RenderDevice& device = *job_data.device;
 	RenderCommandList& cmd_list = job_data.rgbs->_render_commands.getCommandList(device, cache_index);
 
@@ -133,10 +154,10 @@ void RenderGBufferStage::update(uintptr_t thread_id_int)
 
 	// $TODO: If camera_render_data is not dirty, we don't need to regenerate the command list.
 	// $TODO: Need a dynamic way of determining camera render order.
-	for (CameraRenderData& data : camera_render_data) {
-		const auto it = data.g_buffers.find(&device);
+	for (CameraRenderData& camera_data : camera_render_data) {
+		const auto it = camera_data.g_buffers.find(&device);
 
-		if (it == data.g_buffers.end()) {
+		if (it == camera_data.g_buffers.end()) {
 			continue;
 		}
 
@@ -145,11 +166,11 @@ void RenderGBufferStage::update(uintptr_t thread_id_int)
 		Gleam::ProgramBuffers& pb = *job_data.program_buffers;
 		pb.clearResourceViews();
 
-		pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->diffuse_srv.get());
-		pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->specular_srv.get());
-		pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->normal_srv.get());
-		pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->position_srv.get());
-		pb.addResourceView(Gleam::IShader::Type::Pixel, g_buffer->depth_srv.get());
+		pb.addResourceView(Gleam::IShader::Type::Pixel, *g_buffer.diffuse_srv);
+		pb.addResourceView(Gleam::IShader::Type::Pixel, *g_buffer.specular_srv);
+		pb.addResourceView(Gleam::IShader::Type::Pixel, *g_buffer.normal_srv);
+		pb.addResourceView(Gleam::IShader::Type::Pixel, *g_buffer.position_srv);
+		pb.addResourceView(Gleam::IShader::Type::Pixel, *g_buffer.depth_srv);
 
 		pb.bind(*deferred_device);
 
@@ -157,14 +178,9 @@ void RenderGBufferStage::update(uintptr_t thread_id_int)
 		deferred_device->renderNoVertexInput(6);
 	}
 
-	if (!deferred_device->finishCommandList(*job_data.cmd_list)) {
+	if (!deferred_device->finishCommandList(*cmd_list.command_list.back().commands)) {
 		// $TODO: Log error.
 	}
-}
-
-const RenderCommandData* RenderGBufferStage::getRenderCommands(void) const
-{
-	return &_render_commands;
 }
 
 NS_END

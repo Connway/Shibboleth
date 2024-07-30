@@ -20,8 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Camera/Shibboleth_CameraComponent.h"
-#include "Camera/Shibboleth_CameraPipelineData.h"
+#include "Shibboleth_CameraComponent.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Gaff_Math.h>
 
