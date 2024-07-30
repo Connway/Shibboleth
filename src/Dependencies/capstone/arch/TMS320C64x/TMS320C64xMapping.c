@@ -6,6 +6,7 @@
 #include <stdio.h>	// debug
 #include <string.h>
 
+#include "../../Mapping.h"
 #include "../../utils.h"
 
 #include "TMS320C64xMapping.h"
@@ -13,7 +14,7 @@
 #define GET_INSTRINFO_ENUM
 #include "TMS320C64xGenInstrInfo.inc"
 
-static name_map reg_name_maps[] = {
+static const name_map reg_name_maps[] = {
 	{ TMS320C64X_REG_INVALID, NULL },
 
 	{ TMS320C64X_REG_AMR, "amr" },
@@ -131,7 +132,7 @@ tms320c64x_reg TMS320C64x_reg_id(char *name)
 	return 0;
 }
 
-static insn_map insns[] = {
+static const insn_map insns[] = {
 	{
 		0, 0,
 #ifndef CAPSTONE_DIET
@@ -1697,7 +1698,7 @@ void TMS320C64x_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 	if (i != 0) {
 		insn->id = insns[i].mapid;
 
-		if (h->detail) {
+		if (h->detail_opt) {
 #ifndef CAPSTONE_DIET
 			memcpy(insn->detail->regs_read, insns[i].regs_use, sizeof(insns[i].regs_use));
 			insn->detail->regs_read_count = (uint8_t)count_positive(insns[i].regs_use);
@@ -1719,7 +1720,7 @@ void TMS320C64x_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 
 #ifndef CAPSTONE_DIET
 //grep TMS320C64X_INS include/capstone/tms320c64x.h | awk '{print "{"$1 "\""tolower(substr($1, 16, length($1)-16))"\"""},"}'
-static name_map insn_name_maps[] = {
+static const name_map insn_name_maps[] = {
 	{TMS320C64X_INS_INVALID, NULL},
 	{TMS320C64X_INS_ABS, "abs"},
 	{TMS320C64X_INS_ABS2, "abs2"},
@@ -1882,7 +1883,7 @@ const char *TMS320C64x_insn_name(csh handle, unsigned int id)
 }
 
 #ifndef CAPSTONE_DIET
-static name_map group_name_maps[] = {
+static const name_map group_name_maps[] = {
 	{ TMS320C64X_GRP_INVALID, NULL },
 	{ TMS320C64X_GRP_FUNIT_D, "funit_d" },
 	{ TMS320C64X_GRP_FUNIT_L, "funit_l" },
@@ -1898,7 +1899,7 @@ const char *TMS320C64x_group_name(csh handle, unsigned int id)
 #ifndef CAPSTONE_DIET
 	unsigned int i;
 
-	if (id >= TMS320C64X_GRP_ENDING)
+	if (id >= ARR_SIZE(group_name_maps))
 		return NULL;
 
 	for (i = 0; i < ARR_SIZE(group_name_maps); i++) {

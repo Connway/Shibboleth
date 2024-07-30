@@ -27,7 +27,7 @@
 
 #include "capstone/tms320c64x.h"
 
-static char *getRegisterName(unsigned RegNo);
+static const char *getRegisterName(unsigned RegNo);
 static void printOperand(MCInst *MI, unsigned OpNo, SStream *O);
 static void printMemOperand(MCInst *MI, unsigned OpNo, SStream *O);
 static void printMemOperand2(MCInst *MI, unsigned OpNo, SStream *O);
@@ -41,7 +41,7 @@ void TMS320C64x_post_printer(csh ud, cs_insn *insn, char *insn_asm, MCInst *mci)
 	int i;
 	cs_tms320c64x *tms320c64x;
 
-	if (mci->csh->detail) {
+	if (mci->csh->detail_opt) {
 		tms320c64x = &mci->flat_insn->detail->tms320c64x;
 
 		for (i = 0; i < insn->detail->groups_count; i++) {
@@ -70,8 +70,6 @@ void TMS320C64x_post_printer(csh ud, cs_insn *insn, char *insn_asm, MCInst *mci)
 		SStream_Init(&ss);
 		if (tms320c64x->condition.reg != TMS320C64X_REG_INVALID)
 			SStream_concat(&ss, "[%c%s]|", (tms320c64x->condition.zero == 1) ? '!' : '|', cs_reg_name(ud, tms320c64x->condition.reg));
-		else
-			SStream_concat0(&ss, "||||||");
 
 		p = strchr(insn_asm, '\t');
 		if (p != NULL)
@@ -113,7 +111,7 @@ void TMS320C64x_post_printer(csh ud, cs_insn *insn, char *insn_asm, MCInst *mci)
 			SStream_concat(&ss, "\t%s", p);
 
 		if (tms320c64x->parallel != 0)
-			SStream_concat(&ss, "\t||");
+			SStream_concat0(&ss, "\t||");
 
 		/* insn_asm is a buffer from an SStream, so there should be enough space */
 		strcpy(insn_asm, ss.buffer);
@@ -149,7 +147,7 @@ static void printOperand(MCInst *MI, unsigned OpNo, SStream *O)
 			SStream_concat0(O, getRegisterName(reg));
 		}
 
-		if (MI->csh->detail) {
+		if (MI->csh->detail_opt) {
 			MI->flat_insn->detail->tms320c64x.operands[MI->flat_insn->detail->tms320c64x.op_count].type = TMS320C64X_OP_REG;
 			MI->flat_insn->detail->tms320c64x.operands[MI->flat_insn->detail->tms320c64x.op_count].reg = reg;
 			MI->flat_insn->detail->tms320c64x.op_count++;
@@ -169,7 +167,7 @@ static void printOperand(MCInst *MI, unsigned OpNo, SStream *O)
 				SStream_concat(O, "-%"PRIu64, -Imm);
 		}
 
-		if (MI->csh->detail) {
+		if (MI->csh->detail_opt) {
 			MI->flat_insn->detail->tms320c64x.operands[MI->flat_insn->detail->tms320c64x.op_count].type = TMS320C64X_OP_IMM;
 			MI->flat_insn->detail->tms320c64x.operands[MI->flat_insn->detail->tms320c64x.op_count].imm = Imm;
 			MI->flat_insn->detail->tms320c64x.op_count++;
@@ -238,7 +236,7 @@ static void printMemOperand(MCInst *MI, unsigned OpNo, SStream *O)
 			break;
 	}
 
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		tms320c64x = &MI->flat_insn->detail->tms320c64x;
 
 		tms320c64x->operands[tms320c64x->op_count].type = TMS320C64X_OP_MEM;
@@ -324,7 +322,7 @@ static void printMemOperand2(MCInst *MI, unsigned OpNo, SStream *O)
 	offset = (Val >> 7) & 0x7fff;
 	SStream_concat(O, "*+%s[0x%x]", getRegisterName(basereg), offset);
 
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		tms320c64x = &MI->flat_insn->detail->tms320c64x;
 
 		tms320c64x->operands[tms320c64x->op_count].type = TMS320C64X_OP_MEM;
@@ -346,7 +344,7 @@ static void printRegPair(MCInst *MI, unsigned OpNo, SStream *O)
 
 	SStream_concat(O, "%s:%s", getRegisterName(reg + 1), getRegisterName(reg));
 
-	if (MI->csh->detail) {
+	if (MI->csh->detail_opt) {
 		tms320c64x = &MI->flat_insn->detail->tms320c64x;
 
 		tms320c64x->operands[tms320c64x->op_count].type = TMS320C64X_OP_REGPAIR;

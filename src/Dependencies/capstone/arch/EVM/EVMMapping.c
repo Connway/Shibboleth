@@ -6,19 +6,19 @@
 #include <string.h>
 
 #include "../../cs_priv.h"
+#include "../../Mapping.h"
 #include "../../utils.h"
 
 #include "EVMMapping.h"
 
 #ifndef CAPSTONE_DIET
-static cs_evm insns[256] = {
+static const cs_evm insns[256] = {
 #include "EVMMappingInsn.inc"
 };
-#endif
 
 // look for @id in @insns, given its size in @max.
 // return -1 if not found
-static int evm_insn_find(cs_evm *insns, unsigned int max, unsigned int id)
+static int evm_insn_find(const cs_evm *insns, unsigned int max, unsigned int id)
 {
 	if (id >= max)
 		return -1;
@@ -29,6 +29,7 @@ static int evm_insn_find(cs_evm *insns, unsigned int max, unsigned int id)
 
 	return (int)id;
 }
+#endif
 
 // fill in details
 void EVM_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
@@ -36,7 +37,7 @@ void EVM_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 	insn->id = id;
 #ifndef CAPSTONE_DIET
 	if (evm_insn_find(insns, ARR_SIZE(insns), id) > 0) {
-		if (h->detail) {
+		if (h->detail_opt) {
 			memcpy(&insn->detail->evm, &insns[id], sizeof(insns[id]));
 		}
 	}
@@ -44,7 +45,7 @@ void EVM_get_insn_id(cs_struct *h, cs_insn *insn, unsigned int id)
 }
 
 #ifndef CAPSTONE_DIET
-static name_map insn_name_maps[256] = {
+static const name_map insn_name_maps[256] = {
 	{ EVM_INS_STOP, "stop" },
 	{ EVM_INS_ADD, "add" },
 	{ EVM_INS_MUL, "mul" },
@@ -317,7 +318,7 @@ const char *EVM_insn_name(csh handle, unsigned int id)
 }
 
 #ifndef CAPSTONE_DIET
-static name_map group_name_maps[] = {
+static const name_map group_name_maps[] = {
 	// generic groups
 	{ EVM_GRP_INVALID, NULL },
 	{ EVM_GRP_JUMP,	"jump" },

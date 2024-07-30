@@ -1,73 +1,134 @@
-/*===- TableGen'erated file -------------------------------------*- C++ -*-===*\
-|*                                                                            *|
-|*Subtarget Enumeration Source Fragment                                       *|
-|*                                                                            *|
-|* Automatically generated file, do not edit!                                 *|
-|*                                                                            *|
-\*===----------------------------------------------------------------------===*/
-
 /* Capstone Disassembly Engine, http://www.capstone-engine.org */
-/* By Nguyen Anh Quynh <aquynh@gmail.com>, 2013-2015 */
+/* By Nguyen Anh Quynh <aquynh@gmail.com>, 2013-2022, */
+/*    Rot127 <unisono@quyllur.org> 2022-2023 */
+/* Automatically generated file by Capstone's LLVM TableGen Disassembler Backend. */
 
+/* LLVM-commit: 464bda7750a3ba9e23823fc707d7e7b6fc38438d */
+/* LLVM-tag: llvmorg-16.0.2-5-g464bda7750a3 */
+
+/* Do not edit. */
+
+/* Capstone's LLVM TableGen Backends: */
+/* https://github.com/capstone-engine/llvm-capstone */
 
 #ifdef GET_SUBTARGETINFO_ENUM
 #undef GET_SUBTARGETINFO_ENUM
 
-#define PPC_DeprecatedDST (1ULL << 0)
-#define PPC_DeprecatedMFTB (1ULL << 1)
-#define PPC_Directive32 (1ULL << 2)
-#define PPC_Directive64 (1ULL << 3)
-#define PPC_Directive440 (1ULL << 4)
-#define PPC_Directive601 (1ULL << 5)
-#define PPC_Directive602 (1ULL << 6)
-#define PPC_Directive603 (1ULL << 7)
-#define PPC_Directive604 (1ULL << 8)
-#define PPC_Directive620 (1ULL << 9)
-#define PPC_Directive750 (1ULL << 10)
-#define PPC_Directive970 (1ULL << 11)
-#define PPC_Directive7400 (1ULL << 12)
-#define PPC_DirectiveA2 (1ULL << 13)
-#define PPC_DirectiveE500mc (1ULL << 14)
-#define PPC_DirectiveE5500 (1ULL << 15)
-#define PPC_DirectivePwr3 (1ULL << 16)
-#define PPC_DirectivePwr4 (1ULL << 17)
-#define PPC_DirectivePwr5 (1ULL << 18)
-#define PPC_DirectivePwr5x (1ULL << 19)
-#define PPC_DirectivePwr6 (1ULL << 20)
-#define PPC_DirectivePwr6x (1ULL << 21)
-#define PPC_DirectivePwr7 (1ULL << 22)
-#define PPC_DirectivePwr8 (1ULL << 23)
-#define PPC_Feature64Bit (1ULL << 24)
-#define PPC_Feature64BitRegs (1ULL << 25)
-#define PPC_FeatureAltivec (1ULL << 26)
-#define PPC_FeatureBookE (1ULL << 27)
-#define PPC_FeatureCMPB (1ULL << 28)
-#define PPC_FeatureCRBits (1ULL << 29)
-#define PPC_FeatureE500 (1ULL << 30)
-#define PPC_FeatureFCPSGN (1ULL << 31)
-#define PPC_FeatureFPCVT (1ULL << 32)
-#define PPC_FeatureFPRND (1ULL << 33)
-#define PPC_FeatureFRE (1ULL << 34)
-#define PPC_FeatureFRES (1ULL << 35)
-#define PPC_FeatureFRSQRTE (1ULL << 36)
-#define PPC_FeatureFRSQRTES (1ULL << 37)
-#define PPC_FeatureFSqrt (1ULL << 38)
-#define PPC_FeatureICBT (1ULL << 39)
-#define PPC_FeatureISEL (1ULL << 40)
-#define PPC_FeatureInvariantFunctionDescriptors (1ULL << 41)
-#define PPC_FeatureLDBRX (1ULL << 42)
-#define PPC_FeatureLFIWAX (1ULL << 43)
-#define PPC_FeatureMFOCRF (1ULL << 44)
-#define PPC_FeatureMSYNC (1ULL << 45)
-#define PPC_FeatureP8Altivec (1ULL << 46)
-#define PPC_FeatureP8Vector (1ULL << 47)
-#define PPC_FeaturePOPCNTD (1ULL << 48)
-#define PPC_FeaturePPC4xx (1ULL << 49)
-#define PPC_FeaturePPC6xx (1ULL << 50)
-#define PPC_FeatureQPX (1ULL << 51)
-#define PPC_FeatureRecipPrec (1ULL << 52)
-#define PPC_FeatureSPE (1ULL << 53)
-#define PPC_FeatureSTFIWX (1ULL << 54)
-#define PPC_FeatureVSX (1ULL << 55)
-
+enum {
+  PPC_AIXOS = 0,
+  PPC_DeprecatedDST = 1,
+  PPC_Directive32 = 2,
+  PPC_Directive64 = 3,
+  PPC_Directive440 = 4,
+  PPC_Directive601 = 5,
+  PPC_Directive602 = 6,
+  PPC_Directive603 = 7,
+  PPC_Directive604 = 8,
+  PPC_Directive620 = 9,
+  PPC_Directive750 = 10,
+  PPC_Directive970 = 11,
+  PPC_Directive7400 = 12,
+  PPC_DirectiveA2 = 13,
+  PPC_DirectiveE500 = 14,
+  PPC_DirectiveE500mc = 15,
+  PPC_DirectiveE5500 = 16,
+  PPC_DirectivePwr3 = 17,
+  PPC_DirectivePwr4 = 18,
+  PPC_DirectivePwr5 = 19,
+  PPC_DirectivePwr5x = 20,
+  PPC_DirectivePwr6 = 21,
+  PPC_DirectivePwr6x = 22,
+  PPC_DirectivePwr7 = 23,
+  PPC_DirectivePwr8 = 24,
+  PPC_DirectivePwr9 = 25,
+  PPC_DirectivePwr10 = 26,
+  PPC_DirectivePwrFuture = 27,
+  PPC_Feature64Bit = 28,
+  PPC_Feature64BitRegs = 29,
+  PPC_FeatureAddLogicalFusion = 30,
+  PPC_FeatureAddiLoadFusion = 31,
+  PPC_FeatureAddisLoadFusion = 32,
+  PPC_FeatureAltivec = 33,
+  PPC_FeatureArithAddFusion = 34,
+  PPC_FeatureBPERMD = 35,
+  PPC_FeatureBack2BackFusion = 36,
+  PPC_FeatureBookE = 37,
+  PPC_FeatureCMPB = 38,
+  PPC_FeatureCRBits = 39,
+  PPC_FeatureCompareFusion = 40,
+  PPC_FeatureDirectMove = 41,
+  PPC_FeatureE500 = 42,
+  PPC_FeatureEFPU2 = 43,
+  PPC_FeatureExtDiv = 44,
+  PPC_FeatureFCPSGN = 45,
+  PPC_FeatureFPCVT = 46,
+  PPC_FeatureFPRND = 47,
+  PPC_FeatureFPU = 48,
+  PPC_FeatureFRE = 49,
+  PPC_FeatureFRES = 50,
+  PPC_FeatureFRSQRTE = 51,
+  PPC_FeatureFRSQRTES = 52,
+  PPC_FeatureFSqrt = 53,
+  PPC_FeatureFastMFLR = 54,
+  PPC_FeatureFloat128 = 55,
+  PPC_FeatureFusion = 56,
+  PPC_FeatureHTM = 57,
+  PPC_FeatureHardFloat = 58,
+  PPC_FeatureICBT = 59,
+  PPC_FeatureISA2_06 = 60,
+  PPC_FeatureISA2_07 = 61,
+  PPC_FeatureISA3_0 = 62,
+  PPC_FeatureISA3_1 = 63,
+  PPC_FeatureISAFuture = 64,
+  PPC_FeatureISEL = 65,
+  PPC_FeatureInvariantFunctionDescriptors = 66,
+  PPC_FeatureLDBRX = 67,
+  PPC_FeatureLFIWAX = 68,
+  PPC_FeatureLogicalAddFusion = 69,
+  PPC_FeatureLogicalFusion = 70,
+  PPC_FeatureLongCall = 71,
+  PPC_FeatureMFOCRF = 72,
+  PPC_FeatureMFTB = 73,
+  PPC_FeatureMMA = 74,
+  PPC_FeatureMSYNC = 75,
+  PPC_FeatureModernAIXAs = 76,
+  PPC_FeatureP8Altivec = 77,
+  PPC_FeatureP8Crypto = 78,
+  PPC_FeatureP8Vector = 79,
+  PPC_FeatureP9Altivec = 80,
+  PPC_FeatureP9Vector = 81,
+  PPC_FeatureP10Vector = 82,
+  PPC_FeaturePCRelativeMemops = 83,
+  PPC_FeaturePOPCNTD = 84,
+  PPC_FeaturePPC4xx = 85,
+  PPC_FeaturePPC6xx = 86,
+  PPC_FeaturePPCPostRASched = 87,
+  PPC_FeaturePPCPreRASched = 88,
+  PPC_FeaturePS = 89,
+  PPC_FeaturePairedVectorMemops = 90,
+  PPC_FeaturePartwordAtomic = 91,
+  PPC_FeaturePredictableSelectIsExpensive = 92,
+  PPC_FeaturePrefixInstrs = 93,
+  PPC_FeaturePrivileged = 94,
+  PPC_FeatureQPX = 95,
+  PPC_FeatureQuadwordAtomic = 96,
+  PPC_FeatureROPProtect = 97,
+  PPC_FeatureRecipPrec = 98,
+  PPC_FeatureSPE = 99,
+  PPC_FeatureSTFIWX = 100,
+  PPC_FeatureSecurePlt = 101,
+  PPC_FeatureSha3Fusion = 102,
+  PPC_FeatureSlowPOPCNTD = 103,
+  PPC_FeatureStoreFusion = 104,
+  PPC_FeatureTwoConstNR = 105,
+  PPC_FeatureUnalignedFloats = 106,
+  PPC_FeatureVSX = 107,
+  PPC_FeatureVectorsUseTwoUnits = 108,
+  PPC_FeatureWideImmFusion = 109,
+  PPC_FeatureZeroMoveFusion = 110,
+  PPC_NumSubtargetFeatures = 111
+};
 #endif // GET_SUBTARGETINFO_ENUM
+
+
+

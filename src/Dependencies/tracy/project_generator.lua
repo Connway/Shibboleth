@@ -23,7 +23,8 @@ DependencyProject("TracyClient", "SharedLib")
 		"TRACY_ENABLE",
 		"TRACY_CALLSTACK",
 		"TRACY_FIBERS",
-		"TRACY_EXPORTS"
+		"TRACY_EXPORTS",
+		"CAPSTONE_AARCH64_COMPAT_HEADER"
 	}
 
 	postbuildcommands
@@ -61,6 +62,8 @@ DependencyProject("TracyProfiler", "WindowedApp")
 
 	language "C++"
 	warnings "Extra"
+
+	defines { "CAPSTONE_AARCH64_COMPAT_HEADER" }
 
 	build_files_in_dir("common")
 	build_files_in_dir("nfd")
@@ -115,6 +118,7 @@ DependencyProject("TracyProfiler", "WindowedApp")
 
 	filter { "system:macosx" }
 		files { "nfd/nfd_cocoa.m" }
+		links { "Cocoa.framework" }
 
 	filter { "system:windows" }
 		defines

@@ -10645,7 +10645,8 @@ static void printInstruction(MCInst *MI, SStream *O, MCRegisterInfo *MRI)
 
 
   // Fragment 0 encoded into 5 bits for 18 unique commands.
-  switch ((Bits >> 14) & 31) {
+  // printf("Fragment 0 = %" PRIu64 "\n", (Bits >> 14) & 31);
+  switch ((uint32_t)((Bits >> 14) & 31)) {
   default: // llvm_unreachable("Invalid command number.");
   case 0:
     // DBG_VALUE, DBG_LABEL, BUNDLE, LIFETIME_START, LIFETIME_END, FENTRY_CAL...
@@ -10752,7 +10753,8 @@ static void printInstruction(MCInst *MI, SStream *O, MCRegisterInfo *MRI)
 
 
   // Fragment 1 encoded into 5 bits for 17 unique commands.
-  switch ((Bits >> 19) & 31) {
+  // printf("Fragment 1 = %" PRIu64 "\n", (Bits >> 19) & 31);
+  switch ((uint32_t)((Bits >> 19) & 31)) {
   default: // llvm_unreachable("Invalid command number.");
   case 0:
     // A, AD, ADB, ADBR, ADR, ADTR, ADTRA, AE, AEB, AEBR, AER, AFI, AG, AGF, ...
@@ -10845,7 +10847,8 @@ static void printInstruction(MCInst *MI, SStream *O, MCRegisterInfo *MRI)
 
 
   // Fragment 2 encoded into 6 bits for 34 unique commands.
-  switch ((Bits >> 24) & 63) {
+  // printf("Fragment 2 = %" PRIu64 "\n", (Bits >> 24) & 63);
+  switch ((uint32_t)((Bits >> 24) & 63)) {
   default: // llvm_unreachable("Invalid command number.");
   case 0:
     // A, AD, ADB, AE, AEB, AG, AGF, AGH, AH, AHY, AL, ALC, ALCG, ALG, ALGF, ...
@@ -11011,7 +11014,8 @@ static void printInstruction(MCInst *MI, SStream *O, MCRegisterInfo *MRI)
 
 
   // Fragment 3 encoded into 5 bits for 20 unique commands.
-  switch ((Bits >> 30) & 31) {
+  // printf("Fragment 3 = %" PRIu64 "\n", (Bits >> 30) & 31);
+  switch ((uint32_t)((Bits >> 30) & 31)) {
   default: // llvm_unreachable("Invalid command number.");
   case 0:
     // A, AD, ADB, ADBR, ADR, AE, AEB, AEBR, AER, AG, AGF, AGFR, AGH, AGHI, A...
@@ -11116,7 +11120,8 @@ static void printInstruction(MCInst *MI, SStream *O, MCRegisterInfo *MRI)
 
 
   // Fragment 4 encoded into 6 bits for 33 unique commands.
-  switch ((Bits >> 35) & 63) {
+  // printf("Fragment 4 = %" PRIu64 "\n", (Bits >> 35) & 63);
+  switch ((uint32_t)((Bits >> 35) & 63)) {
   default: // llvm_unreachable("Invalid command number.");
   case 0:
     // ADTR, ADTRA, AGRK, AHHHR, AHHLR, ALGRK, ALHHHR, ALHHLR, ALRK, ARK, AXT...
@@ -11277,7 +11282,8 @@ static void printInstruction(MCInst *MI, SStream *O, MCRegisterInfo *MRI)
 
 
   // Fragment 5 encoded into 4 bits for 9 unique commands.
-  switch ((Bits >> 41) & 15) {
+  // printf("Fragment 5 = %" PRIu64 "\n", (Bits >> 41) & 15);
+  switch ((uint32_t)((Bits >> 41) & 15)) {
   default: // llvm_unreachable("Invalid command number.");
   case 0:
     // ADTR, AGRK, AHHHR, AHHLR, ALGRK, ALHHHR, ALHHLR, ALRK, ARK, AXTR, BXH,...
@@ -11329,7 +11335,8 @@ static void printInstruction(MCInst *MI, SStream *O, MCRegisterInfo *MRI)
 
 
   // Fragment 6 encoded into 4 bits for 11 unique commands.
-  switch ((Bits >> 45) & 15) {
+  // printf("Fragment 6 = %" PRIu64 "\n", (Bits >> 45) & 15);
+  switch ((uint32_t)((Bits >> 45) & 15)) {
   default: // llvm_unreachable("Invalid command number.");
   case 0:
     // ADTRA, AXTRA, CRDTE, DDTRA, DXTRA, IDTE, IPTE, MDTRA, MXTRA, SDTRA, SX...
@@ -11386,6 +11393,7 @@ static void printInstruction(MCInst *MI, SStream *O, MCRegisterInfo *MRI)
 
 
   // Fragment 7 encoded into 1 bits for 2 unique commands.
+  // printf("Fragment 7 = %" PRIu64 "\n", (Bits >> 49) & 1);
   if ((Bits >> 49) & 1) {
     // RISBG, RISBG32, RISBGN, RISBHG, RISBLG, RNSBG, ROSBG, RXSBG, VAC, VACC...
     SStream_concat0(O, ", ");
@@ -11396,7 +11404,8 @@ static void printInstruction(MCInst *MI, SStream *O, MCRegisterInfo *MRI)
 
 
   // Fragment 8 encoded into 2 bits for 3 unique commands.
-  switch ((Bits >> 50) & 3) {
+  // printf("Fragment 8 = %" PRIu64 "\n", (Bits >> 50) & 3);
+  switch ((uint32_t)((Bits >> 50) & 3)) {
   default: // llvm_unreachable("Invalid command number.");
   case 0:
     // RISBG, RISBG32, RISBGN, RISBHG, RISBLG, RNSBG, ROSBG, RXSBG
@@ -11416,6 +11425,7 @@ static void printInstruction(MCInst *MI, SStream *O, MCRegisterInfo *MRI)
 
 
   // Fragment 9 encoded into 1 bits for 2 unique commands.
+  // printf("Fragment 9 = %" PRIu64 "\n", (Bits >> 52) & 1);
   if ((Bits >> 52) & 1) {
     // VFCE, VFCH, VFCHE, VFMA, VFMAX, VFMIN, VFMS, VFNMA, VFNMS, VMSL, VSTRC
     SStream_concat0(O, ", ");
