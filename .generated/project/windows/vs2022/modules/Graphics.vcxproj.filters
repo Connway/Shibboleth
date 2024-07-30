@@ -39,9 +39,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Camera\Shibboleth_CameraComponent.h">
-      <Filter>include\Camera</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Camera\Shibboleth_CameraPipelineData.h">
       <Filter>include\Camera</Filter>
     </ClInclude>
@@ -73,6 +70,9 @@
       <Filter>include\Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_RenderPipeline.h">
+      <Filter>include\Pipelines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_RenderPipelineSystem.h">
       <Filter>include\Pipelines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Stages\Shibboleth_ClearRenderTargetStage.h">
@@ -114,9 +114,6 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_TextureResource.h">
       <Filter>include\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_CameraSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsConfig.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -135,14 +132,8 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManagerSystems.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Camera\Shibboleth_CameraComponent.cpp">
-      <Filter>src\Camera</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Camera\Shibboleth_CameraPipelineData.cpp">
       <Filter>src\Camera</Filter>
     </ClCompile>
@@ -171,6 +162,9 @@
       <Filter>src\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderPipeline.cpp">
+      <Filter>src\Pipelines</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderPipelineSystem.cpp">
       <Filter>src\Pipelines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Stages\Shibboleth_ClearRenderTargetStage.cpp">
@@ -212,9 +206,6 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_TextureResource.cpp">
       <Filter>src\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_CameraSystem.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_GraphicsConfig.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -225,9 +216,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_RenderManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_RenderManagerSystems.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

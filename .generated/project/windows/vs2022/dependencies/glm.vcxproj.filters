@@ -16,9 +16,6 @@
     <Filter Include="simd">
       <UniqueIdentifier>{32EC9D7C-1E23-9F0D-C70F-8510B3251B0F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="util">
-      <UniqueIdentifier>{43339F7C-2F6A-A00D-D856-8610C46C1C0F}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\common.hpp" />
@@ -41,6 +38,9 @@
       <Filter>detail</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\compute_common.hpp">
+      <Filter>detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\compute_vector_decl.hpp">
       <Filter>detail</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\compute_vector_relational.hpp">
@@ -199,11 +199,14 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\type_vec4.inl">
       <Filter>detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\type_vec4_simd.inl">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\type_vec_simd.inl">
       <Filter>detail</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\exponential.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\ext.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\ext\_matrix_vectorize.hpp">
+      <Filter>ext</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\ext\matrix_clip_space.hpp">
       <Filter>ext</Filter>
     </ClInclude>
@@ -933,7 +936,7 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\fast_trigonometry.inl">
       <Filter>gtx</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\float_notmalize.inl">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\float_normalize.inl">
       <Filter>gtx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\functions.hpp">
@@ -1057,9 +1060,6 @@
       <Filter>gtx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\number_precision.hpp">
-      <Filter>gtx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\number_precision.inl">
       <Filter>gtx</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\optimum_pow.hpp">
@@ -1250,10 +1250,5 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\vec3.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\vec4.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\vector_relational.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="..\..\..\..\..\src\Dependencies\glm\util\glm.natvis">
-      <Filter>util</Filter>
-    </Natvis>
   </ItemGroup>
 </Project>

@@ -236,7 +236,6 @@ CodeGenerator64od module_header --module Graphics</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Camera\Shibboleth_CameraComponent.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Camera\Shibboleth_CameraPipelineData.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Camera\Shibboleth_CameraView.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h" />
@@ -248,6 +247,7 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IRenderPipelineData.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_IRenderPipelineStage.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_RenderPipeline.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Shibboleth_RenderPipelineSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Stages\Shibboleth_ClearRenderTargetStage.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Stages\Shibboleth_ProcessModelsStage.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Pipelines\Stages\Shibboleth_RenderCommandStage.h" />
@@ -261,17 +261,14 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_SamplerStateResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_ShaderResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Resources\Shibboleth_TextureResource.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_CameraSystem.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsConfig.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsDefines.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsLogging.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsReflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderCommands.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManagerSystems.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Camera\Shibboleth_CameraComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Camera\Shibboleth_CameraPipelineData.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Camera\Shibboleth_CameraView.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Model\Shibboleth_MeshResource.cpp" />
@@ -282,6 +279,7 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IRenderPipelineData.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_IRenderPipelineStage.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Shibboleth_RenderPipelineSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Stages\Shibboleth_ClearRenderTargetStage.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Stages\Shibboleth_ProcessModelsStage.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Pipelines\Stages\Shibboleth_RenderCommandStage.cpp" />
@@ -295,12 +293,10 @@ CodeGenerator64od module_header --module Graphics</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_SamplerStateResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_ShaderResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Resources\Shibboleth_TextureResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_CameraSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_GraphicsConfig.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_GraphicsModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_GraphicsReflection.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_RenderManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Graphics\src\Shibboleth_RenderManagerSystems.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Graphics\project_generator.lua" />

@@ -23,6 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
+
+#ifndef GLM_ENABLE_EXPERIMENTAL
+	#define GLM_ENABLE_EXPERIMENTAL
+#endif
+
 #include <gtx/color_space.hpp>
 
 NS_GLEAM

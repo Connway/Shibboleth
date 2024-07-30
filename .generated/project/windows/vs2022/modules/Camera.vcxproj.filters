@@ -4,9 +4,15 @@
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Camera\include\Gen_ReflectionInit.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Camera\include\Shibboleth_CameraComponent.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Camera\include\Shibboleth_FlyCameraProcess.h">
@@ -14,8 +20,15 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\Shibboleth_CameraModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\Shibboleth_FlyCameraProcess.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\src\Shibboleth_CameraComponent.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\src\Shibboleth_CameraModule.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\src\Shibboleth_FlyCameraProcess.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Camera\project_generator.lua" />

@@ -26,8 +26,8 @@ THE SOFTWARE.
 #include "Camera/Shibboleth_CameraPipelineData.h"
 #include "Shibboleth_GraphicsLogging.h"
 #include "Shibboleth_RenderManager.h"
+#include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_ManagerRef.h>
 #include <Gleam_Program.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderGBufferStage)

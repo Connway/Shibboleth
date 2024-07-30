@@ -240,7 +240,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\CameraMod
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\Shibboleth_CameraModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\src\Shibboleth_CameraModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\Memory.vcxproj">

@@ -237,11 +237,13 @@ CodeGenerator64od module_header --module Camera</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Camera\include\Gen_ReflectionInit.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Camera\include\Shibboleth_CameraComponent.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Camera\include\Shibboleth_FlyCameraProcess.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\Shibboleth_CameraModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\Shibboleth_FlyCameraProcess.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\src\Shibboleth_CameraComponent.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\src\Shibboleth_CameraModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Camera\src\Shibboleth_FlyCameraProcess.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Camera\project_generator.lua" />

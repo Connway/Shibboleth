@@ -33,7 +33,10 @@ THE SOFTWARE.
 #include <Gaff_Math.h>
 #include <imgui.h>
 
-#define GLM_ENABLE_EXPERIMENTAL
+#ifndef GLM_ENABLE_EXPERIMENTAL
+	#define GLM_ENABLE_EXPERIMENTAL
+#endif
+
 #include <gtx/euler_angles.hpp>
 #include <gtx/transform.hpp>
 

@@ -64,6 +64,9 @@
     <Filter Include="code\AssetLib\IFC">
       <UniqueIdentifier>{87069647-F31C-94DD-3C94-1FFFA8E96465}</UniqueIdentifier>
     </Filter>
+    <Filter Include="code\AssetLib\IQM">
+      <UniqueIdentifier>{FC079647-681E-94DD-B195-1FFF1DEB6465}</UniqueIdentifier>
+    </Filter>
     <Filter Include="code\AssetLib\Irr">
       <UniqueIdentifier>{620C9647-CE22-94DD-179A-1FFF83EF6465}</UniqueIdentifier>
     </Filter>
@@ -151,6 +154,9 @@
     <Filter Include="code\AssetLib\Terragen">
       <UniqueIdentifier>{4D073C9E-3901-65F0-226E-FB000E07CB5C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="code\AssetLib\USD">
+      <UniqueIdentifier>{413B9647-AD51-94DD-F6C8-1FFF621E6565}</UniqueIdentifier>
+    </Filter>
     <Filter Include="code\AssetLib\Unreal">
       <UniqueIdentifier>{3C89574A-2818-E113-D136-F50EBDA4F1B9}</UniqueIdentifier>
     </Filter>
@@ -175,6 +181,9 @@
     <Filter Include="code\Common">
       <UniqueIdentifier>{B8FBBEBB-24B1-37B1-ADA5-3188195A2EB5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="code\Geometry">
+      <UniqueIdentifier>{DBBB525B-477C-CE91-10B7-170F7C36136E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="code\Material">
       <UniqueIdentifier>{1EBD14BC-8A7D-90F2-53B8-D96FBF37D5CE}</UniqueIdentifier>
     </Filter>
@@ -183,9 +192,6 @@
     </Filter>
     <Filter Include="code\PostProcessing">
       <UniqueIdentifier>{722971A1-DE8A-4EAF-67F8-9461D358856E}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="code\res">
-      <UniqueIdentifier>{B9362C2A-A503-8735-CE1C-75DDBA48BCC3}</UniqueIdentifier>
     </Filter>
     <Filter Include="contrib">
       <UniqueIdentifier>{16D079D3-82AF-F86E-8BC7-8345F7255FD0}</UniqueIdentifier>
@@ -216,9 +222,6 @@
     </Filter>
     <Filter Include="contrib\pugixml">
       <UniqueIdentifier>{0B3EFB80-77C9-6845-80DA-EB39ECE4C445}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="contrib\pugixml\contrib">
-      <UniqueIdentifier>{0B6182A0-7798-CA37-80A2-2E5BEC58F130}</UniqueIdentifier>
     </Filter>
     <Filter Include="contrib\pugixml\src">
       <UniqueIdentifier>{A2094DE9-0E6B-2AF7-97D8-70A9033961B6}</UniqueIdentifier>
@@ -444,6 +447,12 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\IFC\IFCUtil.h">
       <Filter>code\AssetLib\IFC</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\IQM\IQMImporter.h">
+      <Filter>code\AssetLib\IQM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\IQM\iqm.h">
+      <Filter>code\AssetLib\IQM</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\Irr\IRRLoader.h">
       <Filter>code\AssetLib\Irr</Filter>
     </ClInclude>
@@ -666,6 +675,21 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\Terragen\TerragenLoader.h">
       <Filter>code\AssetLib\Terragen</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\USD\USDLoader.h">
+      <Filter>code\AssetLib\USD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\USD\USDLoaderImplTinyusdz.h">
+      <Filter>code\AssetLib\USD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\USD\USDLoaderImplTinyusdzHelper.h">
+      <Filter>code\AssetLib\USD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\USD\USDLoaderUtil.h">
+      <Filter>code\AssetLib\USD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\USD\USDPreprocessor.h">
+      <Filter>code\AssetLib\USD</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\Unreal\UnrealLoader.h">
       <Filter>code\AssetLib\Unreal</Filter>
     </ClInclude>
@@ -744,10 +768,10 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\CApi\CInterfaceIOWrapper.h">
       <Filter>code\CApi</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\AssertHandler.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\BaseProcess.h">
       <Filter>code\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\BaseProcess.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\Compression.h">
       <Filter>code\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\DefaultProgressHandler.h">
@@ -765,6 +789,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\Importer.h">
       <Filter>code\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\Maybe.h">
+      <Filter>code\Common</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\PolyTools.h">
       <Filter>code\Common</Filter>
     </ClInclude>
@@ -772,6 +799,15 @@
       <Filter>code\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\ScenePrivate.h">
+      <Filter>code\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\StackAllocator.h">
+      <Filter>code\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\StackAllocator.inl">
+      <Filter>code\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\StbCommon.h">
       <Filter>code\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\StdOStreamLogStream.h">
@@ -791,6 +827,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\simd.h">
       <Filter>code\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Geometry\GeometryUtils.h">
+      <Filter>code\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Material\MaterialSystem.h">
       <Filter>code\Material</Filter>
@@ -891,12 +930,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\PostProcessing\ValidateDataStructure.h">
       <Filter>code\PostProcessing</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\res\resource.h">
-      <Filter>code\res</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\revision.h">
-      <Filter>code</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include\openddlparser\DDLNode.h">
       <Filter>contrib\openddlparser\include\openddlparser</Filter>
     </ClInclude>
@@ -921,6 +954,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include\openddlparser\Value.h">
       <Filter>contrib\openddlparser\include\openddlparser</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\poly2tri\poly2tri\common\dll_symbol.h">
+      <Filter>contrib\poly2tri\poly2tri\common</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\poly2tri\poly2tri\common\shapes.h">
       <Filter>contrib\poly2tri\poly2tri\common</Filter>
     </ClInclude>
@@ -942,9 +978,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\poly2tri\poly2tri\sweep\sweep_context.h">
       <Filter>contrib\poly2tri\poly2tri\sweep</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\contrib\foreach.hpp">
-      <Filter>contrib\pugixml\contrib</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\pugixml\src\pugiconfig.hpp">
       <Filter>contrib\pugixml\src</Filter>
     </ClInclude>
@@ -963,8 +996,17 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\utf8cpp\source\utf8\cpp11.h">
       <Filter>contrib\utf8cpp\source\utf8</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\utf8cpp\source\utf8\cpp17.h">
+      <Filter>contrib\utf8cpp\source\utf8</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\contrib\utf8cpp\source\utf8\unchecked.h">
       <Filter>contrib\utf8cpp\source\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\AssertHandler.h">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\Base64.hpp">
+      <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\BaseImporter.h">
       <Filter>include\assimp</Filter>
@@ -1048,6 +1090,9 @@
       <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\NullLogger.hpp">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\ObjMaterial.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\ParsingUtils.h">
@@ -1204,6 +1249,9 @@
       <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\quaternion.inl">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\revision.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\include\assimp\scene.h">
@@ -1439,6 +1487,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\IFC\IFCUtil.cpp">
       <Filter>code\AssetLib\IFC</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\IQM\IQMImporter.cpp">
+      <Filter>code\AssetLib\IQM</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\Irr\IRRLoader.cpp">
       <Filter>code\AssetLib\Irr</Filter>
     </ClCompile>
@@ -1595,6 +1646,18 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\Terragen\TerragenLoader.cpp">
       <Filter>code\AssetLib\Terragen</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\USD\USDLoader.cpp">
+      <Filter>code\AssetLib\USD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\USD\USDLoaderImplTinyusdz.cpp">
+      <Filter>code\AssetLib\USD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\USD\USDLoaderImplTinyusdzHelper.cpp">
+      <Filter>code\AssetLib\USD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\USD\USDLoaderUtil.cpp">
+      <Filter>code\AssetLib\USD</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\AssetLib\Unreal\UnrealLoader.cpp">
       <Filter>code\AssetLib\Unreal</Filter>
     </ClCompile>
@@ -1679,6 +1742,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\Assimp.cpp">
       <Filter>code\Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\Base64.cpp">
+      <Filter>code\Common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\BaseImporter.cpp">
       <Filter>code\Common</Filter>
     </ClCompile>
@@ -1686,6 +1752,9 @@
       <Filter>code\Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\Bitmap.cpp">
+      <Filter>code\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\Compression.cpp">
       <Filter>code\Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\CreateAnimMesh.cpp">
@@ -1704,6 +1773,9 @@
       <Filter>code\Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\Exporter.cpp">
+      <Filter>code\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\IOSystem.cpp">
       <Filter>code\Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\Importer.cpp">
@@ -1759,6 +1831,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Common\simd.cpp">
       <Filter>code\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Geometry\GeometryUtils.cpp">
+      <Filter>code\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Material\MaterialSystem.cpp">
       <Filter>code\Material</Filter>

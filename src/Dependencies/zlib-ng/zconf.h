@@ -160,8 +160,8 @@ typedef PTRDIFF_TYPE ptrdiff_t;
 #  undef _LARGEFILE64_SOURCE
 #endif
 
-//#if !defined(_WIN32) && (defined(Z_HAVE_UNISTD_H) || defined(_LARGEFILE64_SOURCE))
-#if defined(Z_HAVE_UNISTD_H) || defined(_LARGEFILE64_SOURCE)
+// $MODIFICATION: Do not #include <unistd.h> off on Windows.
+#if !defined(_WIN32) && (defined(Z_HAVE_UNISTD_H) || defined(_LARGEFILE64_SOURCE))
 #  include <unistd.h>         /* for SEEK_*, off_t, and _LFS64_LARGEFILE */
 #  ifndef z_off_t
 #    define z_off_t off_t

@@ -1,7 +1,8 @@
 /// @ref gtx_color_space
 
-#include <glm/ext/scalar_relational.hpp>
-#include <glm/ext/scalar_constants.hpp>
+// $MODIFICATION: Removing "glm/" from #include <glm/ext/scalar_*.hpp> lines.
+#include <ext/scalar_relational.hpp>
+#include <ext/scalar_constants.hpp>
 
 namespace glm
 {

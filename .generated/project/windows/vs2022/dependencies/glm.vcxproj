@@ -99,6 +99,7 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\_swizzle_func.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\_vectorize.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\compute_common.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\compute_vector_decl.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\compute_vector_relational.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\func_common.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\func_common_simd.inl" />
@@ -151,9 +152,10 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\type_vec3.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\type_vec4.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\type_vec4.inl" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\type_vec4_simd.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\detail\type_vec_simd.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\exponential.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\ext.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\ext\_matrix_vectorize.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\ext\matrix_clip_space.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\ext\matrix_clip_space.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\ext\matrix_common.hpp" />
@@ -399,7 +401,7 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\fast_square_root.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\fast_trigonometry.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\fast_trigonometry.inl" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\float_notmalize.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\float_normalize.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\functions.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\functions.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\gradient_paint.hpp" />
@@ -441,7 +443,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\normalize_dot.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\normalize_dot.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\number_precision.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\number_precision.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\optimum_pow.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\optimum_pow.inl" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\gtx\orthonormalize.hpp" />
@@ -516,9 +517,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\vec3.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\vec4.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\glm\vector_relational.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="..\..\..\..\..\src\Dependencies\glm\util\glm.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
