@@ -28,8 +28,10 @@ THE SOFTWARE.
 
 #ifdef SHIB_PROFILE
 	#define TRACY_ENABLE
+	#define TRACY_CALLSTACK 10
+	#define TRACY_FIBERS
 #endif
 
 MSVC_DISABLE_WARNING_PUSH(4554)
-#include <Tracy.hpp>
+#include <public/tracy/Tracy.hpp>
 MSVC_DISABLE_WARNING_POP()

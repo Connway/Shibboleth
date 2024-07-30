@@ -196,6 +196,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zstd\common\allocations.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zstd\common\bits.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zstd\common\bitstream.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zstd\common\compiler.h" />

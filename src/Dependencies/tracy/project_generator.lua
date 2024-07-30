@@ -1,3 +1,13 @@
+function TracyDefines()
+	defines
+	{
+		"TRACY_ENABLE",
+		"TRACY_CALLSTACK=10",
+		"TRACY_FIBERS",
+		"TRACY_EXPORTS"
+	}
+end
+
 DependencyProject("TracyClient", "SharedLib")
 	local build_files_in_dir = function(dir)
 		files
@@ -19,14 +29,7 @@ DependencyProject("TracyClient", "SharedLib")
 	build_files_in_dir("public/common")
 	build_files_in_dir("public/tracy")
 
-	defines
-	{
-		"TRACY_ENABLE",
-		"TRACY_CALLSTACK",
-		"TRACY_FIBERS",
-		"TRACY_EXPORTS",
-		-- "CAPSTONE_AARCH64_COMPAT_HEADER"
-	}
+	TracyDefines()
 
 	postbuildcommands
 	{
@@ -63,8 +66,6 @@ DependencyProject("TracyProfiler", "WindowedApp")
 
 	language "C++"
 	warnings "Extra"
-
-	-- defines { "CAPSTONE_AARCH64_COMPAT_HEADER" }
 
 	build_files_in_dir("public/common")
 	build_files_in_dir("dtl")

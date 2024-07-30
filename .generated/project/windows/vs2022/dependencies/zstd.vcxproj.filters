@@ -15,6 +15,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zstd\common\allocations.h">
+      <Filter>common</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zstd\common\bits.h">
       <Filter>common</Filter>
     </ClInclude>

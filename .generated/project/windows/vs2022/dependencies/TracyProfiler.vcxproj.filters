@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="common">
-      <UniqueIdentifier>{AEFEE3F6-9AA0-0ECD-835B-22216F9C951D}</UniqueIdentifier>
+    <Filter Include="dtl">
+      <UniqueIdentifier>{A96B880B-1575-887C-9EF0-9E7C0AF9937C}</UniqueIdentifier>
     </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</UniqueIdentifier>
@@ -16,55 +16,49 @@
     <Filter Include="profiler\src">
       <UniqueIdentifier>{5FEAE3A4-4B4D-7349-F4D2-ABFFE0143FCC}</UniqueIdentifier>
     </Filter>
+    <Filter Include="profiler\src\font">
+      <UniqueIdentifier>{E5920CE3-51A9-0A79-9A20-969A0676DB00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="profiler\src\imgui">
+      <UniqueIdentifier>{0903D444-F5E6-949A-5E47-8FED4A4A7F1C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="profiler\src\profiler">
+      <UniqueIdentifier>{B1C2490E-1D2F-0509-E622-9D66524E2771}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public">
+      <UniqueIdentifier>{A4949D15-9036-C8EB-79F1-DB3F65324F3C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public\common">
+      <UniqueIdentifier>{7C95317D-E855-ADB3-B190-F6301D10F28F}</UniqueIdentifier>
+    </Filter>
     <Filter Include="server">
       <UniqueIdentifier>{9C76841B-8818-AFF1-71D3-C2455D143642}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyAlign.hpp">
-      <Filter>common</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\Diff.hpp">
+      <Filter>dtl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyAlloc.hpp">
-      <Filter>common</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\Diff3.hpp">
+      <Filter>dtl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyApi.h">
-      <Filter>common</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\Lcs.hpp">
+      <Filter>dtl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyColor.hpp">
-      <Filter>common</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\Sequence.hpp">
+      <Filter>dtl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyForceInline.hpp">
-      <Filter>common</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\Ses.hpp">
+      <Filter>dtl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyMutex.hpp">
-      <Filter>common</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\dtl.hpp">
+      <Filter>dtl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyProtocol.hpp">
-      <Filter>common</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\functors.hpp">
+      <Filter>dtl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyQueue.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySocket.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyStackFrames.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySystem.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyUwp.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyYield.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4.hpp">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4hc.hpp">
-      <Filter>common</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\variables.hpp">
+      <Filter>dtl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imconfig.h">
       <Filter>imgui</Filter>
@@ -84,73 +78,244 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\nfd\common.h">
-      <Filter>nfd</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\nfd\nfd.h">
       <Filter>nfd</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\nfd\nfd_common.h">
-      <Filter>nfd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\DroidSans.hpp">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\Backend.hpp">
       <Filter>profiler\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\FiraCodeRetina.hpp">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ConnectionHistory.hpp">
       <Filter>profiler\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\FontAwesomeSolid.hpp">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\Filters.hpp">
+      <Filter>profiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\Fonts.hpp">
       <Filter>profiler\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\HttpRequest.hpp">
       <Filter>profiler\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\NativeWindow.hpp">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ImGuiContext.hpp">
+      <Filter>profiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\IsElevated.hpp">
       <Filter>profiler\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ResolvService.hpp">
       <Filter>profiler\src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\RunQueue.hpp">
+      <Filter>profiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\WindowPosition.hpp">
+      <Filter>profiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\font\DroidSans.hpp">
+      <Filter>profiler\src\font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\font\FiraCodeRetina.hpp">
+      <Filter>profiler\src\font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\font\FontAwesomeSolid.hpp">
+      <Filter>profiler\src\font</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\icon.hpp">
       <Filter>profiler\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui_impl_glfw.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui\imgui_impl_glfw.h">
+      <Filter>profiler\src\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui\imgui_impl_opengl3.h">
+      <Filter>profiler\src\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui\imgui_impl_opengl3_loader.h">
+      <Filter>profiler\src\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ini.h">
       <Filter>profiler\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui_impl_opengl3.h">
-      <Filter>profiler\src</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\IconsFontAwesome6.h">
+      <Filter>profiler\src\profiler</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui_impl_opengl3_loader.h">
-      <Filter>profiler\src</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyAchievements.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyBadVersion.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyBuzzAnim.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyColor.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyConfig.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyDecayValue.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyEventDebug.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyFileselector.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyFilesystem.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyImGui.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyLockHelpers.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyMicroArchitecture.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyMouse.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyProtoHistory.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceContents.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceTokenizer.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceView.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyStorage.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTexture.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineContext.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineController.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineDraw.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItem.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemCpuData.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemGpu.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemPlot.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemThread.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyUserData.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyUtility.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyViewData.hpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyWeb.hpp">
+      <Filter>profiler\src\profiler</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\stb_image.h">
       <Filter>profiler\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\IconsFontAwesome5.h">
-      <Filter>server</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\stb_image_resize.h">
+      <Filter>profiler\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyBadVersion.hpp">
-      <Filter>server</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag01.hpp">
+      <Filter>profiler\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyBuzzAnim.hpp">
-      <Filter>server</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag02.hpp">
+      <Filter>profiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag04.hpp">
+      <Filter>profiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag08.hpp">
+      <Filter>profiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag16.hpp">
+      <Filter>profiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag32.hpp">
+      <Filter>profiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyAlign.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyAlloc.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyApi.h">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyColor.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyForceInline.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyMutex.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyProtocol.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyQueue.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracySocket.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyStackFrames.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracySystem.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyUwp.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyVersion.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyYield.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\tracy_lz4.hpp">
+      <Filter>public\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\tracy_lz4hc.hpp">
+      <Filter>public\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyCharUtil.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyColor.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyDecayValue.hpp">
       <Filter>server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyEvent.hpp">
       <Filter>server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyEventDebug.hpp">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFileHeader.hpp">
       <Filter>server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFileHeader.hpp">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFileMeta.hpp">
       <Filter>server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFileRead.hpp">
@@ -159,22 +324,10 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFileWrite.hpp">
       <Filter>server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFilesystem.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyImGui.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMemory.hpp">
       <Filter>server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMicroArchitecture.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMmap.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMouse.hpp">
       <Filter>server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyPopcnt.hpp">
@@ -195,25 +348,13 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySortedVector.hpp">
       <Filter>server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceContents.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceTokenizer.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceView.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyStorage.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyStringDiscovery.hpp">
       <Filter>server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTaskDispatch.hpp">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySysUtil.hpp">
       <Filter>server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTexture.hpp">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTaskDispatch.hpp">
       <Filter>server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTextureCompression.hpp">
@@ -222,25 +363,10 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyThreadCompress.hpp">
       <Filter>server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyUserData.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyVarArray.hpp">
       <Filter>server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyVector.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyVersion.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyView.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyViewData.hpp">
-      <Filter>server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyWeb.hpp">
       <Filter>server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyWorker.hpp">
@@ -257,21 +383,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySocket.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyStackFrames.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySystem.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4hc.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -287,29 +398,209 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\nfd\nfd_common.c">
-      <Filter>nfd</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\nfd\nfd_win.cpp">
       <Filter>nfd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\BackendGlfw.cpp">
+      <Filter>profiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ConnectionHistory.cpp">
+      <Filter>profiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\Filters.cpp">
+      <Filter>profiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\Fonts.cpp">
+      <Filter>profiler\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\HttpRequest.cpp">
       <Filter>profiler\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\NativeWindow.cpp">
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ImGuiContext.cpp">
+      <Filter>profiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\IsElevated.cpp">
       <Filter>profiler\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ResolvService.cpp">
       <Filter>profiler\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui_impl_glfw.cpp">
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\RunQueue.cpp">
       <Filter>profiler\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui_impl_opengl3.cpp">
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\WindowPosition.cpp">
+      <Filter>profiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui\imgui_impl_glfw.cpp">
+      <Filter>profiler\src\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui\imgui_impl_opengl3.cpp">
+      <Filter>profiler\src\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ini.c">
       <Filter>profiler\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\main.cpp">
       <Filter>profiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyAchievementData.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyAchievements.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyBadVersion.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyColor.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyEventDebug.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyFileselector.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyFilesystem.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyImGui.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyMicroArchitecture.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyMouse.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyProtoHistory.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceContents.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceTokenizer.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceView.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyStorage.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTexture.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineController.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItem.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemCpuData.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemGpu.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemPlot.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemThread.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyUserData.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyUtility.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Annotations.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Callstack.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Compare.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_ConnectionState.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_ContextSwitch.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_CpuData.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_FindZone.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_FrameOverview.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_FrameTimeline.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_FrameTree.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_GpuTimeline.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Locks.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Memory.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Messages.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Navigation.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_NotificationArea.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Options.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Playback.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Plots.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Ranges.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Samples.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Statistics.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Timeline.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_TraceInfo.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Utility.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_ZoneInfo.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_ZoneTimeline.cpp">
+      <Filter>profiler\src\profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyWeb.cpp">
+      <Filter>profiler\src\profiler</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\winmain.cpp">
       <Filter>profiler\src</Filter>
@@ -317,64 +608,40 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\winmainArchDiscovery.cpp">
       <Filter>profiler\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyBadVersion.cpp">
-      <Filter>server</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracySocket.cpp">
+      <Filter>public\common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyColor.cpp">
-      <Filter>server</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyStackFrames.cpp">
+      <Filter>public\common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyEventDebug.cpp">
-      <Filter>server</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracySystem.cpp">
+      <Filter>public\common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFilesystem.cpp">
-      <Filter>server</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\public\common\tracy_lz4.cpp">
+      <Filter>public\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\public\common\tracy_lz4hc.cpp">
+      <Filter>public\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMemory.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMicroArchitecture.cpp">
       <Filter>server</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMmap.cpp">
       <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMouse.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyPrint.cpp">
       <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceContents.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceTokenizer.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceView.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyStorage.cpp">
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySysUtil.cpp">
       <Filter>server</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTaskDispatch.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTexture.cpp">
       <Filter>server</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTextureCompression.cpp">
       <Filter>server</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyThreadCompress.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyUserData.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyView.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyWeb.cpp">
       <Filter>server</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyWorker.cpp">

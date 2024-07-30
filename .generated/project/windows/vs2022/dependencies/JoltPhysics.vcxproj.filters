@@ -52,6 +52,9 @@
     <Filter Include="Jolt\Physics\Ragdoll">
       <UniqueIdentifier>{04E453B4-F072-DD7D-9991-F17885FFED23}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Jolt\Physics\SoftBody">
+      <UniqueIdentifier>{894A755F-F5B6-305A-BEAA-C8B72AD652C2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Jolt\Physics\Vehicle">
       <UniqueIdentifier>{DF1CA6F1-CBAB-2FBB-74CA-43B660384061}</UniqueIdentifier>
     </Filter>
@@ -85,6 +88,9 @@
       <Filter>Jolt</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\ARMNeon.h">
+      <Filter>Jolt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\Array.h">
       <Filter>Jolt\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\Atomics.h">
@@ -126,7 +132,13 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\JobSystem.h">
       <Filter>Jolt\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\JobSystemSingleThreaded.h">
+      <Filter>Jolt\Core</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\JobSystemThreadPool.h">
+      <Filter>Jolt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\JobSystemWithBarrier.h">
       <Filter>Jolt\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\LinearCurve.h">
@@ -171,6 +183,12 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\STLTempAllocator.h">
       <Filter>Jolt\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\ScopeExit.h">
+      <Filter>Jolt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\Semaphore.h">
+      <Filter>Jolt\Core</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\StaticArray.h">
       <Filter>Jolt\Core</Filter>
     </ClInclude>
@@ -178,6 +196,9 @@
       <Filter>Jolt\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\StreamOut.h">
+      <Filter>Jolt\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\StreamUtils.h">
       <Filter>Jolt\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\StreamWrapper.h">
@@ -393,6 +414,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\ObjectStream\TypeDeclarations.h">
       <Filter>Jolt\ObjectStream</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Body\AllowedDOFs.h">
+      <Filter>Jolt\Physics\Body</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Body\Body.h">
       <Filter>Jolt\Physics\Body</Filter>
     </ClInclude>
@@ -427,6 +451,9 @@
       <Filter>Jolt\Physics\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Body\BodyPair.h">
+      <Filter>Jolt\Physics\Body</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Body\BodyType.h">
       <Filter>Jolt\Physics\Body</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Body\MassProperties.h">
@@ -471,10 +498,22 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\BroadPhase\BroadPhaseLayer.h">
       <Filter>Jolt\Physics\Collision\BroadPhase</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\BroadPhase\BroadPhaseLayerInterfaceMask.h">
+      <Filter>Jolt\Physics\Collision\BroadPhase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\BroadPhase\BroadPhaseLayerInterfaceTable.h">
+      <Filter>Jolt\Physics\Collision\BroadPhase</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\BroadPhase\BroadPhaseQuadTree.h">
       <Filter>Jolt\Physics\Collision\BroadPhase</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\BroadPhase\BroadPhaseQuery.h">
+      <Filter>Jolt\Physics\Collision\BroadPhase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\BroadPhase\ObjectVsBroadPhaseLayerFilterMask.h">
+      <Filter>Jolt\Physics\Collision\BroadPhase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\BroadPhase\ObjectVsBroadPhaseLayerFilterTable.h">
       <Filter>Jolt\Physics\Collision\BroadPhase</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\BroadPhase\QuadTree.h">
@@ -499,6 +538,9 @@
       <Filter>Jolt\Physics\Collision</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\CollideShape.h">
+      <Filter>Jolt\Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\CollideSoftBodyVerticesVsTriangles.h">
       <Filter>Jolt\Physics\Collision</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\CollideSphereVsTriangles.h">
@@ -528,6 +570,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\GroupFilterTable.h">
       <Filter>Jolt\Physics\Collision</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\InternalEdgeRemovingCollector.h">
+      <Filter>Jolt\Physics\Collision</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\ManifoldBetweenTwoFaces.h">
       <Filter>Jolt\Physics\Collision</Filter>
     </ClInclude>
@@ -538,6 +583,12 @@
       <Filter>Jolt\Physics\Collision</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\ObjectLayer.h">
+      <Filter>Jolt\Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\ObjectLayerPairFilterMask.h">
+      <Filter>Jolt\Physics\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\ObjectLayerPairFilterTable.h">
       <Filter>Jolt\Physics\Collision</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\PhysicsMaterial.h">
@@ -633,6 +684,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Collision\TransformedShape.h">
       <Filter>Jolt\Physics\Collision</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Constraints\CalculateSolverSteps.h">
+      <Filter>Jolt\Physics\Constraints</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Constraints\ConeConstraint.h">
       <Filter>Jolt\Physics\Constraints</Filter>
     </ClInclude>
@@ -720,6 +774,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Constraints\SliderConstraint.h">
       <Filter>Jolt\Physics\Constraints</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Constraints\SpringSettings.h">
+      <Filter>Jolt\Physics\Constraints</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Constraints\SwingTwistConstraint.h">
       <Filter>Jolt\Physics\Constraints</Filter>
     </ClInclude>
@@ -732,7 +789,13 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\EActivation.h">
       <Filter>Jolt\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\EPhysicsUpdateError.h">
+      <Filter>Jolt\Physics</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\IslandBuilder.h">
+      <Filter>Jolt\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\LargeIslandSplitter.h">
       <Filter>Jolt\Physics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\PhysicsLock.h">
@@ -756,11 +819,38 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Ragdoll\Ragdoll.h">
       <Filter>Jolt\Physics\Ragdoll</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodyContactListener.h">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodyCreationSettings.h">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodyManifold.h">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodyMotionProperties.h">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodyShape.h">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodySharedSettings.h">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodyUpdateContext.h">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodyVertex.h">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\StateRecorder.h">
       <Filter>Jolt\Physics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\StateRecorderImpl.h">
       <Filter>Jolt\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Vehicle\MotorcycleController.h">
+      <Filter>Jolt\Physics\Vehicle</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Vehicle\TrackedVehicleController.h">
       <Filter>Jolt\Physics\Vehicle</Filter>
@@ -805,6 +895,9 @@
       <Filter>Jolt\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Renderer\DebugRendererRecorder.h">
+      <Filter>Jolt\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Renderer\DebugRendererSimple.h">
       <Filter>Jolt\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Skeleton\SkeletalAnimation.h">
@@ -860,7 +953,13 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\IssueReporting.cpp">
       <Filter>Jolt\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\JobSystemSingleThreaded.cpp">
+      <Filter>Jolt\Core</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\JobSystemThreadPool.cpp">
+      <Filter>Jolt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\JobSystemWithBarrier.cpp">
       <Filter>Jolt\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\LinearCurve.cpp">
@@ -873,6 +972,9 @@
       <Filter>Jolt\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\RTTI.cpp">
+      <Filter>Jolt\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\Semaphore.cpp">
       <Filter>Jolt\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Core\StringTools.cpp">
@@ -892,9 +994,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Geometry\OrientedBox.cpp">
       <Filter>Jolt\Geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Math\UVec4.cpp">
-      <Filter>Jolt\Math</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Math\Vec3.cpp">
       <Filter>Jolt\Math</Filter>
@@ -1118,6 +1217,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Constraints\SliderConstraint.cpp">
       <Filter>Jolt\Physics\Constraints</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Constraints\SpringSettings.cpp">
+      <Filter>Jolt\Physics\Constraints</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Constraints\SwingTwistConstraint.cpp">
       <Filter>Jolt\Physics\Constraints</Filter>
     </ClCompile>
@@ -1128,6 +1230,9 @@
       <Filter>Jolt\Physics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\IslandBuilder.cpp">
+      <Filter>Jolt\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\LargeIslandSplitter.cpp">
       <Filter>Jolt\Physics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\PhysicsLock.cpp">
@@ -1145,8 +1250,23 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Ragdoll\Ragdoll.cpp">
       <Filter>Jolt\Physics\Ragdoll</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodyCreationSettings.cpp">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodyMotionProperties.cpp">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodyShape.cpp">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\SoftBody\SoftBodySharedSettings.cpp">
+      <Filter>Jolt\Physics\SoftBody</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\StateRecorderImpl.cpp">
       <Filter>Jolt\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Vehicle\MotorcycleController.cpp">
+      <Filter>Jolt\Physics\Vehicle</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Physics\Vehicle\TrackedVehicleController.cpp">
       <Filter>Jolt\Physics\Vehicle</Filter>
@@ -1191,6 +1311,9 @@
       <Filter>Jolt\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Renderer\DebugRendererRecorder.cpp">
+      <Filter>Jolt\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Renderer\DebugRendererSimple.cpp">
       <Filter>Jolt\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\JoltPhysics\Jolt\Skeleton\SkeletalAnimation.cpp">

@@ -239,7 +239,7 @@ namespace
 
 	static constexpr int32_t k_num_instances_per_buffer = 32;
 
-	static constexpr int32_t k_key_mapping[GLFW_KEY_LAST + 1] =
+	static constexpr ImGuiKey k_key_mapping[GLFW_KEY_LAST + 1] =
 	{
 		ImGuiKey_None, /* 0 */ ImGuiKey_None, /* 1 */ ImGuiKey_None, /* 2 */ ImGuiKey_None, /* 3 */ ImGuiKey_None, /* 4 */
 		ImGuiKey_None, /* 5 */ ImGuiKey_None, /* 6 */ ImGuiKey_None, /* 7 */ ImGuiKey_None, /* 8 */ ImGuiKey_None, /* 9 */

@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include <lua.hpp>
 
 MSVC_DISABLE_WARNING_PUSH(4100 4244)
-#include <TracyLua.hpp>
+#include <public/tracy/TracyLua.hpp>
 MSVC_DISABLE_WARNING_POP()
 
 

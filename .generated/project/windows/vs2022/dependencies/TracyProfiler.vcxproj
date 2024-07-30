@@ -102,7 +102,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_FMADD;JPH_USE_SSE4_1;JPH_USE_SSE4_2;GLM_FORCE_SILENT_WARNINGS;TARGET_SUFFIX_U8="64d";TARGET_SUFFIX="64d";_DEBUG;DEBUG;SHIB_PROFILE;JPH_PROFILE_ENABLED;JPH_DEBUG_RENDERER;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;WIN32;_WINDOWS;WIN64;WIN32_LEAN_AND_MEAN;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\server;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -129,7 +129,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\TracyProfiler\$(Tar
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_FMADD;JPH_USE_SSE4_1;JPH_USE_SSE4_2;GLM_FORCE_SILENT_WARNINGS;TARGET_SUFFIX_U8="64";TARGET_SUFFIX="64";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;WIN32_LEAN_AND_MEAN;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\server;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -162,7 +162,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Release\TracyProfiler\$(T
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_FMADD;JPH_USE_SSE4_1;JPH_USE_SSE4_2;GLM_FORCE_SILENT_WARNINGS;TARGET_SUFFIX_U8="64p";TARGET_SUFFIX="64p";_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;WIN32_LEAN_AND_MEAN;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\server;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -195,7 +195,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Profile\TracyProfiler\$(T
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_INTRINSICS;ZLIB_COMPAT;LUAJIT_NUMMODE=2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_FMADD;JPH_USE_SSE4_1;JPH_USE_SSE4_2;GLM_FORCE_SILENT_WARNINGS;TARGET_SUFFIX_U8="64od";TARGET_SUFFIX="64od";_DEBUG;DEBUG;SHIB_PROFILE;JPH_PROFILE_ENABLED;JPH_DEBUG_RENDERER;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;WIN32;_WINDOWS;WIN64;WIN32_LEAN_AND_MEAN;NOMINMAX;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\tracy\profiler;..\..\..\..\..\src\Dependencies\tracy\server;..\..\..\..\..\src\Dependencies\tracy\imgui;..\..\..\..\..\src\Dependencies\capstone\include\capstone;..\..\..\..\..\src\Dependencies\capstone\include;..\..\..\..\..\src\Dependencies\glfw\include;..\..\..\..\..\src\Dependencies\tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -224,126 +224,210 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\TracyProf
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyAlign.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyAlloc.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyApi.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyColor.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyForceInline.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyMutex.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyProtocol.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyQueue.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySocket.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyStackFrames.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySystem.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyUwp.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyYield.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4hc.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\Diff.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\Diff3.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\Lcs.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\Sequence.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\Ses.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\dtl.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\functors.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\dtl\variables.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imconfig.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imgui.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imgui_internal.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imstb_textedit.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imstb_truetype.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\nfd\common.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\nfd\nfd.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\nfd\nfd_common.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\DroidSans.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\FiraCodeRetina.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\FontAwesomeSolid.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\Backend.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ConnectionHistory.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\Filters.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\Fonts.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\HttpRequest.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\NativeWindow.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ImGuiContext.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\IsElevated.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ResolvService.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\RunQueue.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\WindowPosition.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\font\DroidSans.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\font\FiraCodeRetina.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\font\FontAwesomeSolid.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\icon.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui_impl_glfw.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui_impl_opengl3.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ini.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\IconsFontAwesome6.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyAchievements.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyBadVersion.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyBuzzAnim.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyColor.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyConfig.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyDecayValue.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyEventDebug.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyFileselector.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyFilesystem.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyImGui.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyLockHelpers.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyMicroArchitecture.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyMouse.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyProtoHistory.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceContents.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceTokenizer.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceView.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyStorage.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTexture.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineContext.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineController.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineDraw.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItem.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemCpuData.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemGpu.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemPlot.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemThread.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyUserData.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyUtility.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyViewData.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyWeb.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\stb_image.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\IconsFontAwesome5.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyBadVersion.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyBuzzAnim.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\stb_image_resize.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag01.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag02.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag04.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag08.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag16.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\zigzag32.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyAlign.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyAlloc.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyApi.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyColor.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyForceInline.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyMutex.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyProtocol.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyQueue.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracySocket.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyStackFrames.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracySystem.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyUwp.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyVersion.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyYield.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\tracy_lz4.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\public\common\tracy_lz4hc.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyCharUtil.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyColor.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyDecayValue.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyEvent.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyEventDebug.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFileHeader.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFileMeta.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFileRead.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFileWrite.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFilesystem.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyImGui.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMemory.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMicroArchitecture.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMmap.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMouse.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyPopcnt.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyPrint.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyShortPtr.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySlab.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySort.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySortedVector.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceContents.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceTokenizer.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceView.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyStorage.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyStringDiscovery.hpp" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySysUtil.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTaskDispatch.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTexture.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTextureCompression.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyThreadCompress.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyUserData.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyVarArray.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyVector.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyVersion.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyView.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyViewData.hpp" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyWeb.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyWorker.hpp" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\tracy_pdqsort.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\tracy_robin_hood.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\tracy\server\tracy_xxhash.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySocket.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\TracyStackFrames.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\TracySystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\common\tracy_lz4hc.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imgui.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\nfd\nfd_common.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\nfd\nfd_win.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\BackendGlfw.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ConnectionHistory.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\Filters.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\Fonts.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\HttpRequest.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\NativeWindow.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ImGuiContext.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\IsElevated.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ResolvService.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\RunQueue.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\WindowPosition.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\ini.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\main.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyAchievementData.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyAchievements.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyBadVersion.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyColor.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyEventDebug.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyFileselector.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyFilesystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyImGui.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyMicroArchitecture.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyMouse.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyProtoHistory.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceContents.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceTokenizer.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracySourceView.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyStorage.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTexture.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineController.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemCpuData.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemGpu.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemPlot.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyTimelineItemThread.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyUserData.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyUtility.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Annotations.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Callstack.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Compare.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_ConnectionState.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_ContextSwitch.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_CpuData.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_FindZone.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_FrameOverview.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_FrameTimeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_FrameTree.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_GpuTimeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Locks.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Memory.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Messages.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Navigation.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_NotificationArea.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Options.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Playback.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Plots.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Ranges.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Samples.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Statistics.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Timeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_TraceInfo.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_Utility.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_ZoneInfo.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyView_ZoneTimeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\profiler\TracyWeb.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\winmain.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\profiler\src\winmainArchDiscovery.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyBadVersion.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyColor.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyEventDebug.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyFilesystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracySocket.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracyStackFrames.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\public\common\TracySystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\public\common\tracy_lz4.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\public\common\tracy_lz4hc.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMemory.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMicroArchitecture.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMmap.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyMouse.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyPrint.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceContents.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceTokenizer.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySourceView.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyStorage.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracySysUtil.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTaskDispatch.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTexture.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyTextureCompression.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyThreadCompress.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyUserData.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyView.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyWeb.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\tracy\server\TracyWorker.cpp" />
   </ItemGroup>
   <ItemGroup>

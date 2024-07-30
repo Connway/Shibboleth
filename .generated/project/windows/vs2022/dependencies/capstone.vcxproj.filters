@@ -10,8 +10,20 @@
     <Filter Include="arch\ARM">
       <UniqueIdentifier>{12917736-FE5D-D241-2777-C0E913A307D0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="arch\Alpha">
+      <UniqueIdentifier>{1802AFB2-04BA-F0FF-6DC1-C95B59988BF0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arch\BPF">
+      <UniqueIdentifier>{0A957736-F661-D241-1F7B-C0E90BA707D0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="arch\EVM">
       <UniqueIdentifier>{9AA27736-866F-D241-AF88-C0E99BB407D0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arch\HPPA">
+      <UniqueIdentifier>{1B826D05-87EC-217C-D02A-D3213CD4FFD0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arch\LoongArch">
+      <UniqueIdentifier>{8F88C71F-7B56-BB25-64EA-2B4C5057978A}</UniqueIdentifier>
     </Filter>
     <Filter Include="arch\M680X">
       <UniqueIdentifier>{359669B3-214E-AB00-8A55-845C762C46F1}</UniqueIdentifier>
@@ -28,6 +40,12 @@
     <Filter Include="arch\PowerPC">
       <UniqueIdentifier>{924A9EA4-7EAD-2D49-2733-66FF1375F9CB}</UniqueIdentifier>
     </Filter>
+    <Filter Include="arch\RISCV">
+      <UniqueIdentifier>{39F1CEB3-25A9-1001-8EB0-E95C7A87ABF1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arch\SH">
+      <UniqueIdentifier>{6D0EB63F-D9ED-34DB-E205-C0B14E649B3C}</UniqueIdentifier>
+    </Filter>
     <Filter Include="arch\Sparc">
       <UniqueIdentifier>{2BAEF6B3-1766-3801-806D-115D6C44D3F1}</UniqueIdentifier>
     </Filter>
@@ -36,6 +54,12 @@
     </Filter>
     <Filter Include="arch\TMS320C64x">
       <UniqueIdentifier>{E042B7AE-4CCE-2473-55DF-A767C1E98073}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arch\TriCore">
+      <UniqueIdentifier>{4AB376DE-3616-0683-DF9B-3E39CBDDD105}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arch\WASM">
+      <UniqueIdentifier>{6A7C7505-D6E6-297C-1F25-DB218BCE07D1}</UniqueIdentifier>
     </Filter>
     <Filter Include="arch\X86">
       <UniqueIdentifier>{78EF7736-64BC-D241-8DD5-C0E9790108D0}</UniqueIdentifier>
@@ -58,8 +82,10 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MCDisassembler.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MCFixedLenDisassembler.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MCInst.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MCInstPrinter.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MCInstrDesc.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MCRegisterInfo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\Mapping.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\MathExtras.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\SStream.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64AddressingModes.h">
@@ -68,10 +94,13 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64BaseInfo.h">
       <Filter>arch\AArch64</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64Disassembler.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64DisassemblerExtension.h">
       <Filter>arch\AArch64</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64InstPrinter.h">
+      <Filter>arch\AArch64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64Linkage.h">
       <Filter>arch\AArch64</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64Mapping.h">
@@ -86,10 +115,13 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMBaseInfo.h">
       <Filter>arch\ARM</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMDisassembler.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMDisassemblerExtension.h">
       <Filter>arch\ARM</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMInstPrinter.h">
+      <Filter>arch\ARM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMLinkage.h">
       <Filter>arch\ARM</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMMapping.h">
@@ -97,6 +129,33 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMModule.h">
       <Filter>arch\ARM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Alpha\AlphaDisassembler.h">
+      <Filter>arch\Alpha</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Alpha\AlphaLinkage.h">
+      <Filter>arch\Alpha</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Alpha\AlphaMapping.h">
+      <Filter>arch\Alpha</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Alpha\AlphaModule.h">
+      <Filter>arch\Alpha</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\BPF\BPFConstants.h">
+      <Filter>arch\BPF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\BPF\BPFDisassembler.h">
+      <Filter>arch\BPF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\BPF\BPFInstPrinter.h">
+      <Filter>arch\BPF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\BPF\BPFMapping.h">
+      <Filter>arch\BPF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\BPF\BPFModule.h">
+      <Filter>arch\BPF</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMDisassembler.h">
       <Filter>arch\EVM</Filter>
@@ -109,6 +168,36 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMModule.h">
       <Filter>arch\EVM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\HPPA\HPPAConstants.h">
+      <Filter>arch\HPPA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\HPPA\HPPADisassembler.h">
+      <Filter>arch\HPPA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\HPPA\HPPAInstPrinter.h">
+      <Filter>arch\HPPA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\HPPA\HPPAMapping.h">
+      <Filter>arch\HPPA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\HPPA\HPPAModule.h">
+      <Filter>arch\HPPA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\LoongArch\LoongArchDisassemblerExtension.h">
+      <Filter>arch\LoongArch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\LoongArch\LoongArchInstPrinter.h">
+      <Filter>arch\LoongArch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\LoongArch\LoongArchLinkage.h">
+      <Filter>arch\LoongArch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\LoongArch\LoongArchMapping.h">
+      <Filter>arch\LoongArch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\LoongArch\LoongArchModule.h">
+      <Filter>arch\LoongArch</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\M680X\M680XDisassembler.h">
       <Filter>arch\M680X</Filter>
@@ -134,6 +223,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\MOS65XX\MOS65XXDisassembler.h">
       <Filter>arch\MOS65XX</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\MOS65XX\MOS65XXDisassemblerInternals.h">
+      <Filter>arch\MOS65XX</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\MOS65XX\MOS65XXModule.h">
       <Filter>arch\MOS65XX</Filter>
     </ClInclude>
@@ -149,10 +241,16 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Mips\MipsModule.h">
       <Filter>arch\Mips</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCDisassembler.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCInstPrinter.h">
       <Filter>arch\PowerPC</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCInstPrinter.h">
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCInstrInfo.h">
+      <Filter>arch\PowerPC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCLinkage.h">
+      <Filter>arch\PowerPC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCMCTargetDesc.h">
       <Filter>arch\PowerPC</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCMapping.h">
@@ -163,6 +261,33 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCPredicates.h">
       <Filter>arch\PowerPC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCRegisterInfo.h">
+      <Filter>arch\PowerPC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\RISCV\RISCVBaseInfo.h">
+      <Filter>arch\RISCV</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\RISCV\RISCVDisassembler.h">
+      <Filter>arch\RISCV</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\RISCV\RISCVInstPrinter.h">
+      <Filter>arch\RISCV</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\RISCV\RISCVMapping.h">
+      <Filter>arch\RISCV</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\RISCV\RISCVModule.h">
+      <Filter>arch\RISCV</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\SH\SHDisassembler.h">
+      <Filter>arch\SH</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\SH\SHInstPrinter.h">
+      <Filter>arch\SH</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\SH\SHModule.h">
+      <Filter>arch\SH</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\Sparc\Sparc.h">
       <Filter>arch\Sparc</Filter>
@@ -206,6 +331,30 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\TMS320C64x\TMS320C64xModule.h">
       <Filter>arch\TMS320C64x</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\TriCore\TriCoreDisassembler.h">
+      <Filter>arch\TriCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\TriCore\TriCoreLinkage.h">
+      <Filter>arch\TriCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\TriCore\TriCoreMapping.h">
+      <Filter>arch\TriCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\TriCore\TriCoreModule.h">
+      <Filter>arch\TriCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\WASM\WASMDisassembler.h">
+      <Filter>arch\WASM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\WASM\WASMInstPrinter.h">
+      <Filter>arch\WASM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\WASM\WASMMapping.h">
+      <Filter>arch\WASM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\WASM\WASMModule.h">
+      <Filter>arch\WASM</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86BaseInfo.h">
       <Filter>arch\X86</Filter>
     </ClInclude>
@@ -221,13 +370,13 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86InstPrinter.h">
       <Filter>arch\X86</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86InstPrinterCommon.h">
+      <Filter>arch\X86</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86Mapping.h">
       <Filter>arch\X86</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86Module.h">
-      <Filter>arch\X86</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\qsort.h">
       <Filter>arch\X86</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\arch\XCore\XCoreDisassembler.h">
@@ -243,16 +392,35 @@
       <Filter>arch\XCore</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\cs_priv.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\cs_simple_types.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\aarch64.h">
+      <Filter>include\capstone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\alpha.h">
+      <Filter>include\capstone</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\arm.h">
       <Filter>include\capstone</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\arm64.h">
       <Filter>include\capstone</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\bpf.h">
+      <Filter>include\capstone</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\capstone.h">
       <Filter>include\capstone</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\cs_operand.h">
+      <Filter>include\capstone</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\evm.h">
+      <Filter>include\capstone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\hppa.h">
+      <Filter>include\capstone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\loongarch.h">
       <Filter>include\capstone</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\m680x.h">
@@ -273,6 +441,12 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\ppc.h">
       <Filter>include\capstone</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\riscv.h">
+      <Filter>include\capstone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\sh.h">
+      <Filter>include\capstone</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\sparc.h">
       <Filter>include\capstone</Filter>
     </ClInclude>
@@ -280,6 +454,12 @@
       <Filter>include\capstone</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\tms320c64x.h">
+      <Filter>include\capstone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\tricore.h">
+      <Filter>include\capstone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\wasm.h">
       <Filter>include\capstone</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\capstone\include\capstone\x86.h">
@@ -301,13 +481,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\MCInst.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\MCInstPrinter.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\MCInstrDesc.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\MCRegisterInfo.c" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\Mapping.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\SStream.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64BaseInfo.c">
       <Filter>arch\AArch64</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64Disassembler.c">
+      <Filter>arch\AArch64</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64DisassemblerExtension.c">
       <Filter>arch\AArch64</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64InstPrinter.c">
@@ -319,7 +504,13 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\AArch64\AArch64Module.c">
       <Filter>arch\AArch64</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMBaseInfo.c">
+      <Filter>arch\ARM</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMDisassembler.c">
+      <Filter>arch\ARM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMDisassemblerExtension.c">
       <Filter>arch\ARM</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMInstPrinter.c">
@@ -330,6 +521,30 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\ARM\ARMModule.c">
       <Filter>arch\ARM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Alpha\AlphaDisassembler.c">
+      <Filter>arch\Alpha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Alpha\AlphaInstPrinter.c">
+      <Filter>arch\Alpha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Alpha\AlphaMapping.c">
+      <Filter>arch\Alpha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Alpha\AlphaModule.c">
+      <Filter>arch\Alpha</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\BPF\BPFDisassembler.c">
+      <Filter>arch\BPF</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\BPF\BPFInstPrinter.c">
+      <Filter>arch\BPF</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\BPF\BPFMapping.c">
+      <Filter>arch\BPF</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\BPF\BPFModule.c">
+      <Filter>arch\BPF</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMDisassembler.c">
       <Filter>arch\EVM</Filter>
@@ -342,6 +557,33 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\EVM\EVMModule.c">
       <Filter>arch\EVM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\HPPA\HPPADisassembler.c">
+      <Filter>arch\HPPA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\HPPA\HPPAInstPrinter.c">
+      <Filter>arch\HPPA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\HPPA\HPPAMapping.c">
+      <Filter>arch\HPPA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\HPPA\HPPAModule.c">
+      <Filter>arch\HPPA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\LoongArch\LoongArchDisassembler.c">
+      <Filter>arch\LoongArch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\LoongArch\LoongArchDisassemblerExtension.c">
+      <Filter>arch\LoongArch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\LoongArch\LoongArchInstPrinter.c">
+      <Filter>arch\LoongArch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\LoongArch\LoongArchMapping.c">
+      <Filter>arch\LoongArch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\LoongArch\LoongArchModule.c">
+      <Filter>arch\LoongArch</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\M680X\M680XDisassembler.c">
       <Filter>arch\M680X</Filter>
@@ -391,6 +633,27 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\PowerPC\PPCModule.c">
       <Filter>arch\PowerPC</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\RISCV\RISCVDisassembler.c">
+      <Filter>arch\RISCV</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\RISCV\RISCVInstPrinter.c">
+      <Filter>arch\RISCV</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\RISCV\RISCVMapping.c">
+      <Filter>arch\RISCV</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\RISCV\RISCVModule.c">
+      <Filter>arch\RISCV</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\SH\SHDisassembler.c">
+      <Filter>arch\SH</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\SH\SHInstPrinter.c">
+      <Filter>arch\SH</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\SH\SHModule.c">
+      <Filter>arch\SH</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\Sparc\SparcDisassembler.c">
       <Filter>arch\Sparc</Filter>
     </ClCompile>
@@ -430,6 +693,30 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\TMS320C64x\TMS320C64xModule.c">
       <Filter>arch\TMS320C64x</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\TriCore\TriCoreDisassembler.c">
+      <Filter>arch\TriCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\TriCore\TriCoreInstPrinter.c">
+      <Filter>arch\TriCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\TriCore\TriCoreMapping.c">
+      <Filter>arch\TriCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\TriCore\TriCoreModule.c">
+      <Filter>arch\TriCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\WASM\WASMDisassembler.c">
+      <Filter>arch\WASM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\WASM\WASMInstPrinter.c">
+      <Filter>arch\WASM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\WASM\WASMMapping.c">
+      <Filter>arch\WASM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\WASM\WASMModule.c">
+      <Filter>arch\WASM</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86ATTInstPrinter.c">
       <Filter>arch\X86</Filter>
     </ClCompile>
@@ -437,6 +724,9 @@
       <Filter>arch\X86</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86DisassemblerDecoder.c">
+      <Filter>arch\X86</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86InstPrinterCommon.c">
       <Filter>arch\X86</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\capstone\arch\X86\X86IntelInstPrinter.c">

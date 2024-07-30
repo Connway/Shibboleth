@@ -330,7 +330,8 @@ static void SetupVsync()
 #endif
 }
 
-static constexpr int GetSamplingInterval()
+// $MODIFICATION: This calls a non-constexpr function. Removing constexpr.
+static /*constexpr*/ int GetSamplingInterval()
 {
     return GetSamplingPeriod() / 100;
 }
