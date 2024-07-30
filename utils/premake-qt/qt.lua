@@ -15,7 +15,8 @@ premake.extensions.qt = {
 	-- these are private, do not touch
 	--
 	enabled = false,
-	major_version = "6",
+	major_version = "6", -- $MODIFICATION: Changing major version to 6.
+	-- $MODIFICATION: Supporting environment variables for where Qt lives.
 	defaultpath = (function()
 		local qt_dir = nil
 
@@ -29,6 +30,7 @@ premake.extensions.qt = {
 			qt_dir = "QT_PATH"
 		end
 
+		-- Temporary hack for resolving home-path to an absolute path.
 		if (_ACTION == "ninja" or _ACTION == "gmake2") and qt_dir ~= nil then
 			if os.target() == "macosx" then
 				qt_dir = os.getenv(qt_dir)
