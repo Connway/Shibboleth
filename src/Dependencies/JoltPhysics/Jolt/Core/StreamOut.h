@@ -1,12 +1,15 @@
+// Jolt Physics Library (https://github.com/jrouwe/JoltPhysics)
 // SPDX-FileCopyrightText: 2021 Jorrit Rouwe
 // SPDX-License-Identifier: MIT
 
 #pragma once
 
+#include <Jolt/Core/NonCopyable.h>
+
 JPH_NAMESPACE_BEGIN
 
 /// Simple binary output stream
-class StreamOut
+class JPH_EXPORT StreamOut : public NonCopyable
 {
 public:
 	/// Virtual destructor
@@ -19,21 +22,32 @@ public:
 	virtual bool		IsFailed() const = 0;
 
 	/// Write a primitive (e.g. float, int, etc.) to the binary stream
-	template <class T>
+	template <class T, std::enable_if_t<std::is_trivially_copyable_v<T>, bool> = true>
 	void				Write(const T &inT)
 	{
 		WriteBytes(&inT, sizeof(inT));
 	}
 
-	/// Write a vector of primitives from the binary stream
-	template <class T, class A>
-	void				Write(const std::vector<T, A> &inT)
+	/// Write a vector of primitives to the binary stream
+	template <class T, class A, std::enable_if_t<std::is_trivially_copyable_v<T>, bool> = true>
+	void				Write(const Array<T, A> &inT)
 	{
-		typename Array<T>::size_type len = inT.size();
+		typename Array<T, A>::size_type len = inT.size();
 		Write(len);
 		if (!IsFailed())
-			for (typename Array<T>::size_type i = 0; i < len; ++i)
-				Write(inT[i]);
+		{
+			if constexpr (std::is_same_v<T, Vec3> || std::is_same_v<T, DVec3> || std::is_same_v<T, DMat44>)
+			{
+				// These types have unused components that we don't want to write
+				for (typename Array<T, A>::size_type i = 0; i < len; ++i)
+					Write(inT[i]);
+			}
+			else
+			{
+				// Write all elements at once
+				WriteBytes(inT.data(), len * sizeof(T));
+			}
+		}
 	}
 
 	/// Write a string to the binary stream (writes the number of characters and then the characters)
@@ -44,6 +58,17 @@ public:
 		Write(len);
 		if (!IsFailed())
 			WriteBytes(inString.data(), len * sizeof(Type));
+	}
+
+	/// Write a vector of primitives to the binary stream using a custom write function
+	template <class T, class A, typename F>
+	void				Write(const Array<T, A> &inT, const F &inWriteElement)
+	{
+		typename Array<T, A>::size_type len = inT.size();
+		Write(len);
+		if (!IsFailed())
+			for (typename Array<T, A>::size_type i = 0; i < len; ++i)
+				inWriteElement(inT[i], *this);
 	}
 
 	/// Write a Vec3 (don't write W)

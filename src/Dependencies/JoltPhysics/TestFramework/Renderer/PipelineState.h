@@ -1,3 +1,4 @@
+// Jolt Physics Library (https://github.com/jrouwe/JoltPhysics)
 // SPDX-FileCopyrightText: 2021 Jorrit Rouwe
 // SPDX-License-Identifier: MIT
 
@@ -42,5 +43,5 @@ private:
 	friend class Renderer;
 
 	Renderer *							mRenderer;
-    ComPtr<ID3D12PipelineState>			mPSO;
+	ComPtr<ID3D12PipelineState>			mPSO;
 };

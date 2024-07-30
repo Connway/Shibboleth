@@ -1,3 +1,4 @@
+// Jolt Physics Library (https://github.com/jrouwe/JoltPhysics)
 // SPDX-FileCopyrightText: 2022 Jorrit Rouwe
 // SPDX-License-Identifier: MIT
 
@@ -29,13 +30,13 @@
 	template <>
 	JPH_INLINE float32x4_t NeonShuffleFloat32x4<0, 1, 2, 2>(float32x4_t inV1, float32x4_t inV2)
 	{
-	    return vcombine_f32(vget_low_f32(inV1), vdup_lane_s32(vget_high_f32(inV1), 0));
+		return vcombine_f32(vget_low_f32(inV1), vdup_lane_s32(vget_high_f32(inV1), 0));
 	}
 
 	template <>
 	JPH_INLINE float32x4_t NeonShuffleFloat32x4<0, 1, 3, 3>(float32x4_t inV1, float32x4_t inV2)
 	{
-	    return vcombine_f32(vget_low_f32(inV1), vdup_lane_s32(vget_high_f32(inV1), 1));
+		return vcombine_f32(vget_low_f32(inV1), vdup_lane_s32(vget_high_f32(inV1), 1));
 	}
 
 	template <>
@@ -47,13 +48,13 @@
 	template <>
 	JPH_INLINE float32x4_t NeonShuffleFloat32x4<1, 0, 3, 2>(float32x4_t inV1, float32x4_t inV2)
 	{
-	    return vcombine_f32(vrev64_f32(vget_low_f32(inV1)), vrev64_f32(vget_high_f32(inV1)));
+		return vcombine_f32(vrev64_f32(vget_low_f32(inV1)), vrev64_f32(vget_high_f32(inV1)));
 	}
 
 	template <>
 	JPH_INLINE float32x4_t NeonShuffleFloat32x4<2, 2, 1, 0>(float32x4_t inV1, float32x4_t inV2)
 	{
-	    return vcombine_f32(vdup_lane_s32(vget_high_f32(inV1), 0), vrev64_f32(vget_low_f32(inV1)));
+		return vcombine_f32(vdup_lane_s32(vget_high_f32(inV1), 0), vrev64_f32(vget_low_f32(inV1)));
 	}
 
 	template <>
@@ -67,7 +68,7 @@
 	JPH_INLINE float32x4_t NeonShuffleFloat32x4<1, 2, 0, 0>(float32x4_t inV1, float32x4_t inV2)
 	{
 		static int8x16_t table = JPH_NEON_INT8x16(0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x00, 0x01, 0x02, 0x03, 0x00, 0x01, 0x02, 0x03);
-	    return vreinterpretq_f32_u8(vqtbl1q_u8(vreinterpretq_u8_f32(inV1), table));
+		return vreinterpretq_f32_u8(vqtbl1q_u8(vreinterpretq_u8_f32(inV1), table));
 	}
 
 	// Shuffle a vector

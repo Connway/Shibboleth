@@ -1,3 +1,4 @@
+// Jolt Physics Library (https://github.com/jrouwe/JoltPhysics)
 // SPDX-FileCopyrightText: 2021 Jorrit Rouwe
 // SPDX-License-Identifier: MIT
 
@@ -7,7 +8,7 @@
 
 // Trace to TTY
 void TraceImpl(const char *inFMT, ...)
-{ 
+{
 	// Format the message
 	va_list list;
 	va_start(list, inFMT);
@@ -17,7 +18,7 @@ void TraceImpl(const char *inFMT, ...)
 	strcat_s(buffer, "\n");
 
 	// Log to the output window
-	OutputDebugStringA(buffer); 
+	OutputDebugStringA(buffer);
 }
 
 void FatalError [[noreturn]] (const char *inFMT, ...)
@@ -27,6 +28,7 @@ void FatalError [[noreturn]] (const char *inFMT, ...)
 	va_start(list, inFMT);
 	char buffer[1024];
 	vsnprintf(buffer, sizeof(buffer), inFMT, list);
+	va_end(list);
 
 	Trace("Fatal Error: %s", buffer);
 
