@@ -261,6 +261,7 @@ LUA_API int lua_iscfunction(lua_State *L, int idx)
   return tvisfunc(o) && !isluafunc(funcV(o));
 }
 
+// $MODIFICATION: Adding lua_isinteger(). It was missing.
 LUA_API int lua_isinteger(lua_State* L, int idx)
 {
     cTValue* o = index2adr(L, idx);
@@ -814,6 +815,7 @@ LUA_API void lua_gettable(lua_State *L, int idx)
   copyTV(L, L->top-1, v);
 }
 
+// $MODIFICATION: Change lua_getfield() to match Lua 5.4 function definition.
 LUA_API int lua_getfield(lua_State *L, int idx, const char *k)
 {
   cTValue *v, *t = index2adr_check(L, idx);

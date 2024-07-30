@@ -22,20 +22,12 @@ Libraries Affected:
 	argparse
 		Commented out unused variables to fix compilation issues.
 
-	LuaJIT
-		Modified msvcbuild.bat to use /MDd, /MD, /Od, and /Fd flags.
-		Added lua_isinteger.
-		Changed lua_getfield to match the Lua 5.4 function definition.
-
 Libraries included, but not used:
 	acl
 		Technically nothing uses this, but in the future we will use this for animations.
 
 	Capstone
 		This is only included for building TracyServer. It is not used by the engine itself.
-
-	sqlite
-		Technically nothing uses this, but in the future might use this.
 
 	zstd
 		This is only included for building TracyServer and unused APIs in minizip-ng. It is not used by the engine itself.

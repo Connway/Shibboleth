@@ -133,6 +133,7 @@ LUA_API void  (lua_xmove) (lua_State *from, lua_State *to, int n);
 ** access functions (stack -> C)
 */
 
+// $MODIFICATION: Adding lua_isinteger(). It was missing.
 LUA_API int             (lua_isinteger) (lua_State *L, int idx);
 LUA_API int             (lua_isnumber) (lua_State *L, int idx);
 LUA_API int             (lua_isstring) (lua_State *L, int idx);
@@ -177,6 +178,7 @@ LUA_API int   (lua_pushthread) (lua_State *L);
 ** get functions (Lua -> stack)
 */
 LUA_API void  (lua_gettable) (lua_State *L, int idx);
+// $MODIFICATION: Change lua_getfield() to match Lua 5.4 function definition.
 LUA_API int  (lua_getfield) (lua_State *L, int idx, const char *k);
 LUA_API void  (lua_rawget) (lua_State *L, int idx);
 LUA_API void  (lua_rawgeti) (lua_State *L, int idx, int n);
