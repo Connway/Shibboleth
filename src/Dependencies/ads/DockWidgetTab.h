@@ -84,7 +84,7 @@ public:
 	 * param[in] DockWidget The dock widget this title bar belongs to
 	 * param[in] parent The parent widget of this title bar
 	 */
-	CDockWidgetTab(CDockWidget* DockWidget, QWidget* parent = 0);
+	CDockWidgetTab(CDockWidget* DockWidget, QWidget* parent = nullptr);
 
 	/**
 	 * Virtual Destructor
@@ -173,10 +173,16 @@ public:
 
 	/**
 	 * Set an explicit icon size.
-	 * If no icon size has been set explicitely, than the tab sets the icon size
+	 * If no icon size has been set explicitly, than the tab sets the icon size
 	 * depending on the style
 	 */
 	void setIconSize(const QSize& Size);
+
+	/**
+	 * Returns the current drag state of this tab.
+	 * Use this function to determine if the tab is currently being dragged
+	 */
+	eDragState dragState() const;
 
 public Q_SLOTS:
 	virtual void setVisible(bool visible) override;

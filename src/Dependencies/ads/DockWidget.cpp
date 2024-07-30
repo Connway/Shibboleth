@@ -80,8 +80,8 @@ struct DockWidgetPrivate
 	QWidget* Widget = nullptr;
 	CDockWidgetTab* TabWidget = nullptr;
 	CDockWidget::DockWidgetFeatures Features = CDockWidget::DefaultDockWidgetFeatures;
-	CDockManager* DockManager = nullptr;
-	CDockAreaWidget* DockArea = nullptr;
+	QPointer<CDockManager> DockManager;
+	QPointer<CDockAreaWidget> DockArea;
 	QAction* ToggleViewAction = nullptr;
 	bool Closed = false;
 	QScrollArea* ScrollArea = nullptr;
@@ -95,6 +95,7 @@ struct DockWidgetPrivate
 	CDockWidget::eMinimumSizeHintMode MinimumSizeHintMode = CDockWidget::MinimumSizeHintFromDockWidget;
 	WidgetFactory* Factory = nullptr;
 	QPointer<CAutoHideTab> SideTabWidget;
+	CDockWidget::eToolBarStyleSource ToolBarStyleSource = CDockWidget::ToolBarStyleFromDockManager;
 	
 	/**
 	 * Private data constructor
@@ -139,6 +140,11 @@ struct DockWidgetPrivate
 	 * returns true on success.
 	 */
 	bool createWidgetFromFactory();
+
+	/**
+	 * Use the dock manager toolbar style and icon size for the different states
+	 */
+	void setToolBarStyleFromDockManager();
 };
 // struct DockWidgetPrivate
 
@@ -178,11 +184,11 @@ void DockWidgetPrivate::showDockWidget()
 		DockArea->setCurrentDockWidget(_this);
 		DockArea->toggleView(true);
 		TabWidget->show();
-		QSplitter* Splitter = internal::findParent<QSplitter*>(DockArea);
+		auto Splitter = DockArea->parentSplitter();
 		while (Splitter && !Splitter->isVisible() && !DockArea->isAutoHide())
 		{
 			Splitter->show();
-			Splitter = internal::findParent<QSplitter*>(Splitter);
+			Splitter = internal::findParent<CDockSplitter*>(Splitter);
 		}
 
 		CDockContainerWidget* Container = DockArea->dockContainer();
@@ -213,6 +219,12 @@ void DockWidgetPrivate::hideDockWidget()
 
 	if (Features.testFlag(CDockWidget::DeleteContentOnClose))
 	{
+		if (ScrollArea)
+		{
+			ScrollArea->takeWidget();
+			delete ScrollArea;
+			ScrollArea = nullptr;
+		}
 		Widget->deleteLater();
 		Widget = nullptr;
 	}
@@ -259,7 +271,10 @@ void DockWidgetPrivate::closeAutoHideDockWidgetsIfNeeded()
 		return;
 	}
 
-	if (!DockContainer->openedDockWidgets().isEmpty())
+	// If the dock container is the dock manager, or if it is not empty, then we
+	// don't need to do anything
+	if ((DockContainer == _this->dockManager())
+	 || !DockContainer->openedDockWidgets().isEmpty())
 	{
 		return;
 	}
@@ -326,6 +341,22 @@ bool DockWidgetPrivate::createWidgetFromFactory()
 
 
 //============================================================================
+void DockWidgetPrivate::setToolBarStyleFromDockManager()
+{
+	if (!DockManager)
+	{
+		return;
+	}
+	auto State = CDockWidget::StateDocked;
+	_this->setToolBarIconSize(DockManager->dockWidgetToolBarIconSize(State), State);
+	_this->setToolBarStyle(DockManager->dockWidgetToolBarStyle(State), State);
+	State = CDockWidget::StateFloating;
+	_this->setToolBarIconSize(DockManager->dockWidgetToolBarIconSize(State), State);
+	_this->setToolBarStyle(DockManager->dockWidgetToolBarStyle(State), State);
+}
+
+
+//============================================================================
 CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 	QFrame(parent),
 	d(new DockWidgetPrivate(this))
@@ -354,10 +385,24 @@ CDockWidget::CDockWidget(const QString &title, QWidget *parent) :
 //============================================================================
 CDockWidget::~CDockWidget()
 {
-	ADS_PRINT("~CDockWidget()");
+    ADS_PRINT("~CDockWidget(): " << this->windowTitle());
 	delete d;
 }
 
+//============================================================================
+void CDockWidget::setToggleViewAction(QAction* action)
+{
+	if (!action)
+	{
+		return;
+	}
+
+	d->ToggleViewAction->setParent(nullptr);
+	delete d->ToggleViewAction;
+	d->ToggleViewAction = action;
+	d->ToggleViewAction->setParent(this);
+	connect(d->ToggleViewAction, &QAction::triggered, this, &CDockWidget::toggleView);
+}
 
 //============================================================================
 void CDockWidget::setToggleViewActionChecked(bool Checked)
@@ -469,10 +514,19 @@ void CDockWidget::setFeatures(DockWidgetFeatures features)
 		return;
 	}
 	d->Features = features;
+	notifyFeaturesChanged();
+}
+
+
+//============================================================================
+void CDockWidget::notifyFeaturesChanged()
+{
 	Q_EMIT featuresChanged(d->Features);
 	d->TabWidget->onDockWidgetFeaturesChanged();
 	if(CDockAreaWidget* DockArea = dockAreaWidget())
+	{
 		DockArea->onDockWidgetFeaturesChanged();
+	}
 }
 
 
@@ -488,7 +542,14 @@ void CDockWidget::setFeature(DockWidgetFeature flag, bool on)
 //============================================================================
 CDockWidget::DockWidgetFeatures CDockWidget::features() const
 {
-	return d->Features;
+	if (d->DockManager)
+	{
+		return d->Features &~ d->DockManager->globallyLockedDockWidgetFeatures();
+	}
+	else
+	{
+		return d->Features;
+	}
 }
 
 
@@ -503,6 +564,15 @@ CDockManager* CDockWidget::dockManager() const
 void CDockWidget::setDockManager(CDockManager* DockManager)
 {
 	d->DockManager = DockManager;
+	if (!DockManager)
+	{
+		return;
+	}
+
+	if (ToolBarStyleFromDockManager == d->ToolBarStyleSource)
+	{
+		d->setToolBarStyleFromDockManager();
+	}
 }
 
 
@@ -515,7 +585,7 @@ CDockContainerWidget* CDockWidget::dockContainer() const
 	}
 	else
 	{
-		return 0;
+		return nullptr;
 	}
 }
 
@@ -552,6 +622,13 @@ void CDockWidget::setSideTabWidget(CAutoHideTab* SideTab) const
 bool CDockWidget::isAutoHide() const
 {
 	return !d->SideTabWidget.isNull();
+}
+
+
+//============================================================================
+SideBarLocation CDockWidget::autoHideLocation() const
+{
+	return isAutoHide() ? autoHideDockContainer()->sideBarLocation() : SideBarNone;
 }
 
 
@@ -623,6 +700,13 @@ void CDockWidget::setMinimumSizeHintMode(eMinimumSizeHintMode Mode)
 
 
 //============================================================================
+CDockWidget::eMinimumSizeHintMode CDockWidget::minimumSizeHintMode() const
+{
+	return d->MinimumSizeHintMode;
+}
+
+
+//============================================================================
 bool CDockWidget::isCentralWidget() const
 {
 	return dockManager()->centralWidget() == this;
@@ -643,13 +727,19 @@ void CDockWidget::toggleView(bool Open)
 	// If the dock widget state is different, then we really need to toggle
 	// the state. If we are in the right state, then we simply make this
 	// dock widget the current dock widget
+	auto AutoHideContainer = autoHideDockContainer();
 	if (d->Closed != !Open)
 	{
 		toggleViewInternal(Open);
 	}
-	else if (Open && d->DockArea)
+	else if (Open && d->DockArea && !AutoHideContainer)
 	{
 		raise();
+	}
+
+	if (Open && AutoHideContainer)
+	{
+		AutoHideContainer->collapseView(false);
 	}
 }
 
@@ -678,11 +768,10 @@ void CDockWidget::toggleViewInternal(bool Open)
 	if (d->DockArea)
 	{
 		d->DockArea->toggleDockWidgetView(this, Open);
-	}
-
-	if (d->DockArea->isAutoHide())
-	{
-		d->DockArea->autoHideDockContainer()->toggleView(Open);
+		if (d->DockArea->isAutoHide())
+		{
+			d->DockArea->autoHideDockContainer()->toggleView(Open);
+		}
 	}
 
 	if (Open && TopLevelDockWidgetBefore)
@@ -984,14 +1073,20 @@ void CDockWidget::setClosedState(bool Closed)
 //============================================================================
 QSize CDockWidget::minimumSizeHint() const
 {
-	if (d->MinimumSizeHintMode == CDockWidget::MinimumSizeHintFromDockWidget || !d->Widget)
+	if (!d->Widget)
 	{
 		return QSize(60, 40);
 	}
-	else
+
+	switch (d->MinimumSizeHintMode)
 	{
-		return d->Widget->minimumSizeHint();
+		case MinimumSizeHintFromDockWidget: return QSize(60, 40);
+    	case MinimumSizeHintFromContent: return d->Widget->minimumSizeHint();
+    	case MinimumSizeHintFromDockWidgetMinimumSize: return minimumSize();
+    	case MinimumSizeHintFromContentMinimumSize: return d->Widget->minimumSize();
 	}
+
+	return d->Widget->minimumSizeHint();
 }
 
 
@@ -1002,7 +1097,15 @@ void CDockWidget::setFloating()
 	{
 		return;
 	}
-	d->TabWidget->detachDockWidget();
+
+	if (this->isAutoHide())
+	{
+		dockAreaWidget()->setFloating();
+	}
+	else
+	{
+		d->TabWidget->detachDockWidget();
+	}
 }
 
 
@@ -1022,6 +1125,22 @@ void CDockWidget::deleteDockWidget()
 void CDockWidget::closeDockWidget()
 {
 	closeDockWidgetInternal(true);
+}
+
+
+
+//============================================================================
+void CDockWidget::requestCloseDockWidget()
+{
+    if (features().testFlag(CDockWidget::DockWidgetDeleteOnClose)
+     || features().testFlag(CDockWidget::CustomCloseHandling))
+    {
+    	closeDockWidgetInternal(false);
+    }
+    else
+    {
+    	toggleView(false);
+    }
 }
 
 
@@ -1171,7 +1290,7 @@ void CDockWidget::raise()
 
 
 //============================================================================
-void CDockWidget::setAutoHide(bool Enable, SideBarLocation Location)
+void CDockWidget::setAutoHide(bool Enable, SideBarLocation Location, int TabIndex)
 {
 	if (!CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideFeatureEnabled))
 	{
@@ -1179,20 +1298,25 @@ void CDockWidget::setAutoHide(bool Enable, SideBarLocation Location)
 	}
 
 	// Do nothing if nothing changes
-	if (Enable == isAutoHide())
+	if (Enable == isAutoHide() && Location == autoHideLocation())
 	{
 		return;
 	}
 
 	auto DockArea = dockAreaWidget();
+
 	if (!Enable)
 	{
 		DockArea->setAutoHide(false);
 	}
+	else if (isAutoHide())
+	{
+		autoHideDockContainer()->moveToNewSideBarLocation(Location);
+	}
 	else
 	{
 		auto area = (SideBarNone == Location) ? DockArea->calculateSideTabBarArea() : Location;
-		dockContainer()->createAndSetupAutoHideContainer(area, this);
+		dockContainer()->createAndSetupAutoHideContainer(area, this, TabIndex);
 	}
 }
 
@@ -1206,6 +1330,24 @@ void CDockWidget::toggleAutoHide(SideBarLocation Location)
 	}
 
 	setAutoHide(!isAutoHide(), Location);
+}
+
+
+//============================================================================
+void CDockWidget::setToolBarStyleSource(eToolBarStyleSource Source)
+{
+	d->ToolBarStyleSource = Source;
+	if (ToolBarStyleFromDockManager == d->ToolBarStyleSource)
+	{
+		d->setToolBarStyleFromDockManager();
+	}
+}
+
+
+//============================================================================
+CDockWidget::eToolBarStyleSource CDockWidget::toolBarStyleSource() const
+{
+	return d->ToolBarStyleSource;
 }
 
 
