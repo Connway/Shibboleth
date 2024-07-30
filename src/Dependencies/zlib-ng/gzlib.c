@@ -1,5 +1,5 @@
 /* gzlib.c -- zlib functions common to reading and writing gzip files
- * Copyright (C) 2004-2019 Mark Adler
+ * Copyright (C) 2004-2024 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -10,6 +10,7 @@
 #if defined(_WIN32)
 #  define LSEEK _lseeki64
 #else
+// $MODIFICATION: Fixing calling undefined function lseek[64]().
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -20,6 +21,7 @@
 #endif
 #endif
 
+// $MODIFICATION: Call _open() when on Windows.
 #if defined(_WIN32)
 #  define OPEN _open
 #else
@@ -196,6 +198,7 @@ static gzFile gz_open(const void *path, int fd, const char *mode) {
 #elif __CYGWIN__
         fd == -2 ? open(state->path, oflag, 0666) :
 #endif
+		// $MODIFICATION: Fixing Windows call to open() with macro.
         OPEN((const char *)path, oflag, 0666));
     if (state->fd == -1) {
         free(state->path);
@@ -283,8 +286,8 @@ int Z_EXPORT PREFIX(gzbuffer)(gzFile file, unsigned size) {
     /* check and set requested size */
     if ((size << 1) < size)
         return -1;              /* need to be able to double it */
-    if (size < 2)
-        size = 2;               /* need two bytes to check magic header */
+    if (size < 8)
+        size = 8;               /* needed to behave well with flushing */
     state->want = size;
     return 0;
 }
@@ -532,3 +535,9 @@ void Z_INTERNAL gz_error(gz_state *state, int err, const char *msg) {
     }
     (void)snprintf(state->msg, strlen(state->path) + strlen(msg) + 3, "%s%s%s", state->path, ": ", msg);
 }
+
+#ifdef ZLIB_COMPAT
+unsigned Z_INTERNAL gz_intmax(void) {
+    return INT_MAX;
+}
+#endif

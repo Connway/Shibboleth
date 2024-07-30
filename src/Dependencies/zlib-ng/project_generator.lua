@@ -9,11 +9,11 @@ DependencyProject "zlib-ng"
 	defines { "WITH_GZFILEOP" }
 
 	filter { "platforms:x64" }
-		removefiles { "arch/arm/*.*", "arch/s390/*.*", "arch/power/*.*" }
+		removefiles { "arch/arm/*.*", "arch/s390/*.*", "arch/power/*.*", "arch/riscv/*.*" }
 		defines { "X86_FEATURES" }
 
 	filter { "platforms:arm64" }
-		removefiles { "arch/x86/*.*", "arch/s390/*.*", "arch/power/*.*" }
+		removefiles { "arch/x86/*.*", "arch/s390/*.*", "arch/power/*.*", "arch/riscv/*.*" }
 		defines { "ARM_FEATURES" }
 
 	filter { "system:windows" }
@@ -21,6 +21,10 @@ DependencyProject "zlib-ng"
 
 	filter { "system:linux" }
 		buildoptions { "-fPIC" }
+		defines { "HAVE_ATTRIBUTE_ALIGNED" }
+
+	filter { "system:macosx" }
+		defines { "HAVE_ATTRIBUTE_ALIGNED" }
 
 	filter {}
 

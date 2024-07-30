@@ -19,10 +19,6 @@ Libraries Affected:
 	imgui
 		Fixed ImGui::DestroyContext() not checking for null.
 
-	zlib-ng
-		Fixed compilation error on Linux when compiling on a system that does not support AVX.
-		Fixing compilation errors.
-
 	premake-qt
 		Added if QT_DIR or QTDIR environment variables are present, use $(QT_DIR) or $(QTDIR) as paths instead.
 

@@ -1,5 +1,5 @@
 /* deflate.c -- compress data using the deflation algorithm
- * Copyright (C) 1995-2022 Jean-loup Gailly and Mark Adler
+ * Copyright (C) 1995-2024 Jean-loup Gailly and Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -58,7 +58,7 @@
 # undef deflateInit2
 #endif
 
-const char PREFIX(deflate_copyright)[] = " deflate 1.2.13 Copyright 1995-2022 Jean-loup Gailly and Mark Adler ";
+const char PREFIX(deflate_copyright)[] = " deflate 1.3.1 Copyright 1995-2024 Jean-loup Gailly and Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -71,14 +71,16 @@ const char PREFIX(deflate_copyright)[] = " deflate 1.2.13 Copyright 1995-2022 Je
  */
 #ifdef S390_DFLTCC_DEFLATE
 #  include "arch/s390/dfltcc_deflate.h"
+/* DFLTCC instructions require window to be page-aligned */
+#  define PAD_WINDOW            PAD_4096
+#  define WINDOW_PAD_SIZE       4096
+#  define HINT_ALIGNED_WINDOW   HINT_ALIGNED_4096
 #else
-/* Memory management for the deflate state. Useful for allocating arch-specific extension blocks. */
-#  define ZALLOC_DEFLATE_STATE(strm) ((deflate_state *)ZALLOC(strm, 1, sizeof(deflate_state)))
-#  define ZFREE_STATE(strm, addr) ZFREE(strm, addr)
-#  define ZCOPY_DEFLATE_STATE(dst, src) memcpy(dst, src, sizeof(deflate_state))
-/* Memory management for the window. Useful for allocation the aligned window. */
-#  define ZALLOC_WINDOW(strm, items, size) ZALLOC(strm, items, size)
-#  define TRY_FREE_WINDOW(strm, addr) TRY_FREE(strm, addr)
+#  define PAD_WINDOW            PAD_64
+#  define WINDOW_PAD_SIZE       64
+#  define HINT_ALIGNED_WINDOW   HINT_ALIGNED_64
+/* Adjust the window size for the arch-specific deflate code. */
+#  define DEFLATE_ADJUST_WINDOW_SIZE(n) (n)
 /* Invoked at the beginning of deflateSetDictionary(). Useful for checking arch-specific window data. */
 #  define DEFLATE_SET_DICTIONARY_HOOK(strm, dict, dict_len) do {} while (0)
 /* Invoked at the beginning of deflateGetDictionary(). Useful for adjusting arch-specific window data. */
@@ -119,10 +121,6 @@ Z_INTERNAL block_state deflate_huff  (deflate_state *s, int flush);
 static void lm_set_level         (deflate_state *s, int level);
 static void lm_init              (deflate_state *s);
 Z_INTERNAL unsigned read_buf  (PREFIX3(stream) *strm, unsigned char *buf, unsigned size);
-
-extern uint32_t update_hash_roll        (deflate_state *const s, uint32_t h, uint32_t val);
-extern void     insert_string_roll      (deflate_state *const s, uint32_t str, uint32_t count);
-extern Pos      quick_insert_string_roll(deflate_state *const s, uint32_t str);
 
 /* ===========================================================================
  * Local data
@@ -185,14 +183,111 @@ static const config configuration_table[10] = {
     memset((unsigned char *)s->head, 0, HASH_SIZE * sizeof(*s->head)); \
   } while (0)
 
-/* ========================================================================= */
-/* This function is hidden in ZLIB_COMPAT builds. */
+
+#ifdef DEF_ALLOC_DEBUG
+#  include <stdio.h>
+#  define LOGSZ(name,size)           fprintf(stderr, "%s is %d bytes\n", name, size)
+#  define LOGSZP(name,size,loc,pad)  fprintf(stderr, "%s is %d bytes, offset %d, padded %d\n", name, size, loc, pad)
+#  define LOGSZPL(name,size,loc,pad) fprintf(stderr, "%s is %d bytes, offset %ld, padded %d\n", name, size, loc, pad)
+#else
+#  define LOGSZ(name,size)
+#  define LOGSZP(name,size,loc,pad)
+#  define LOGSZPL(name,size,loc,pad)
+#endif
+
+/* ===========================================================================
+ * Allocate a big buffer and divide it up into the various buffers deflate needs.
+ * Handles alignment of allocated buffer and alignment of individual buffers.
+ */
+Z_INTERNAL deflate_allocs* alloc_deflate(PREFIX3(stream) *strm, int windowBits, int lit_bufsize) {
+    int curr_size = 0;
+
+    /* Define sizes */
+    int window_size = DEFLATE_ADJUST_WINDOW_SIZE((1 << windowBits) * 2);
+    int prev_size = (1 << windowBits) * sizeof(Pos);
+    int head_size = HASH_SIZE * sizeof(Pos);
+    int pending_size = lit_bufsize * LIT_BUFS;
+    int state_size = sizeof(deflate_state);
+    int alloc_size = sizeof(deflate_allocs);
+
+    /* Calculate relative buffer positions and paddings */
+    LOGSZP("window", window_size, PAD_WINDOW(curr_size), PADSZ(curr_size,WINDOW_PAD_SIZE));
+    int window_pos = PAD_WINDOW(curr_size);
+    curr_size = window_pos + window_size;
+
+    LOGSZP("prev", prev_size, PAD_64(curr_size), PADSZ(curr_size,64));
+    int prev_pos = PAD_64(curr_size);
+    curr_size = prev_pos + prev_size;
+
+    LOGSZP("head", head_size, PAD_64(curr_size), PADSZ(curr_size,64));
+    int head_pos = PAD_64(curr_size);
+    curr_size = head_pos + head_size;
+
+    LOGSZP("pending", pending_size, PAD_64(curr_size), PADSZ(curr_size,64));
+    int pending_pos = PAD_64(curr_size);
+    curr_size = pending_pos + pending_size;
+
+    LOGSZP("state", state_size, PAD_64(curr_size), PADSZ(curr_size,64));
+    int state_pos = PAD_64(curr_size);
+    curr_size = state_pos + state_size;
+
+    LOGSZP("alloc", alloc_size, PAD_16(curr_size), PADSZ(curr_size,16));
+    int alloc_pos = PAD_16(curr_size);
+    curr_size = alloc_pos + alloc_size;
+
+    /* Add 64-1 or 4096-1 to allow window alignment, and round size of buffer up to multiple of 64 */
+    int total_size = PAD_64(curr_size + (WINDOW_PAD_SIZE - 1));
+
+    /* Allocate buffer, align to 64-byte cacheline, and zerofill the resulting buffer */
+    char *original_buf = strm->zalloc(strm->opaque, 1, total_size);
+    if (original_buf == NULL)
+        return NULL;
+
+    char *buff = (char *)HINT_ALIGNED_WINDOW((char *)PAD_WINDOW(original_buf));
+    LOGSZPL("Buffer alloc", total_size, PADSZ((uintptr_t)original_buf,WINDOW_PAD_SIZE), PADSZ(curr_size,WINDOW_PAD_SIZE));
+
+    /* Initialize alloc_bufs */
+    deflate_allocs *alloc_bufs  = (struct deflate_allocs_s *)(buff + alloc_pos);
+    alloc_bufs->buf_start = (char *)original_buf;
+    alloc_bufs->zfree = strm->zfree;
+
+    /* Assign buffers */
+    alloc_bufs->window = (unsigned char *)HINT_ALIGNED_WINDOW(buff + window_pos);
+    alloc_bufs->prev = (Pos *)HINT_ALIGNED_64(buff + prev_pos);
+    alloc_bufs->head = (Pos *)HINT_ALIGNED_64(buff + head_pos);
+    alloc_bufs->pending_buf = (unsigned char *)HINT_ALIGNED_64(buff + pending_pos);
+    alloc_bufs->state = (deflate_state *)HINT_ALIGNED_16(buff + state_pos);
+
+    memset((char *)alloc_bufs->prev, 0, prev_size);
+
+    return alloc_bufs;
+}
+
+/* ===========================================================================
+ * Free all allocated deflate buffers
+ */
+static inline void free_deflate(PREFIX3(stream) *strm) {
+    deflate_state *state = (deflate_state *)strm->state;
+
+    if (state->alloc_bufs != NULL) {
+        deflate_allocs *alloc_bufs = state->alloc_bufs;
+        alloc_bufs->zfree(strm->opaque, alloc_bufs->buf_start);
+        strm->state = NULL;
+    }
+}
+
+/* ===========================================================================
+ * Initialize deflate state and buffers.
+ * This function is hidden in ZLIB_COMPAT builds.
+ */
 int32_t ZNG_CONDEXPORT PREFIX(deflateInit2)(PREFIX3(stream) *strm, int32_t level, int32_t method, int32_t windowBits,
                                             int32_t memLevel, int32_t strategy) {
     /* Todo: ignore strm->next_in if we use it as window */
-    uint32_t window_padding = 0;
     deflate_state *s;
     int wrap = 1;
+
+    /* Initialize functable */
+    FUNCTABLE_INIT;
 
     if (strm == NULL)
         return Z_STREAM_ERROR;
@@ -227,9 +322,19 @@ int32_t ZNG_CONDEXPORT PREFIX(deflateInit2)(PREFIX3(stream) *strm, int32_t level
     if (windowBits == 8)
         windowBits = 9;  /* until 256-byte window bug fixed */
 
-    s = ZALLOC_DEFLATE_STATE(strm);
-    if (s == NULL)
+    /* Allocate buffers */
+    int lit_bufsize = 1 << (memLevel + 6);
+    deflate_allocs *alloc_bufs = alloc_deflate(strm, windowBits, lit_bufsize);
+    if (alloc_bufs == NULL)
         return Z_MEM_ERROR;
+
+    s = alloc_bufs->state;
+    s->alloc_bufs = alloc_bufs;
+    s->window = alloc_bufs->window;
+    s->prev = alloc_bufs->prev;
+    s->head = alloc_bufs->head;
+    s->pending_buf = alloc_bufs->pending_buf;
+
     strm->state = (struct internal_state *)s;
     s->strm = strm;
     s->status = INIT_STATE;     /* to pass state test in deflateReset() */
@@ -240,18 +345,9 @@ int32_t ZNG_CONDEXPORT PREFIX(deflateInit2)(PREFIX3(stream) *strm, int32_t level
     s->w_size = 1 << s->w_bits;
     s->w_mask = s->w_size - 1;
 
-#ifdef X86_PCLMULQDQ_CRC
-    window_padding = 8;
-#endif
-
-    s->window = (unsigned char *) ZALLOC_WINDOW(strm, s->w_size + window_padding, 2*sizeof(unsigned char));
-    s->prev   = (Pos *)  ZALLOC(strm, s->w_size, sizeof(Pos));
-    memset(s->prev, 0, s->w_size * sizeof(Pos));
-    s->head   = (Pos *)  ZALLOC(strm, HASH_SIZE, sizeof(Pos));
-
     s->high_water = 0;      /* nothing written to s->window yet */
 
-    s->lit_bufsize = 1 << (memLevel + 6); /* 16K elements by default */
+    s->lit_bufsize = lit_bufsize; /* 16K elements by default */
 
     /* We overlay pending_buf and sym_buf. This works since the average size
      * for length/distance pairs over any compressed block is assured to be 31
@@ -292,7 +388,6 @@ int32_t ZNG_CONDEXPORT PREFIX(deflateInit2)(PREFIX3(stream) *strm, int32_t level
      * symbols from which it is being constructed.
      */
 
-    s->pending_buf = (unsigned char *) ZALLOC(strm, s->lit_bufsize, 4);
     s->pending_buf_size = s->lit_bufsize * 4;
 
     if (s->window == NULL || s->prev == NULL || s->head == NULL || s->pending_buf == NULL) {
@@ -301,8 +396,15 @@ int32_t ZNG_CONDEXPORT PREFIX(deflateInit2)(PREFIX3(stream) *strm, int32_t level
         PREFIX(deflateEnd)(strm);
         return Z_MEM_ERROR;
     }
+
+#ifdef LIT_MEM
+    s->d_buf = (uint16_t *)(s->pending_buf + (s->lit_bufsize << 1));
+    s->l_buf = s->pending_buf + (s->lit_bufsize << 2);
+    s->sym_end = s->lit_bufsize - 1;
+#else
     s->sym_buf = s->pending_buf + s->lit_bufsize;
     s->sym_end = (s->lit_bufsize - 1) * 3;
+#endif
     /* We avoid equality with lit_bufsize*3 because of wraparound at 64K
      * on 16 bit machines and because stored blocks are restricted to
      * 64K-1 bytes.
@@ -340,21 +442,12 @@ int32_t Z_EXPORT PREFIX(deflateInit2_)(PREFIX3(stream) *strm, int32_t level, int
 /* =========================================================================
  * Check for a valid deflate stream state. Return 0 if ok, 1 if not.
  */
-static int deflateStateCheck (PREFIX3(stream) *strm) {
+static int deflateStateCheck(PREFIX3(stream) *strm) {
     deflate_state *s;
     if (strm == NULL || strm->zalloc == (alloc_func)0 || strm->zfree == (free_func)0)
         return 1;
     s = strm->state;
-    if (s == NULL || s->strm != strm || (s->status != INIT_STATE &&
-#ifdef GZIP
-                                           s->status != GZIP_STATE &&
-                                           s->status != EXTRA_STATE &&
-                                           s->status != NAME_STATE &&
-                                           s->status != COMMENT_STATE &&
-                                           s->status != HCRC_STATE &&
-#endif
-                                           s->status != BUSY_STATE &&
-                                           s->status != FINISH_STATE))
+    if (s == NULL || s->alloc_bufs == NULL || s->strm != strm || (s->status < INIT_STATE || s->status > MAX_STATE))
         return 1;
     return 0;
 }
@@ -376,7 +469,7 @@ int32_t Z_EXPORT PREFIX(deflateSetDictionary)(PREFIX3(stream) *strm, const uint8
 
     /* when using zlib wrappers, compute Adler-32 for provided dictionary */
     if (wrap == 1)
-        strm->adler = functable.adler32(strm->adler, dictionary, dictLength);
+        strm->adler = FUNCTABLE_CALL(adler32)(strm->adler, dictionary, dictLength);
     DEFLATE_SET_DICTIONARY_HOOK(strm, dictionary, dictLength);  /* hook for IBM Z DFLTCC */
     s->wrap = 0;                    /* avoid computing Adler-32 in read_buf */
 
@@ -463,7 +556,7 @@ int32_t Z_EXPORT PREFIX(deflateResetKeep)(PREFIX3(stream) *strm) {
 
 #ifdef GZIP
     if (s->wrap == 2) {
-        strm->adler = functable.crc32_fold_reset(&s->crc_fold);
+        strm->adler = FUNCTABLE_CALL(crc32_fold_reset)(&s->crc_fold);
     } else
 #endif
         strm->adler = ADLER32_INITIAL_VALUE;
@@ -478,9 +571,7 @@ int32_t Z_EXPORT PREFIX(deflateResetKeep)(PREFIX3(stream) *strm) {
 
 /* ========================================================================= */
 int32_t Z_EXPORT PREFIX(deflateReset)(PREFIX3(stream) *strm) {
-    int ret;
-
-    ret = PREFIX(deflateResetKeep)(strm);
+    int ret = PREFIX(deflateResetKeep)(strm);
     if (ret == Z_OK)
         lm_init(strm->state);
     return ret;
@@ -514,9 +605,17 @@ int32_t Z_EXPORT PREFIX(deflatePrime)(PREFIX3(stream) *strm, int32_t bits, int32
     if (deflateStateCheck(strm))
         return Z_STREAM_ERROR;
     s = strm->state;
+
+#ifdef LIT_MEM
+    if (bits < 0 || bits > BIT_BUF_SIZE ||
+        (unsigned char *)s->d_buf < s->pending_out + ((BIT_BUF_SIZE + 7) >> 3))
+        return Z_BUF_ERROR;
+#else
     if (bits < 0 || bits > BIT_BUF_SIZE || bits > (int32_t)(sizeof(value) << 3) ||
         s->sym_buf < s->pending_out + ((BIT_BUF_SIZE + 7) >> 3))
         return Z_BUF_ERROR;
+#endif
+
     do {
         put = BIT_BUF_SIZE - s->bi_valid;
         put = MIN(put, bits);
@@ -563,7 +662,7 @@ int32_t Z_EXPORT PREFIX(deflateParams)(PREFIX3(stream) *strm, int32_t level, int
     if (s->level != level) {
         if (s->level == 0 && s->matches != 0) {
             if (s->matches == 1) {
-                functable.slide_hash(s);
+                FUNCTABLE_CALL(slide_hash)(s);
             } else {
                 CLEAR_HASH(s);
             }
@@ -692,9 +791,7 @@ Z_INTERNAL void PREFIX(flush_pending)(PREFIX3(stream) *strm) {
     deflate_state *s = strm->state;
 
     zng_tr_flush_bits(s);
-    len = s->pending;
-    if (len > strm->avail_out)
-        len = strm->avail_out;
+    len = MIN(s->pending, strm->avail_out);
     if (len == 0)
         return;
 
@@ -804,7 +901,7 @@ int32_t Z_EXPORT PREFIX(deflate)(PREFIX3(stream) *strm, int32_t flush) {
 #ifdef GZIP
     if (s->status == GZIP_STATE) {
         /* gzip header */
-        functable.crc32_fold_reset(&s->crc_fold);
+        FUNCTABLE_CALL(crc32_fold_reset)(&s->crc_fold);
         put_byte(s, 31);
         put_byte(s, 139);
         put_byte(s, 8);
@@ -921,7 +1018,7 @@ int32_t Z_EXPORT PREFIX(deflate)(PREFIX3(stream) *strm, int32_t flush) {
                 }
             }
             put_short(s, (uint16_t)strm->adler);
-            functable.crc32_fold_reset(&s->crc_fold);
+            FUNCTABLE_CALL(crc32_fold_reset)(&s->crc_fold);
         }
         s->status = BUSY_STATE;
 
@@ -992,7 +1089,7 @@ int32_t Z_EXPORT PREFIX(deflate)(PREFIX3(stream) *strm, int32_t flush) {
     /* Write the trailer */
 #ifdef GZIP
     if (s->wrap == 2) {
-        strm->adler = functable.crc32_fold_final(&s->crc_fold);
+        strm->adler = FUNCTABLE_CALL(crc32_fold_final)(&s->crc_fold);
 
         put_uint32(s, strm->adler);
         put_uint32(s, (uint32_t)strm->total_in);
@@ -1017,21 +1114,13 @@ int32_t Z_EXPORT PREFIX(deflate)(PREFIX3(stream) *strm, int32_t flush) {
 
 /* ========================================================================= */
 int32_t Z_EXPORT PREFIX(deflateEnd)(PREFIX3(stream) *strm) {
-    int32_t status;
-
     if (deflateStateCheck(strm))
         return Z_STREAM_ERROR;
 
-    status = strm->state->status;
+    int32_t status = strm->state->status;
 
-    /* Deallocate in reverse order of allocations: */
-    TRY_FREE(strm, strm->state->pending_buf);
-    TRY_FREE(strm, strm->state->head);
-    TRY_FREE(strm, strm->state->prev);
-    TRY_FREE_WINDOW(strm, strm->state->window);
-
-    ZFREE_STATE(strm, strm->state);
-    strm->state = NULL;
+    /* Free allocated buffers */
+    free_deflate(strm);
 
     return status == BUSY_STATE ? Z_DATA_ERROR : Z_OK;
 }
@@ -1042,7 +1131,6 @@ int32_t Z_EXPORT PREFIX(deflateEnd)(PREFIX3(stream) *strm) {
 int32_t Z_EXPORT PREFIX(deflateCopy)(PREFIX3(stream) *dest, PREFIX3(stream) *source) {
     deflate_state *ds;
     deflate_state *ss;
-    uint32_t window_padding = 0;
 
     if (deflateStateCheck(source) || dest == NULL)
         return Z_STREAM_ERROR;
@@ -1051,34 +1139,39 @@ int32_t Z_EXPORT PREFIX(deflateCopy)(PREFIX3(stream) *dest, PREFIX3(stream) *sou
 
     memcpy((void *)dest, (void *)source, sizeof(PREFIX3(stream)));
 
-    ds = ZALLOC_DEFLATE_STATE(dest);
-    if (ds == NULL)
+    deflate_allocs *alloc_bufs = alloc_deflate(dest, ss->w_bits, ss->lit_bufsize);
+    if (alloc_bufs == NULL)
         return Z_MEM_ERROR;
+
+    ds = alloc_bufs->state;
+
     dest->state = (struct internal_state *) ds;
-    ZCOPY_DEFLATE_STATE(ds, ss);
+    memcpy(ds, ss, sizeof(deflate_state));
     ds->strm = dest;
 
-#ifdef X86_PCLMULQDQ_CRC
-    window_padding = 8;
-#endif
-
-    ds->window = (unsigned char *) ZALLOC_WINDOW(dest, ds->w_size + window_padding, 2*sizeof(unsigned char));
-    ds->prev   = (Pos *)  ZALLOC(dest, ds->w_size, sizeof(Pos));
-    ds->head   = (Pos *)  ZALLOC(dest, HASH_SIZE, sizeof(Pos));
-    ds->pending_buf = (unsigned char *) ZALLOC(dest, ds->lit_bufsize, 4);
+    ds->alloc_bufs = alloc_bufs;
+    ds->window = alloc_bufs->window;
+    ds->prev = alloc_bufs->prev;
+    ds->head = alloc_bufs->head;
+    ds->pending_buf = alloc_bufs->pending_buf;
 
     if (ds->window == NULL || ds->prev == NULL || ds->head == NULL || ds->pending_buf == NULL) {
         PREFIX(deflateEnd)(dest);
         return Z_MEM_ERROR;
     }
 
-    memcpy(ds->window, ss->window, ds->w_size * 2 * sizeof(unsigned char));
+    memcpy(ds->window, ss->window, DEFLATE_ADJUST_WINDOW_SIZE(ds->w_size * 2 * sizeof(unsigned char)));
     memcpy((void *)ds->prev, (void *)ss->prev, ds->w_size * sizeof(Pos));
     memcpy((void *)ds->head, (void *)ss->head, HASH_SIZE * sizeof(Pos));
-    memcpy(ds->pending_buf, ss->pending_buf, ds->pending_buf_size);
+    memcpy(ds->pending_buf, ss->pending_buf, ds->lit_bufsize * LIT_BUFS);
 
     ds->pending_out = ds->pending_buf + (ss->pending_out - ss->pending_buf);
+#ifdef LIT_MEM
+    ds->d_buf = (uint16_t *)(ds->pending_buf + (ds->lit_bufsize << 1));
+    ds->l_buf = ds->pending_buf + (ds->lit_bufsize << 2);
+#else
     ds->sym_buf = ds->pending_buf + ds->lit_bufsize;
+#endif
 
     ds->l_desc.dyn_tree = ds->dyn_ltree;
     ds->d_desc.dyn_tree = ds->dyn_dtree;
@@ -1095,9 +1188,7 @@ int32_t Z_EXPORT PREFIX(deflateCopy)(PREFIX3(stream) *dest, PREFIX3(stream) *sou
  * (See also flush_pending()).
  */
 Z_INTERNAL unsigned PREFIX(read_buf)(PREFIX3(stream) *strm, unsigned char *buf, unsigned size) {
-    uint32_t len = strm->avail_in;
-
-    len = MIN(len, size);
+    uint32_t len = MIN(strm->avail_in, size);
     if (len == 0)
         return 0;
 
@@ -1107,13 +1198,12 @@ Z_INTERNAL unsigned PREFIX(read_buf)(PREFIX3(stream) *strm, unsigned char *buf, 
         memcpy(buf, strm->next_in, len);
 #ifdef GZIP
     } else if (strm->state->wrap == 2) {
-        functable.crc32_fold_copy(&strm->state->crc_fold, buf, strm->next_in, len);
+        FUNCTABLE_CALL(crc32_fold_copy)(&strm->state->crc_fold, buf, strm->next_in, len);
 #endif
+    } else if (strm->state->wrap == 1) {
+        strm->adler = FUNCTABLE_CALL(adler32_fold_copy)(strm->adler, buf, strm->next_in, len);
     } else {
-        if (strm->state->wrap == 1)
-            strm->adler = functable.adler32_fold_copy(strm->adler, buf, strm->next_in, len);
-        else
-            memcpy(buf, strm->next_in, len);
+        memcpy(buf, strm->next_in, len);
     }
     strm->next_in  += len;
     strm->total_in += len;
@@ -1138,9 +1228,9 @@ static void lm_set_level(deflate_state *s, int level) {
         s->insert_string = &insert_string_roll;
         s->quick_insert_string = &quick_insert_string_roll;
     } else {
-        s->update_hash = functable.update_hash;
-        s->insert_string = functable.insert_string;
-        s->quick_insert_string = functable.quick_insert_string;
+        s->update_hash = update_hash;
+        s->insert_string = insert_string;
+        s->quick_insert_string = quick_insert_string;
     }
 
     s->level = level;
@@ -1204,7 +1294,7 @@ void Z_INTERNAL PREFIX(fill_window)(deflate_state *s) {
             s->block_start -= (int)wsize;
             if (s->insert > s->strstart)
                 s->insert = s->strstart;
-            functable.slide_hash(s);
+            FUNCTABLE_CALL(slide_hash)(s);
             more += wsize;
         }
         if (s->strm->avail_in == 0)
@@ -1230,15 +1320,13 @@ void Z_INTERNAL PREFIX(fill_window)(deflate_state *s) {
         if (s->lookahead + s->insert >= STD_MIN_MATCH) {
             unsigned int str = s->strstart - s->insert;
             if (UNLIKELY(s->max_chain_length > 1024)) {
-                s->ins_h = s->update_hash(s, s->window[str], s->window[str+1]);
+                s->ins_h = s->update_hash(s->window[str], s->window[str+1]);
             } else if (str >= 1) {
                 s->quick_insert_string(s, str + 2 - STD_MIN_MATCH);
             }
-            unsigned int count;
+            unsigned int count = s->insert;
             if (UNLIKELY(s->lookahead == 1)) {
-                count = s->insert - 1;
-            } else {
-                count = s->insert;
+                count -= 1;
             }
             if (count > 0) {
                 s->insert_string(s, str, count);
@@ -1313,8 +1401,6 @@ int32_t Z_EXPORT zng_deflateSetParams(zng_stream *strm, zng_deflate_param_value 
     int version_error = 0;
     int buf_error = 0;
     int stream_error = 0;
-    int ret;
-    int val;
 
     /* Initialize the statuses. */
     for (i = 0; i < count; i++)
@@ -1354,8 +1440,8 @@ int32_t Z_EXPORT zng_deflateSetParams(zng_stream *strm, zng_deflate_param_value 
 
     /* Apply changes, remember if there were errors. */
     if (new_level != NULL || new_strategy != NULL) {
-        ret = PREFIX(deflateParams)(strm, new_level == NULL ? s->level : *(int *)new_level->buf,
-                                    new_strategy == NULL ? s->strategy : *(int *)new_strategy->buf);
+        int ret = PREFIX(deflateParams)(strm, new_level == NULL ? s->level : *(int *)new_level->buf,
+                                        new_strategy == NULL ? s->strategy : *(int *)new_strategy->buf);
         if (ret != Z_OK) {
             if (new_level != NULL)
                 new_level->status = Z_STREAM_ERROR;
@@ -1365,7 +1451,7 @@ int32_t Z_EXPORT zng_deflateSetParams(zng_stream *strm, zng_deflate_param_value 
         }
     }
     if (new_reproducible != NULL) {
-        val = *(int *)new_reproducible->buf;
+        int val = *(int *)new_reproducible->buf;
         if (DEFLATE_CAN_SET_REPRODUCIBLE(strm, val)) {
             s->reproducible = val;
         } else {

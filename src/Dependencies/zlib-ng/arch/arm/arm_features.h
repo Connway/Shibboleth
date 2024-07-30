@@ -2,14 +2,15 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-#ifndef ARM_H_
-#define ARM_H_
+#ifndef ARM_FEATURES_H_
+#define ARM_FEATURES_H_
 
 struct arm_cpu_features {
+    int has_simd;
     int has_neon;
     int has_crc32;
 };
 
 void Z_INTERNAL arm_check_features(struct arm_cpu_features *features);
 
-#endif /* ARM_H_ */
+#endif /* ARM_FEATURES_H_ */

@@ -7,11 +7,13 @@
 #include "zutil_p.h"
 #include "gzguts.h"
 
+// $MODIFICATION: Call _close() and _read() when on Windows.
+// Also include unistd.h to fix undeclared function read()/close() errors.
 #if defined(_WIN32)
 #  define CLOSE _close
 #  define READ _read
 #else
-#include <unistd.h>
+#  include <unistd.h>
 #  define CLOSE close
 #  define READ read
 #endif
@@ -34,6 +36,7 @@ static int gz_load(gz_state *state, unsigned char *buf, unsigned len, unsigned *
 
     *have = 0;
     do {
+		// $MODIFICATION: Fixing Windows call to read() with macro.
         ret = READ(state->fd, buf + *have, len - *have);
         if (ret <= 0)
             break;
@@ -454,6 +457,10 @@ int Z_EXPORT PREFIX(gzungetc)(int c, gzFile file) {
         return -1;
     state = (gz_state *)file;
 
+    /* in case this was just opened, set up the input buffer */
+    if (state->mode == GZ_READ && state->how == LOOK && state->x.have == 0)
+        (void)gz_look(state);
+
     /* check that we're reading and that there's no (serious) error */
     if (state->mode != GZ_READ || (state->err != Z_OK && state->err != Z_BUF_ERROR))
         return -1;
@@ -605,6 +612,7 @@ int Z_EXPORT PREFIX(gzclose_r)(gzFile file) {
     err = state->err == Z_BUF_ERROR ? Z_BUF_ERROR : Z_OK;
     gz_error(state, Z_OK, NULL);
     free(state->path);
+	// $MODIFICATION: Fixing Windows call to close() with macro.
     ret = CLOSE(state->fd);
     zng_free(state);
     return ret ? Z_ERRNO : err;

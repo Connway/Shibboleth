@@ -1,5 +1,5 @@
 /* zconf.h -- configuration of the zlib compression library
- * Copyright (C) 1995-2016 Jean-loup Gailly, Mark Adler
+ * Copyright (C) 1995-2024 Jean-loup Gailly, Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -116,6 +116,9 @@
 #ifndef ZEXPORTVA
 #  define ZEXPORTVA Z_EXPORTVA
 #endif
+#ifndef FAR
+#  define FAR
+#endif
 
 /* Legacy zlib typedefs for backwards compatibility. Don't assume stdint.h is defined. */
 typedef unsigned char Byte;
@@ -157,7 +160,8 @@ typedef PTRDIFF_TYPE ptrdiff_t;
 #  undef _LARGEFILE64_SOURCE
 #endif
 
-#if !defined(_WIN32) && (defined(Z_HAVE_UNISTD_H) || defined(_LARGEFILE64_SOURCE))
+//#if !defined(_WIN32) && (defined(Z_HAVE_UNISTD_H) || defined(_LARGEFILE64_SOURCE))
+#if defined(Z_HAVE_UNISTD_H) || defined(_LARGEFILE64_SOURCE)
 #  include <unistd.h>         /* for SEEK_*, off_t, and _LFS64_LARGEFILE */
 #  ifndef z_off_t
 #    define z_off_t off_t
@@ -197,5 +201,7 @@ typedef PTRDIFF_TYPE ptrdiff_t;
 #    define z_off64_t z_off_t
 #  endif
 #endif
+
+typedef size_t z_size_t;
 
 #endif /* ZCONF_H */

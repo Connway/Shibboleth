@@ -8,11 +8,13 @@
 #include <stdarg.h>
 #include "gzguts.h"
 
+// $MODIFICATION: Call _close() and _write() when on Windows.
+// Also include unistd.h to fix undeclared function write()/close() errors.
 #if defined(_WIN32)
 #  define CLOSE _close
 #  define WRITE _write
 #else
-#include <unistd.h>
+#  include <unistd.h>
 #  define CLOSE close
 #  define WRITE write
 #endif
@@ -93,6 +95,7 @@ static int gz_comp(gz_state *state, int flush) {
 
     /* write directly if requested */
     if (state->direct) {
+		// $MODIFICATION: Fixing Windows call to write() with macro.
         got = WRITE(state->fd, strm->next_in, strm->avail_in);
         if (got < 0 || (unsigned)got != strm->avail_in) {
             gz_error(state, Z_ERRNO, zstrerror());
@@ -118,6 +121,7 @@ static int gz_comp(gz_state *state, int flush) {
            doing Z_FINISH then don't write until we get to Z_STREAM_END */
         if (strm->avail_out == 0 || (flush != Z_NO_FLUSH && (flush != Z_FINISH || ret == Z_STREAM_END))) {
             have = (unsigned)(strm->next_out - state->x.next);
+			// $MODIFICATION: Fixing Windows call to write() with macro.
             if (have && ((got = WRITE(state->fd, state->x.next, (unsigned long)have)) < 0 || (unsigned)got != have)) {
                 gz_error(state, Z_ERRNO, zstrerror());
                 return -1;
@@ -529,6 +533,7 @@ int Z_EXPORT PREFIX(gzclose_w)(gzFile file) {
     }
     gz_error(state, Z_OK, NULL);
     free(state->path);
+	// $MODIFICATION: Fixing Windows call to close() with macro.
     if (CLOSE(state->fd) == -1)
         ret = Z_ERRNO;
     zng_free(state);
