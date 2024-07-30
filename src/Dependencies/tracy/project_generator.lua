@@ -13,10 +13,11 @@ DependencyProject("TracyClient", "SharedLib")
 	warnings "Extra"
 
 	files { "*.h", "*.hpp", "*.cpp", "*.c" }
-	removefiles { "TracyClient.cpp" }
+	removefiles { "public/TracyClient.cpp" }
 
-	build_files_in_dir("client")
-	build_files_in_dir("common")
+	build_files_in_dir("public/client")
+	build_files_in_dir("public/common")
+	build_files_in_dir("public/tracy")
 
 	defines
 	{
@@ -24,7 +25,7 @@ DependencyProject("TracyClient", "SharedLib")
 		"TRACY_CALLSTACK",
 		"TRACY_FIBERS",
 		"TRACY_EXPORTS",
-		"CAPSTONE_AARCH64_COMPAT_HEADER"
+		-- "CAPSTONE_AARCH64_COMPAT_HEADER"
 	}
 
 	postbuildcommands
@@ -34,13 +35,13 @@ DependencyProject("TracyClient", "SharedLib")
 	}
 
 	filter { "system:not windows" }
-		build_files_in_dir("libbacktrace")
+		build_files_in_dir("public/libbacktrace")
 
 	filter { "system:not macosx"}
-		removefiles { "libbacktrace/macho.cpp" }
+		removefiles { "public/libbacktrace/macho.cpp" }
 
 	filter { "system:not linux" }
-		removefiles { "libbacktrace/elf.cpp" }
+		removefiles { "public/libbacktrace/elf.cpp" }
 
 	filter { "system:windows" }
 		links { "ws2_32", "Dbghelp" }
@@ -63,9 +64,10 @@ DependencyProject("TracyProfiler", "WindowedApp")
 	language "C++"
 	warnings "Extra"
 
-	defines { "CAPSTONE_AARCH64_COMPAT_HEADER" }
+	-- defines { "CAPSTONE_AARCH64_COMPAT_HEADER" }
 
-	build_files_in_dir("common")
+	build_files_in_dir("public/common")
+	build_files_in_dir("dtl")
 	build_files_in_dir("nfd")
 	build_files_in_dir("imgui") -- tracy is using a beta branch of imgui.
 	build_files_in_dir("server")
@@ -73,11 +75,12 @@ DependencyProject("TracyProfiler", "WindowedApp")
 
 	-- tracy is normally built with freetype used in imgui.
 	-- I do not want to add another dependency, so I am using the default font renderer instead.
-	removefiles { "imgui/misc/freetype/*.*" }
+	removefiles { "imgui/misc/freetype/*.*", "profiler/src/BackendWayland.cpp", "nfd/nfd_portal.cpp" }
 
 	includedirs
 	{
 		"profiler",
+		"server",
 		"imgui",
 
 		"../capstone/include/capstone",
@@ -111,14 +114,14 @@ DependencyProject("TracyProfiler", "WindowedApp")
 		defines { "DISPLAY_SERVER_WAYLAND" }
 
 	filter { "system:not linux" }
-		removefiles { "nfd/nfd_gtk.c" }
+		removefiles { "nfd/nfd_gtk.cpp" }
 
 	filter { "system:not windows" }
 		removefiles { "nfd/nfd_win.cpp" }
 
 	filter { "system:macosx" }
 		files { "nfd/nfd_cocoa.m" }
-		links { "Cocoa.framework" }
+		links { "Cocoa.framework", "UniformTypeIdentifiers.framework" }
 
 	filter { "system:windows" }
 		defines
