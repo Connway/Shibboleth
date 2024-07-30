@@ -14,11 +14,6 @@ Libraries Affected:
 	premake-qt
 		Added if QT_DIR or QTDIR environment variables are present, use $(QT_DIR) or $(QTDIR) as paths instead.
 
-	tracy
-		Fixing compilation errors with macros in Tracy.hpp incorrectly constexpr'ing a variable into a non-constexpr constructor.
-		Fixing compilation errors on Linux by adding #include <cpuid.h>.
-		Fixing unused variable warnings on Linux/Mac in TracyLua.hpp.
-
 	argparse
 		Commented out unused variables to fix compilation issues.
 
