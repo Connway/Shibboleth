@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2021, assimp team
+Copyright (c) 2006-2024, assimp team
 
 
 All rights reserved.
@@ -78,7 +78,7 @@ inline void PrefixString(aiString &string, const char *prefix, unsigned int len)
     if (string.length >= 1 && string.data[0] == '$')
         return;
 
-    if (len + string.length >= MAXLEN - 1) {
+    if (len + string.length >= AI_MAXLEN - 1) {
         ASSIMP_LOG_VERBOSE_DEBUG("Can't add an unique prefix because the string is too long");
         ai_assert(false);
         return;
@@ -408,7 +408,7 @@ void SceneCombiner::MergeScenes(aiScene **_dest, aiScene *master, std::vector<At
                             // where n is the index of the texture.
                             // Copy here because we overwrite the string data in-place and the buffer inside of aiString
                             // will be a lie if we just reinterpret from prop->mData. The size of mData is not guaranteed to be
-                            // MAXLEN in size.
+                            // AI_MAXLEN in size.
                             aiString s(*(aiString *)prop->mData);
                             if ('*' == s.data[0]) {
                                 // Offset the index and write it back ..
@@ -510,7 +510,7 @@ void SceneCombiner::MergeScenes(aiScene **_dest, aiScene *master, std::vector<At
             OffsetNodeMeshIndices(node, offset[n]);
         }
         if (n) // src[0] is the master node
-            nodes.push_back(NodeAttachmentInfo(node, srcList[n - 1].attachToNode, n));
+            nodes.emplace_back(node, srcList[n - 1].attachToNode, n);
 
         // add name prefixes?
         if (flags & AI_INT_MERGE_SCENE_GEN_UNIQUE_NAMES) {
@@ -685,19 +685,19 @@ void SceneCombiner::BuildUniqueBoneList(std::list<BoneWithHash> &asBones,
 
             for (; it2 != end2; ++it2) {
                 if ((*it2).first == itml) {
-                    (*it2).pSrcBones.push_back(BoneSrcIndex(p, iOffset));
+                    (*it2).pSrcBones.emplace_back(p, iOffset);
                     break;
                 }
             }
             if (end2 == it2) {
                 // need to begin a new bone entry
-                asBones.push_back(BoneWithHash());
+                asBones.emplace_back();
                 BoneWithHash &btz = asBones.back();
 
                 // setup members
                 btz.first = itml;
                 btz.second = &p->mName;
-                btz.pSrcBones.push_back(BoneSrcIndex(p, iOffset));
+                btz.pSrcBones.emplace_back(p, iOffset);
             }
         }
         iOffset += (*it)->mNumVertices;
@@ -1348,6 +1348,9 @@ void SceneCombiner::Copy(aiMetadata **_dest, const aiMetadata *src) {
             break;
         case AI_AIVECTOR3D:
             out.mData = new aiVector3D(*static_cast<aiVector3D *>(in.mData));
+            break;
+        case AI_AIMETADATA:
+            out.mData = new aiMetadata(*static_cast<aiMetadata *>(in.mData));
             break;
         default:
             ai_assert(false);

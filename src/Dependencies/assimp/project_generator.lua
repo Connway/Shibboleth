@@ -16,6 +16,7 @@ DependencyProject "assimp"
 	{
 		".",
 		"contrib/openddlparser/include",
+		"contrib/utf8cpp/source",
 		"contrib/pugixml/src",
 		"include",
 		"code",
@@ -81,6 +82,7 @@ DependencyProject "assimp"
 		"ASSIMP_BUILD_NO_STL_EXPORTER",
 		"ASSIMP_BUILD_NO_3D_IMPORTER",
 		"ASSIMP_BUILD_NO_XGL_IMPORTER",
+		"ASSIMP_BUILD_NO_USD_IMPORTER",
 		"OPENDDL_STATIC_LIBARY"
 	}
 

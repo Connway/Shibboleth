@@ -2,7 +2,7 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2021, assimp team
+Copyright (c) 2006-2024, assimp team
 
 
 All rights reserved.
@@ -209,9 +209,7 @@ Discreet3DSExporter::Discreet3DSExporter(std::shared_ptr<IOStream> &outfile, con
 }
 
 // ------------------------------------------------------------------------------------------------
-Discreet3DSExporter::~Discreet3DSExporter() {
-    // empty
-}
+Discreet3DSExporter::~Discreet3DSExporter() = default;
 
 // ------------------------------------------------------------------------------------------------
 int Discreet3DSExporter::WriteHierarchy(const aiNode &node, int seq, int sibling_level) {

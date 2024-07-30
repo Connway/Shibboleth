@@ -8,9 +8,6 @@ While not that much different than the original source, these packages ARE NOT
 the original source.
 
 Libraries Affected:
-	assimp
-		Fixing RAPIDJSON_HAS_STDSTRING not being defined before inclusion of rapidjson.
-
 	minizip-ng
 		unzip.h and zip.h added #include <zlib.h>
 		Fixing compilation error with CLOCK_MONOTONIC not being defined.
