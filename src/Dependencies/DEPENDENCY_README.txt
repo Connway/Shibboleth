@@ -8,9 +8,6 @@ While not that much different than the original source, these packages ARE NOT
 the original source.
 
 Libraries Affected:
-	imgui
-		Fixed ImGui::DestroyContext() not checking for null.
-
 	premake-qt
 		Added if QT_DIR or QTDIR environment variables are present, use $(QT_DIR) or $(QTDIR) as paths instead.
 

@@ -3726,7 +3726,9 @@ void ImGui::DestroyContext(ImGuiContext* ctx)
     if (ctx == NULL) //-V1051
         ctx = prev_ctx;
     SetCurrentContext(ctx);
-    Shutdown();
+	// $MODIFICATION: Checking if the context is valid before calling shutdown.
+	if (ctx)
+	    Shutdown();
     SetCurrentContext((prev_ctx != ctx) ? prev_ctx : NULL);
     IM_DELETE(ctx);
 }
