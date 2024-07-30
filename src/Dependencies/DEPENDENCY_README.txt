@@ -8,11 +8,6 @@ While not that much different than the original source, these packages ARE NOT
 the original source.
 
 Libraries Affected:
-	minizip-ng
-		unzip.h and zip.h added #include <zlib.h>
-		Fixing compilation error with CLOCK_MONOTONIC not being defined.
-		Fixing compilation errors on Mac.
-
 	imgui
 		Fixed ImGui::DestroyContext() not checking for null.
 

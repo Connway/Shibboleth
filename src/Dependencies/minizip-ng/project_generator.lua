@@ -3,7 +3,7 @@ DependencyProject "minizip-ng"
 	warnings "Default"
 
 	files { "**.c", "**.h" }
-	removefiles { "**bzip.*", "**lzma.*", "**openssl.*", "**libcomp.*", "**crypt_win32.*" }
+	removefiles { "**bzip.*", "**lzma.*", "**openssl.*", "**libcomp.*", "**crypt_winvista.*", "**crypt_winxp.*" }
 	defines { "HAVE_ZLIB", "MZ_ZIP_NO_MAIN", "MZ_ZIP_SIGNING" }
 
 	includedirs
