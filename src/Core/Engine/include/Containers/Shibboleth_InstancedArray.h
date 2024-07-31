@@ -271,14 +271,14 @@ public:
 
 	T* at(int32_t index)
 	{
-		GAFF_ASSERT(index >= 0 && index < _metadata.size());
+		GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_metadata.size()));
 		const Metadata& metadata = _metadata[index];
 		return (metadata.ref_def) ? reinterpret_cast<T*>(_instances.data() + metadata.start) : nullptr;
 	}
 
 	const Refl::IReflectionDefinition* getReflectionDefinition(int32_t index) const
 	{
-		GAFF_ASSERT(index >= 0 && index < _metadata.size());
+		GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_metadata.size()));
 		return _metadata[index].ref_def;
 	}
 
