@@ -18,8 +18,8 @@ CoreProject "Engine"
 		base_dir .. "../../Dependencies/mpack",
 		base_dir .. "../../Dependencies/glm",
 		base_dir .. "../../Dependencies/zlib-ng",
-		base_dir .. "../../Dependencies/libpng",
-		base_dir .. "../../Dependencies/libtiff"
+		base_dir .. "../../Dependencies/libtiff/libtiff",
+		base_dir .. "../../Dependencies/libpng"
 	}
 
 	filter { "configurations:*Static*" }

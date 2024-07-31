@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2009 Frank Warmerdam
+ * Copyright (c) 1992-1997 Sam Leffler
+ * Copyright (c) 1992-1997 Silicon Graphics, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and
  * its documentation for any purpose is hereby granted without fee, provided
@@ -20,24 +21,8 @@
  * LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
  * OF THIS SOFTWARE.
  */
+#include "tiffiop.h"
 
-#ifndef _LIBPORT_
-#define _LIBPORT_
+static const char TIFFVersion[] = TIFFLIB_VERSION_STR;
 
-#include <libport_config.h>
-
-#if HAVE_GETOPT
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#else
-
-int getopt(int argc, char *const argv[], const char *optstring);
-extern char *optarg;
-extern int opterr;
-extern int optind;
-extern int optopt;
-
-#endif
-
-#endif /* ndef _LIBPORT_ */
+const char *TIFFGetVersion(void) { return (TIFFVersion); }

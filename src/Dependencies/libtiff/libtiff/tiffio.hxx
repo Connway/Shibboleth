@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2009 Frank Warmerdam
+ * Copyright (c) 1988-1997 Sam Leffler
+ * Copyright (c) 1991-1997 Silicon Graphics, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and
  * its documentation for any purpose is hereby granted without fee, provided
@@ -21,23 +22,18 @@
  * OF THIS SOFTWARE.
  */
 
-#ifndef _LIBPORT_
-#define _LIBPORT_
+#ifndef _TIFFIO_HXX_
+#define _TIFFIO_HXX_
 
-#include <libport_config.h>
+/*
+ * TIFF I/O library definitions which provide C++ streams API.
+ */
 
-#if HAVE_GETOPT
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#else
+#include "tiff.h"
+#include "tiffio.h"
+#include <iostream>
 
-int getopt(int argc, char *const argv[], const char *optstring);
-extern char *optarg;
-extern int opterr;
-extern int optind;
-extern int optopt;
+extern TIFF *TIFFStreamOpen(const char *, std::ostream *);
+extern TIFF *TIFFStreamOpen(const char *, std::istream *);
 
-#endif
-
-#endif /* ndef _LIBPORT_ */
+#endif /* _TIFFIO_HXX_ */

@@ -1,14 +1,14 @@
 DependencyProject "libtiff"
-	language "C"
+	language "C++"
 	warnings "Default"
 
-	files { "**.c", "**.h" }
-	includedirs { "port", "../zlib-ng" }
-	removefiles { "tif_win32.c" }
+	files { "**.c", "**.h", "**.cxx" }
+	includedirs { "port", "../zlib-ng", "../zstd" }
+	removefiles { "libtiff/tif_win32.c", "libtiff/mkspans.c" }
 
 	filter { "system:windows" }
-		files { "tif_win32.c" }
-		removefiles { "tif_unix.c" }
+		files { "libtiff/tif_win32.c" }
+		removefiles { "libtiff/tif_unix.c" }
 
 	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
