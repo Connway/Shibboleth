@@ -46,6 +46,7 @@ local GenerateProject = function()
 			"mpack",
 			"minizip-ng",
 			"zlib-ng",
+			"zstd",
 			"libpng",
 			"libtiff",
 			"GLFW",
@@ -67,6 +68,7 @@ local LinkDependencies = function()
 	table.insert(deps, "mpack")
 	table.insert(deps, "minizip-ng")
 	table.insert(deps, "zlib-ng")
+	table.insert(deps, "zstd")
 	table.insert(deps, "libpng")
 	table.insert(deps, "libtiff")
 	table.insert(deps, "GLFW")
