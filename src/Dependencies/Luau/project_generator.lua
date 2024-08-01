@@ -12,9 +12,11 @@ DependencyProject "Luau"
 	includedirs
 	{
 		"Compiler/include",
+		"CodeGen/include",
 		"Common/include",
 		"Ast/include",
-		"VM/include"
+		"VM/include",
+		"VM/src"
 	}
 
 	SetupConfigMap()
