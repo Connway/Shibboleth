@@ -80,7 +80,7 @@ static inline void mpack_writer_track_element(mpack_writer_t* writer) {
         if (build->nested_compound_elements == 0) {
             if (build->type != mpack_type_map) {
                 ++build->count;
-                mpack_log("adding element to build %p, now %u elements\n", (void*)build, build->count);
+                mpack_log("adding element to build %p, now %" PRIu32 " elements\n", (void*)build, build->count);
             } else if (build->key_needs_value) {
                 build->key_needs_value = false;
                 ++build->count;
@@ -1103,7 +1103,7 @@ void mpack_write_timestamp(mpack_writer_t* writer, int64_t seconds, uint32_t nan
     #endif
 
     if (nanoseconds > MPACK_TIMESTAMP_NANOSECONDS_MAX) {
-        mpack_break("timestamp nanoseconds out of bounds: %u", nanoseconds);
+        mpack_break("timestamp nanoseconds out of bounds: %" PRIu32 , nanoseconds);
         mpack_writer_flag_error(writer, mpack_error_bug);
         return;
     }
@@ -1246,7 +1246,7 @@ void mpack_start_ext(mpack_writer_t* writer, int8_t exttype, uint32_t count) {
  */
 
 void mpack_write_str(mpack_writer_t* writer, const char* data, uint32_t count) {
-    mpack_assert(data != NULL, "data for string of length %i is NULL", (int)count);
+    mpack_assert(count == 0 || data != NULL, "data for string of length %i is NULL", (int)count);
 
     #if MPACK_OPTIMIZE_FOR_SIZE
     mpack_writer_track_element(writer);
@@ -1301,7 +1301,7 @@ void mpack_write_str(mpack_writer_t* writer, const char* data, uint32_t count) {
 }
 
 void mpack_write_bin(mpack_writer_t* writer, const char* data, uint32_t count) {
-    mpack_assert(data != NULL, "data pointer for bin of %i bytes is NULL", (int)count);
+    mpack_assert(count == 0 || data != NULL, "data pointer for bin of %i bytes is NULL", (int)count);
     mpack_start_bin(writer, count);
     mpack_write_bytes(writer, data, count);
     mpack_finish_bin(writer);
@@ -1309,7 +1309,7 @@ void mpack_write_bin(mpack_writer_t* writer, const char* data, uint32_t count) {
 
 #if MPACK_EXTENSIONS
 void mpack_write_ext(mpack_writer_t* writer, int8_t exttype, const char* data, uint32_t count) {
-    mpack_assert(data != NULL, "data pointer for ext of type %i and %i bytes is NULL", exttype, (int)count);
+    mpack_assert(count == 0 || data != NULL, "data pointer for ext of type %i and %i bytes is NULL", exttype, (int)count);
     mpack_start_ext(writer, exttype, count);
     mpack_write_bytes(writer, data, count);
     mpack_finish_ext(writer);
@@ -1317,7 +1317,7 @@ void mpack_write_ext(mpack_writer_t* writer, int8_t exttype, const char* data, u
 #endif
 
 void mpack_write_bytes(mpack_writer_t* writer, const char* data, size_t count) {
-    mpack_assert(data != NULL, "data pointer for %i bytes is NULL", (int)count);
+    mpack_assert(count == 0 || data != NULL, "data pointer for %i bytes is NULL", (int)count);
     mpack_writer_track_bytes(writer, count);
     mpack_write_native(writer, data, count);
 }
@@ -1338,7 +1338,7 @@ void mpack_write_cstr_or_nil(mpack_writer_t* writer, const char* cstr) {
 }
 
 void mpack_write_utf8(mpack_writer_t* writer, const char* str, uint32_t length) {
-    mpack_assert(str != NULL, "data for string of length %i is NULL", (int)length);
+    mpack_assert(length == 0 || str != NULL, "data for string of length %i is NULL", (int)length);
     if (!mpack_utf8_check(str, length)) {
         mpack_writer_flag_error(writer, mpack_error_invalid);
         return;
@@ -1686,7 +1686,7 @@ static void mpack_builder_resolve(mpack_writer_t* writer) {
     while (true) {
 
         // write out the container tag
-        mpack_log("writing out an %s with count %u followed by %zi bytes\n",
+        mpack_log("writing out an %s with count %" PRIu32 " followed by %zi bytes\n",
                 mpack_type_to_string(build->type), build->count, build->bytes);
         switch (build->type) {
             case mpack_type_map:
@@ -1736,7 +1736,7 @@ static void mpack_builder_resolve(mpack_writer_t* writer) {
 
         // now see if we can find another build.
         offset = mpack_builder_align_build(offset);
-        if (offset + sizeof(mpack_build_t) >= mpack_builder_page_size(writer, page)) {
+        if (offset + sizeof(mpack_build_t) > mpack_builder_page_size(writer, page)) {
             mpack_log("not enough room in this page for another build\n");
             mpack_builder_page_t* next_page = page->next;
             mpack_builder_free_page(writer, page);
@@ -1765,7 +1765,7 @@ static void mpack_builder_resolve(mpack_writer_t* writer) {
 
     // We can now restore the error handler and call it if an error occurred.
     writer->error_fn = error_fn;
-    if (mpack_writer_error(writer) != mpack_ok)
+    if (writer->error_fn && mpack_writer_error(writer) != mpack_ok)
         writer->error_fn(writer, writer->error);
 }
 
