@@ -32,14 +32,8 @@ THE SOFTWARE.
 
 namespace
 {
-// LuaJIT
-#if LUA_VERSION_NUM == 501
-	constexpr auto k_lua_geti = lua_rawgeti;
-	constexpr auto k_lua_seti = lua_rawseti;
-#else
 	constexpr auto k_lua_geti = lua_geti;
 	constexpr auto k_lua_seti = lua_seti;
-#endif
 
 	constexpr int32_t k_ref_def_index = lua_upvalueindex(1);
 	constexpr int32_t k_metatable_index = lua_upvalueindex(2);

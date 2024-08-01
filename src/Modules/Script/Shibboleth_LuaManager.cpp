@@ -87,27 +87,6 @@ bool LuaManager::initAllModulesLoaded(void)
 
 		lua_atpanic(state, &LuaManager::panic);
 
-	// LuaJIT
-	#if LUA_VERSION_NUM == 501
-		#define LIB_REG(name, reg_name, func) \
-			{ \
-				const luaL_Reg k_lua_reg[] = { { reg_name, func }, { NULL, NULL } }; \
-				luaL_openlib(state, name, k_lua_reg, 1); \
-			}
-
-		LIB_REG("base", "", luaopen_base);
-		LIB_REG(LUA_MATHLIBNAME, LUA_MATHLIBNAME, luaopen_math);
-		LIB_REG(LUA_TABLIBNAME, LUA_TABLIBNAME, luaopen_table);
-		LIB_REG(LUA_STRLIBNAME, LUA_STRLIBNAME, luaopen_string);
-		LIB_REG(LUA_BITLIBNAME, LUA_BITLIBNAME, luaopen_bit);
-		LIB_REG(LUA_JITLIBNAME, LUA_JITLIBNAME, luaopen_jit);
-
-	#ifdef _DEBUG
-		LIB_REG(LUA_DBLIBNAME, LUA_DBLIBNAME, luaopen_debug);
-	#endif
-
-	// Reference Interpreter
-	#else
 		luaL_requiref(state, "base", luaopen_base, 1);
 		lua_pop(state, 1);
 
@@ -125,7 +104,6 @@ bool LuaManager::initAllModulesLoaded(void)
 
 		luaL_requiref(state, "utf8", luaopen_utf8, 1);
 		lua_pop(state, 1);
-	#endif
 
 		lua_createtable(state, 0, 0);
 		lua_setglobal(state, k_config_script_loaded_chunks_name);

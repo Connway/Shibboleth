@@ -50,10 +50,6 @@ if _OPTIONS["preproc-pipeline"] and not _OPTIONS["generate-preproc"] then
 
 			local gen_proj_options = ""
 
-			if _OPTIONS["no-luajit"] then
-				gen_proj_options = gen_proj_options .. " --no-luajit"
-			end
-
 			buildcommands
 			{
 				"{CHDIR} ../../../../../workingdir/tools",

@@ -29,10 +29,6 @@ THE SOFTWARE.
 
 void GenerateProject_AddArguments(argparse::ArgumentParser& program)
 {
-	program.add_argument("--no-luajit", "-nlj")
-		.help("(Optional) Generates the project with the reference Lua interpreter instead of LuaJIT.")
-		.implicit_value(true)
-		.default_value(false);
 }
 
 int GenerateProject_Run(const argparse::ArgumentParser& program)
@@ -50,10 +46,6 @@ int GenerateProject_Run(const argparse::ArgumentParser& program)
 #endif
 
 	std::string gen_args = " --generate-preproc";
-
-	if (program.get<bool>("--no-luajit")) {
-		gen_args += " --no-luajit";
-	}
 
 	std::string proj_gen_cmd = std::string("premake5 ") + k_premake_action + gen_args;
 
