@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Ast">
+      <UniqueIdentifier>{ADD6870B-19E0-877C-A25B-9E7C0E64937C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ast\include">
+      <UniqueIdentifier>{205BA35B-8C10-1C51-1505-162881B91255}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ast\include\Luau">
+      <UniqueIdentifier>{467A17AD-3273-36FF-5BA5-1B8447FD150B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ast\src">
+      <UniqueIdentifier>{4423D9A3-B002-583F-B91A-E3152579BEA0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{8EEA3EAC-7A8C-6982-6347-7DD64F88F0D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\include">
+      <UniqueIdentifier>{01C01C61-ED8D-1067-D621-818DC28EECCB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\include\Luau">
+      <UniqueIdentifier>{C713E856-3375-C564-BCE2-0B172843FC23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Compiler">
+      <UniqueIdentifier>{40CAD6B7-2C97-31C3-55B0-1F6B41DC6651}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Compiler\include">
+      <UniqueIdentifier>{B331AA78-9F2A-C9CA-C85C-AE4FB4B4A8D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Compiler\include\Luau">
+      <UniqueIdentifier>{B964BA64-25D1-755F-EEC4-0DBD5AF097C7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Compiler\src">
+      <UniqueIdentifier>{57A8CDFE-430B-5DA3-EC90-9559D8D22826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VM">
+      <UniqueIdentifier>{A8755900-9401-880B-FDAF-880BE95A880B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VM\include">
+      <UniqueIdentifier>{1BC53595-077D-77E2-7084-503E5C5B12D3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VM\src">
+      <UniqueIdentifier>{BFC707D6-AB69-32AC-9424-46008065B9FC}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Ast\include\Luau\Ast.h">
+      <Filter>Ast\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Ast\include\Luau\Confusables.h">
+      <Filter>Ast\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Ast\include\Luau\Lexer.h">
+      <Filter>Ast\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Ast\include\Luau\Location.h">
+      <Filter>Ast\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Ast\include\Luau\ParseOptions.h">
+      <Filter>Ast\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Ast\include\Luau\ParseResult.h">
+      <Filter>Ast\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Ast\include\Luau\Parser.h">
+      <Filter>Ast\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Ast\include\Luau\StringUtils.h">
+      <Filter>Ast\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Ast\include\Luau\TimeTrace.h">
+      <Filter>Ast\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Common\include\Luau\Bytecode.h">
+      <Filter>Common\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Common\include\Luau\BytecodeUtils.h">
+      <Filter>Common\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Common\include\Luau\Common.h">
+      <Filter>Common\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Common\include\Luau\DenseHash.h">
+      <Filter>Common\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Common\include\Luau\ExperimentalFlags.h">
+      <Filter>Common\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Common\include\Luau\VecDeque.h">
+      <Filter>Common\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\include\Luau\BytecodeBuilder.h">
+      <Filter>Compiler\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\include\Luau\Compiler.h">
+      <Filter>Compiler\include\Luau</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\include\luacode.h">
+      <Filter>Compiler\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\BuiltinFolding.h">
+      <Filter>Compiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\Builtins.h">
+      <Filter>Compiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\ConstantFolding.h">
+      <Filter>Compiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\CostModel.h">
+      <Filter>Compiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\TableShape.h">
+      <Filter>Compiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\Types.h">
+      <Filter>Compiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\ValueTracking.h">
+      <Filter>Compiler\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\include\lua.h">
+      <Filter>VM\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\include\luaconf.h">
+      <Filter>VM\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\include\lualib.h">
+      <Filter>VM\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lapi.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lbuffer.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lbuiltins.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lbytecode.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lcommon.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ldebug.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ldo.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lfunc.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lgc.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lmem.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lnumutils.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lobject.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lstate.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lstring.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ltable.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ltm.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ludata.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lvm.h">
+      <Filter>VM\src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Ast\src\Ast.cpp">
+      <Filter>Ast\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Ast\src\Confusables.cpp">
+      <Filter>Ast\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Ast\src\Lexer.cpp">
+      <Filter>Ast\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Ast\src\Location.cpp">
+      <Filter>Ast\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Ast\src\Parser.cpp">
+      <Filter>Ast\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Ast\src\StringUtils.cpp">
+      <Filter>Ast\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Ast\src\TimeTrace.cpp">
+      <Filter>Ast\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\BuiltinFolding.cpp">
+      <Filter>Compiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\Builtins.cpp">
+      <Filter>Compiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\BytecodeBuilder.cpp">
+      <Filter>Compiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\Compiler.cpp">
+      <Filter>Compiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\ConstantFolding.cpp">
+      <Filter>Compiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\CostModel.cpp">
+      <Filter>Compiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\TableShape.cpp">
+      <Filter>Compiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\Types.cpp">
+      <Filter>Compiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\ValueTracking.cpp">
+      <Filter>Compiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\Compiler\src\lcode.cpp">
+      <Filter>Compiler\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lapi.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\laux.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lbaselib.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lbitlib.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lbuffer.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lbuflib.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lbuiltins.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lcorolib.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ldblib.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ldebug.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ldo.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lfunc.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lgc.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lgcdebug.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\linit.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lmathlib.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lmem.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lnumprint.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lobject.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\loslib.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lperf.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lstate.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lstring.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lstrlib.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ltable.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ltablib.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ltm.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\ludata.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lutf8lib.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lvmexecute.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lvmload.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\Luau\VM\src\lvmutils.cpp">
+      <Filter>VM\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\src\Dependencies\Luau\project_generator.lua" />
+  </ItemGroup>
+</Project>

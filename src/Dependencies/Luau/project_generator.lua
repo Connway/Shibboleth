@@ -4,7 +4,10 @@ DependencyProject "Luau"
 
 	files { "**.h", "**.cpp" }
 
-	defines { "_CRT_SECURE_NO_WARNINGS" }
+	filter { "system:windows" }
+		defines { "_CRT_SECURE_NO_WARNINGS" }
+
+	filter {}
 
 	includedirs
 	{
