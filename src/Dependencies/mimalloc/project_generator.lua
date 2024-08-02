@@ -7,9 +7,17 @@ DependencyProject "mimalloc"
 
 	removefiles
 	{
-		"src/alloc-override*.c",
+		"src/prim/emscripten/*.*",
+		"src/prim/osx/*.*",
+		"src/prim/unix/*.*",
+		"src/prim/wasi/*.*",
+		"src/prim/windows/*.*",
+
+		"src/alloc-override.c",
+		"src/arena-abandon.c",
 		"src/page-queue.c",
-		"src/static.c"
+		"src/static.c",
+		"src/free.c"
 	}
 
 	-- defines
