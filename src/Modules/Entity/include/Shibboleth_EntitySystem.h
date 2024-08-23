@@ -28,7 +28,27 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-template <EntityManager::UpdatePhase update_phase>
+class EntityUpdateDirtyNodesSystem final : public ISystem
+{
+public:
+	bool init(void) override
+	{
+		_entity_mgr = &GetManagerTFast<EntityManager>();
+		return true;
+	}
+
+	void update(uintptr_t) override
+	{
+		_entity_mgr->updateDirtyNodes();
+	}
+
+private:
+	EntityManager* _entity_mgr = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(EntityUpdateDirtyNodesSystem);
+};
+
+template <EntityUpdatePhase update_phase>
 class EntityUpdateSystem : public ISystem
 {
 public:
@@ -38,31 +58,33 @@ public:
 		return true;
 	}
 
-	void update(uintptr_t /*thread_id_int*/) override
+	void update(uintptr_t thread_id_int) override
 	{
-		_entity_mgr->updateEntitiesAndComponents(update_phase);
+		_entity_mgr->update(thread_id_int, update_phase);
 	}
 
 private:
 	EntityManager* _entity_mgr = nullptr;
 };
 
-class EntityUpdatePrePhysicsSystem final : public EntityUpdateSystem<EntityManager::UpdatePhase::PrePhysics>
+class EntityUpdatePrePhysicsSystem final : public EntityUpdateSystem<EntityUpdatePhase::PrePhysics>
 {
 	SHIB_REFLECTION_CLASS_DECLARE(EntityUpdatePrePhysicsSystem);
 };
 
-class EntityUpdateDuringPhysicsSystem final : public EntityUpdateSystem<EntityManager::UpdatePhase::DuringPhysics>
+class EntityUpdateDuringPhysicsSystem final : public EntityUpdateSystem<EntityUpdatePhase::DuringPhysics>
 {
 	SHIB_REFLECTION_CLASS_DECLARE(EntityUpdateDuringPhysicsSystem);
 };
 
-class EntityUpdatePostPhysicsSystem final : public EntityUpdateSystem<EntityManager::UpdatePhase::PostPhysics>
+class EntityUpdatePostPhysicsSystem final : public EntityUpdateSystem<EntityUpdatePhase::PostPhysics>
 {
 	SHIB_REFLECTION_CLASS_DECLARE(EntityUpdatePostPhysicsSystem);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::EntityUpdateDirtyNodesSystem)
 
 SHIB_REFLECTION_DECLARE(Shibboleth::EntityUpdatePrePhysicsSystem)
 SHIB_REFLECTION_DECLARE(Shibboleth::EntityUpdateDuringPhysicsSystem)

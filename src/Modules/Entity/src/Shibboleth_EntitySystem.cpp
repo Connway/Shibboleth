@@ -20,30 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_EntitySystem.h"
 
-#include <Reflection/Shibboleth_IReflectionObject.h>
-#include <Containers/Shibboleth_Vector.h>
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::EntityUpdateDirtyNodesSystem, Shibboleth::ISystem)
+
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::EntityUpdatePrePhysicsSystem, Shibboleth::ISystem)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::EntityUpdateDuringPhysicsSystem, Shibboleth::ISystem)
+SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::EntityUpdatePostPhysicsSystem, Shibboleth::ISystem)
 
 NS_SHIBBOLETH
 
-class IEntityUpdateable : public Refl::IReflectionObject
-{
-public:
-	virtual ~IEntityUpdateable(void) = default;
+SHIB_REFLECTION_CLASS_DEFINE(EntityUpdateDirtyNodesSystem)
 
-	virtual void update(float dt);
-
-	void setUpdateNode(void* update_node);
-	const void* getUpdateNode(void) const;
-
-private:
-	Vector<const void*> _dependent_on_me;
-	Vector<const void*> _update_after;
-
-	void* _update_node = nullptr;
-
-	friend class EntityManager;
-};
+SHIB_REFLECTION_CLASS_DEFINE(EntityUpdatePrePhysicsSystem)
+SHIB_REFLECTION_CLASS_DEFINE(EntityUpdateDuringPhysicsSystem)
+SHIB_REFLECTION_CLASS_DEFINE(EntityUpdatePostPhysicsSystem)
 
 NS_END

@@ -20,16 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_EntitySystem.h"
+#pragma once
 
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::EntityUpdatePrePhysicsSystem, Shibboleth::ISystem)
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::EntityUpdateDuringPhysicsSystem, Shibboleth::ISystem)
-SHIB_REFLECTION_DEFINE_WITH_CTOR_AND_BASE(Shibboleth::EntityUpdatePostPhysicsSystem, Shibboleth::ISystem)
+#include <Shibboleth_ProxyAllocator.h>
 
-NS_SHIBBOLETH
-
-SHIB_REFLECTION_CLASS_DEFINE(EntityUpdatePrePhysicsSystem)
-SHIB_REFLECTION_CLASS_DEFINE(EntityUpdateDuringPhysicsSystem)
-SHIB_REFLECTION_CLASS_DEFINE(EntityUpdatePostPhysicsSystem)
-
-NS_END
+#define ENTITY_ALLOCATOR_POOL_NAME "Entity"
+#define ENTITY_ALLOCATOR Shibboleth::ProxyAllocator{ ENTITY_ALLOCATOR_POOL_NAME }

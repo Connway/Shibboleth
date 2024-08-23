@@ -24,17 +24,20 @@ THE SOFTWARE.
 #include "Shibboleth_EntityManager.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponentFlag)
-	.entry("Update Enabled", Shibboleth::EntityComponentFlag::UpdateEnabled)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponentFlag)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponent)
-	.BASE(Shibboleth::IEntityUpdateable)
-
 	.var("flags", &Shibboleth::EntityComponent::_flags)
 	.var("name", &Shibboleth::EntityComponent::_name)
 
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponent)
+
+
+namespace
+{
+	static Shibboleth::ProxyAllocator s_allocator{ ENTITY_ALLOCATOR };
+}
 
 NS_SHIBBOLETH
 
@@ -49,12 +52,14 @@ bool EntityComponent::clone(EntityComponent*& new_component, const ISerializeRea
 {
 	const Refl::IReflectionDefinition& ref_def = getReflectionDefinition();
 
-	new_component = static_cast<EntityComponent*>(_owner->_entity_mgr.createUpdateable(ref_def));
+	new_component = ref_def.template createT<EntityComponent>(s_allocator);
 
 	if (!new_component) {
 		// $TODO: Log error.
 		return false;
 	}
+
+	// $TODO: Offer a path for calling a copy function instead.
 
 	// Copy all reflected variables.
 	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
@@ -91,22 +96,6 @@ void EntityComponent::destroy(void)
 Entity* EntityComponent::getOwner(void) const
 {
 	return _owner;
-}
-
-void EntityComponent::updateAfter(IEntityUpdateable& after)
-{
-	GAFF_ASSERT(_owner);
-	_owner->_entity_mgr.updateAfter(*this, after);
-}
-
-void EntityComponent::setEnableUpdate(bool enabled)
-{
-	_flags.set(enabled, EntityComponentFlag::UpdateEnabled);
-}
-
-bool EntityComponent::canUpdate(void) const
-{
-	return _flags.testAll(EntityComponentFlag::UpdateEnabled);
 }
 
 const U8String& EntityComponent::getName(void) const

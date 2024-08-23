@@ -20,23 +20,64 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_IEntityUpdateable.h"
-#include "Shibboleth_EntityManager.h"
+#pragma once
+
+#include "Shibboleth_EntityDefines.h"
+#include <Containers/Shibboleth_Vector.h>
+#include <Shibboleth_HashString.h>
+#include <Gaff_EnumIterator.h>
+#include <Gaff_Flags.h>
 
 NS_SHIBBOLETH
 
-void IEntityUpdateable::update(float /*dt*/)
+// Modify on a per game basis as needed.
+enum class EntityUpdatePhase
 {
-}
+	PrePhysics,
+	DuringPhysics,
+	PostPhysics,
 
-void IEntityUpdateable::setUpdateNode(void* update_node)
-{
-	_update_node = update_node;
-}
+	Count
+};
 
-const void* IEntityUpdateable::getUpdateNode(void) const
+
+class EntityUpdater final
 {
-	return _update_node;
-}
+public:
+	using UpdateFunction = eastl::function<void (float)>;
+
+	~EntityUpdater(void);
+
+	void updateAfter(EntityUpdater& updater);
+
+	void setEnabled(bool value);
+	bool isEnabled(void) const;
+
+	// "register" is a reserved keyword, so using enable/disable.
+	void disable(void);
+	void enable(void);
+
+	void setUpdateFunction(const UpdateFunction& function);
+	void setUpdateFunction(UpdateFunction&& function);
+
+	void setUpdatePhase(EntityUpdatePhase update_phase);
+	EntityUpdatePhase getUpdatePhase(void) const;
+
+private:
+	UpdateFunction _update_function;
+
+	Vector<EntityUpdater*> _update_after{ ENTITY_ALLOCATOR };
+	Vector<EntityUpdater*> _depends_on_me{ ENTITY_ALLOCATOR };
+
+	EntityUpdatePhase _update_phase = EntityUpdatePhase::PrePhysics;
+
+	int32_t _node_id = -1; // For use by EntityManager only.
+
+	void markDirty(void);
+
+	friend class EntityManager;
+};
 
 NS_END
+
+GAFF_DEFINE_ENUM_ITERATOR(Shibboleth::EntityUpdatePhase)

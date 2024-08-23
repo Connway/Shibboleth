@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IEntityUpdateable.h"
+#include "Shibboleth_EntityUpdater.h"
 #include <Reflection/Shibboleth_Reflection.h>
 #include <Gaff_Flags.h>
 
@@ -32,14 +32,11 @@ class Entity;
 
 enum class EntityComponentFlag
 {
-	UpdateEnabled,
-	CallInit,
-
 	Count
 };
 
 
-class EntityComponent : public IEntityUpdateable
+class EntityComponent : public Refl::IReflectionObject
 {
 public:
 	EntityComponent(void) = default;
@@ -50,16 +47,13 @@ public:
 
 	Entity* getOwner(void) const;
 
-	void updateAfter(IEntityUpdateable& after);
-
-	void setEnableUpdate(bool enabled);
-	bool canUpdate(void) const;
-
 	const U8String& getName(void) const;
 	void setName(const U8String& name);
 	void setName(U8String&& name);
 
 private:
+	EntityUpdater _updater;
+
 	Entity* _owner = nullptr;
 
 	U8String _name;

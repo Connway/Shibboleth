@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_EntityComponent.h"
-//#include <Shibboleth_ECSEntity.h>
 //#include <Gaff_IncludeEASTLAtomic.h>
 //#include <Gaff_RefPtr.h>
 //#include <Gaff_Hash.h>
@@ -35,12 +34,10 @@ class EntityManager;
 
 enum class EntityFlag
 {
-	UpdateEnabled,
-
 	Count
 };
 
-class Entity : public IEntityUpdateable
+class Entity : public Refl::IReflectionObject
 {
 public:
 	template <class T>
@@ -116,8 +113,6 @@ public:
 	virtual bool init(void);
 	virtual bool clone(Entity*& new_entity, const ISerializeReader* overrides);
 
-	void update(float dt) override;
-
 	virtual void addToWorld(void);
 	virtual void removeFromWorld(void);
 
@@ -150,8 +145,6 @@ public:
 	const EntitySceneComponent* getRootComponent(void) const;
 	EntitySceneComponent* getRootComponent(void);
 
-	void updateAfter(IEntityUpdateable& after);
-
 	void setEnableUpdate(bool enabled);
 	bool canUpdate(void) const;
 
@@ -159,7 +152,11 @@ public:
 	void setName(const U8String& name);
 	void setName(U8String&& name);
 
+	const EntityUpdater& getUpdater(void) const;
+	EntityUpdater& getUpdater(void);
+
 protected:
+	EntityUpdater _updater;
 	EntityManager& _entity_mgr;
 
 private:
