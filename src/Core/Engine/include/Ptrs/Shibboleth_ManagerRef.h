@@ -65,9 +65,9 @@ public:
 		if constexpr (k_lazy_init) {
 			if (!_manager) {
 				if constexpr (k_use_fast_getter) {
-					_manager = &GetManagerTFast<T>();
+					_manager = &GetManagerTFast< std::decay_t<T> >();
 				} else {
-					_manager = &GetManagerT<T>();
+					_manager = &GetManagerT< std::decay_t<T> >();
 				}
 			}
 		}
