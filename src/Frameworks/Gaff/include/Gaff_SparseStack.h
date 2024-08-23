@@ -146,7 +146,7 @@ public:
 	int32_t push(T&& value);
 
 	void remove(const T& value);
-	void remove(int32_t index);
+	void removeAt(int32_t index);
 
 	void pop(void);
 

@@ -231,7 +231,7 @@ void SparseStack<T, Allocator>::remove(const T& value)
 }
 
 template <class T, class Allocator>
-void SparseStack<T, Allocator>::remove(int32_t index)
+void SparseStack<T, Allocator>::removeAt(int32_t index)
 {
 	GAFF_ASSERT(validIndex(index));
 
