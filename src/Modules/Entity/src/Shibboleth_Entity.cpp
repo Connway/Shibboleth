@@ -23,18 +23,23 @@ THE SOFTWARE.
 #include "Shibboleth_Entity.h"
 #include "Shibboleth_EntitySceneComponent.h"
 #include "Shibboleth_EntityManager.h"
+#include "Shibboleth_EntityDefines.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityFlag)
-	.entry("Update Enabled", Shibboleth::EntityFlag::UpdateEnabled)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityFlag)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
-	.BASE(Shibboleth::IEntityUpdateable)
 	.template ctor<Shibboleth::EntityManager&>()
 
 	.var("flags", &Shibboleth::Entity::_flags)
 	.var("name", &Shibboleth::Entity::_name)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Entity)
+
+
+namespace
+{
+	static Shibboleth::ProxyAllocator s_allocator{ ENTITY_ALLOCATOR };
+}
 
 NS_SHIBBOLETH
 
@@ -63,14 +68,14 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 {
 	const Refl::IReflectionDefinition& ref_def = getReflectionDefinition();
 
-	new_entity = _entity_mgr.createEntity(ref_def);
+	new_entity = ref_def.template createT<Entity>(s_allocator);
 
 	if (!new_entity) {
 		// $TODO: Log error.
 		return false;
 	}
 
-	new_entity->_components.reserve(_components.size());
+	// $TODO: Offer a path for calling a copy function instead.
 
 	// Copy all reflected variables.
 	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
@@ -85,6 +90,8 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 	}
 
 	bool success = true;
+
+	new_entity->_components.reserve(_components.size());
 
 	// Clone all components
 	for (auto& comp : _components) {
@@ -137,16 +144,6 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 	}
 
 	return success;
-}
-
-void Entity::update(float dt)
-{
-	// $TODO: Jobify this.
-	for (auto& comp : _components) {
-		if (!comp->getUpdateNode()) {
-			comp->update(dt);
-		}
-	}
 }
 
 void Entity::addToWorld(void)
@@ -352,21 +349,6 @@ EntitySceneComponent* Entity::getRootComponent(void)
 	return _root_scene_comp;
 }
 
-void Entity::updateAfter(IEntityUpdateable& after)
-{
-	_entity_mgr.updateAfter(*this, after);
-}
-
-void Entity::setEnableUpdate(bool enabled)
-{
-	_flags.set(enabled, EntityFlag::UpdateEnabled);
-}
-
-bool Entity::canUpdate(void) const
-{
-	return _flags.testAll(EntityFlag::UpdateEnabled);
-}
-
 const U8String& Entity::getName(void) const
 {
 	return _name;
@@ -380,6 +362,16 @@ void Entity::setName(const U8String& name)
 void Entity::setName(U8String&& name)
 {
 	_name = std::move(name);
+}
+
+const EntityUpdater& Entity::getUpdater(void) const
+{
+	return _updater;
+}
+
+EntityUpdater& Entity::getUpdater(void)
+{
+	return _updater;
 }
 
 NS_END

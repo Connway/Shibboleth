@@ -22,12 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Entity.h"
+#include "Shibboleth_EntityUpdater.h"
+#include <Containers/Shibboleth_SparseStack.h>
 #include <Containers/Shibboleth_VectorMap.h>
 #include <Containers/Shibboleth_Vector.h>
 #include <Shibboleth_IManager.h>
-#include <eathread/eathread_rwspinlock.h>
-#include <eathread/eathread_rwmutex.h>
+#include <Shibboleth_JobPool.h>
+#include <eathread/eathread_mutex.h>
 
 NS_SHIBBOLETH
 
@@ -36,95 +37,69 @@ class GameTimeManager;
 class EntityManager final : public IManager
 {
 public:
-	enum class UpdatePhase
-	{
-		PrePhysics,
-		DuringPhysics,
-		PostPhysics,
-
-		Count
-	};
-
-	template <class T>
-	T* createUpdateable(void)
-	{
-		static_assert(std::is_base_of<IEntityUpdateable, T>::value, "T must be derived from IEntityUpdateable.");
-
-		IEntityUpdateable* const updateable = createUpdateable(Refl::Reflection<T>::GetReflectionDefinition());
-		return (updateable) ? static_cast<T*>(updateable) : nullptr;
-	}
-
-	template <class T>
-	T* createEntity(void)
-	{
-		static_assert(std::is_base_of<Entity, T>::value, "T must be derived from Entity.");
-
-		Entity* const entity = createEntity(Refl::Reflection<T>::GetReflectionDefinition());
-		return (entity) ? static_cast<T*>(entity) : nullptr;
-	}
-
-	//~EntityManager(void);
-
 	bool initAllModulesLoaded(void) override;
 
-	IEntityUpdateable* createUpdateable(const Refl::IReflectionDefinition& ref_def);
-
-	Entity* createEntity(const Refl::IReflectionDefinition& ref_def);
-	Entity* createEntity(void);
-
-	void destroy(IEntityUpdateable& updateable);
-
-	void updateEntitiesAndComponents(UpdatePhase update_phase);
-
-	void changeDefaultUpdatePhase(IEntityUpdateable& entity, UpdatePhase update_phase);
-
-	void updateAfter(IEntityUpdateable& updateable, IEntityUpdateable& after);
+	void update(uintptr_t thread_id_int, EntityUpdatePhase update_phase);
+	void updateDirtyNodes(void);
 
 private:
 	struct UpdateNode final
 	{
 		enum class Flag
 		{
-			Component,
-
-			Removed,
-			Destroy,
 			Dirty,
 
 			Count
 		};
 
-		IEntityUpdateable* updater = nullptr;
-		UpdateNode* root = nullptr;
-		UpdateNode* parent = nullptr;
-		UpdateNode* prev_sibling = nullptr;
-		UpdateNode* next_sibling = nullptr;
-		UpdateNode* first_child = nullptr;
-		UpdateNode* last_child = nullptr;
+		EntityUpdater* updater = nullptr;
+		int32_t level = -1;
+		EntityUpdatePhase update_phase = EntityUpdatePhase::Count;
 
-		int16_t depth = 1;
 		Gaff::Flags<Flag> flags;
 	};
 
-	UpdateNode _update_roots[static_cast<size_t>(UpdatePhase::Count)];
-	mutable EA::Thread::RWMutex _graph_locks[static_cast<size_t>(UpdatePhase::Count)]; // Mutable so const functions can take a lock.
-
-	EA::Thread::Mutex _dirty_nodes_locks[static_cast<size_t>(UpdatePhase::Count)];
-	Vector<UpdateNode*> _dirty_nodes[static_cast<size_t>(UpdatePhase::Count)] =
+	struct UpdateNodeLevel final
 	{
-		Vector<UpdateNode*>{ ProxyAllocator("Entity") },
-		Vector<UpdateNode*>{ ProxyAllocator("Entity") },
-		Vector<UpdateNode*>{ ProxyAllocator("Entity") }
+		Vector<int32_t> update_nodes{ ENTITY_ALLOCATOR };
 	};
 
-	const GameTimeManager* _game_time_mgr = nullptr;
+	Vector<UpdateNodeLevel> _update_levels[static_cast<size_t>(EntityUpdatePhase::Count)] =
+	{
+		Vector<UpdateNodeLevel>{ ENTITY_ALLOCATOR },
+		Vector<UpdateNodeLevel>{ ENTITY_ALLOCATOR },
+		Vector<UpdateNodeLevel>{ ENTITY_ALLOCATOR }
+	};
 
+	SparseStack<UpdateNode> _update_nodes{ ENTITY_ALLOCATOR };
+
+	Vector<int32_t> _dirty_nodes{ ENTITY_ALLOCATOR };
+
+	// Job Data
+	Vector<int32_t> _nodes_to_update{ ENTITY_ALLOCATOR };
+	Vector<Gaff::JobData> _job_data{ ENTITY_ALLOCATOR };
+
+	EA::Thread::Mutex _nodes_to_update_lock;
+	EA::Thread::Mutex _update_nodes_lock;
+	EA::Thread::Mutex _dirty_nodes_lock;
+
+	const GameTimeManager* _game_time_mgr = nullptr;
+	JobPool* _job_pool = nullptr;
+	Gaff::Counter _count = 0;
+
+	EntityUpdatePhase _current_update_phase = EntityUpdatePhase::Count;
+
+
+	// "register" is a reserved keyword, so using enable/disable.
+	void disable(EntityUpdater& updater);
+	void enable(EntityUpdater& updater);
+
+	void markDirty(EntityUpdater& updater);
 	void markDirty(UpdateNode& node);
 
-	UpdatePhase getUpdatePhase(const UpdateNode& node) const;
+	static void UpdateEntities(uintptr_t, void* data);
 
-	void addToGraph(UpdateNode& node);
-	void removeFromGraph(UpdateNode& node);
+	friend class EntityUpdater;
 
 	SHIB_REFLECTION_CLASS_DECLARE(EntityManager);
 };
