@@ -62,9 +62,17 @@ void EntityManager::update(uintptr_t thread_id_int, EntityUpdatePhase update_pha
 
 void EntityManager::updateDirtyNodes(void)
 {
+	Vector<UpdateNode*> depends_on{ ENTITY_ALLOCATOR };
+
 	for (int32_t index : _dirty_nodes) {
-		// $TODO: Determine update levels.
-		GAFF_REF(index);
+		UpdateNode& node = _update_nodes[index];
+
+		// This node might have already been processed.
+		if (!node.flags.testAny(UpdateNode::Flag::Dirty)) {
+			continue;
+		}
+
+		updateDirtyNode(node);
 	}
 
 	_dirty_nodes.clear();
@@ -91,7 +99,7 @@ void EntityManager::disable(EntityUpdater& updater)
 		_dirty_nodes.erase_first(updater._node_id);
 	}
 
-	// Mark all dependent nodes as dirty. Their level needs to be recalculated.
+	// Mark all dependent nodes as dirty. Their phase and level needs to be recalculated.
 	for (const EntityUpdater* const dependent : updater._depends_on_me) {
 		UpdateNode& node = _update_nodes[dependent->_node_id];
 		markDirty(node);
@@ -139,6 +147,34 @@ void EntityManager::markDirty(UpdateNode& node)
 		UpdateNode& node = _update_nodes[updater->_node_id];
 		markDirty(node);
 	}
+}
+
+void EntityManager::updateDirtyNode(UpdateNode& node)
+{
+	EntityUpdatePhase update_phase = node.updater->_update_phase;
+	int32_t level = -1;
+
+	for (const EntityUpdater* updater : node.updater->_update_after) {
+		UpdateNode& prereq_node = _update_nodes[updater->_node_id];
+
+		if (prereq_node.flags.testAny(UpdateNode::Flag::Dirty)) {
+			updateDirtyNode(prereq_node);
+		}
+
+		// We are moving up an update phase.
+		if (update_phase < prereq_node.update_phase) {
+			update_phase = prereq_node.update_phase;
+			level = prereq_node.level;
+
+		// We are staying on the same update phase, pick the largest level.
+		} else if (update_phase == prereq_node.update_phase) {
+			level = Gaff::Max(prereq_node.level, level);
+		}
+		// Ignore levels less than ours.
+	}
+
+	node.update_phase = update_phase;
+	node.level = level + 1;
 }
 
 void EntityManager::UpdateEntities(uintptr_t, void* data)

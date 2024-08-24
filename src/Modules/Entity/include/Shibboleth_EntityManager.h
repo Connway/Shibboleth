@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Containers/Shibboleth_Vector.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_JobPool.h>
+#include <Gaff_IncludeEASTLAtomic.h>
 #include <eathread/eathread_mutex.h>
 
 NS_SHIBBOLETH
@@ -52,7 +53,30 @@ private:
 			Count
 		};
 
+		UpdateNode(const UpdateNode& node):
+			updater(node.updater),
+			prereq_count(static_cast<int32_t>(node.prereq_count)),
+			level(node.level),
+			update_phase(node.update_phase),
+			flags(node.flags)
+		{
+		}
+
+		UpdateNode(void) = default;
+
+		UpdateNode& operator=(UpdateNode&& node)
+		{
+			updater = node.updater;
+			prereq_count = static_cast<int32_t>(node.prereq_count);
+			level = node.level;
+			update_phase = node.update_phase;
+			flags = node.flags;
+
+			return *this;
+		}
+
 		EntityUpdater* updater = nullptr;
+		eastl::atomic<int32_t> prereq_count = 0;
 		int32_t level = -1;
 		EntityUpdatePhase update_phase = EntityUpdatePhase::Count;
 
@@ -96,6 +120,8 @@ private:
 
 	void markDirty(EntityUpdater& updater);
 	void markDirty(UpdateNode& node);
+
+	void updateDirtyNode(UpdateNode& node);
 
 	static void UpdateEntities(uintptr_t, void* data);
 
