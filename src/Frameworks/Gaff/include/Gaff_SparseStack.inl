@@ -200,24 +200,23 @@ template <class T, class Allocator>
 template <class... Args>
 int32_t SparseStack<T, Allocator>::emplace(Args&&... args)
 {
-	T value(std::forward<Args>(args)...);
-	return push(std::move(value));
+	const int32_t index = allocateIndex();
+	new (&_data[index]) T(std::forward<Args>(args)...);
+	return index;
 }
 
 template <class T, class Allocator>
 int32_t SparseStack<T, Allocator>::push(const T& value)
 {
 	const int32_t index = allocateIndex();
-	_data[index] = value;
+	new (&_data[index]) T(value);
 	return index;
 }
 
 template <class T, class Allocator>
 int32_t SparseStack<T, Allocator>::push(T&& value)
 {
-	const int32_t index = allocateIndex();
-	_data[index] = std::move(value);
-	return index;
+	return emplace(std::move(value));
 }
 
 template <class T, class Allocator>
@@ -226,7 +225,7 @@ void SparseStack<T, Allocator>::remove(const T& value)
 	const int32_t index = find(value);
 
 	if (index > -1) {
-		remove(index);
+		removeAt(index);
 	}
 }
 
@@ -259,7 +258,7 @@ void SparseStack<T, Allocator>::removeAt(int32_t index)
 
 	} else {
 		_free_indices.set(static_cast<size_t>(index), true);
-		_data[index] = T();
+		_data[index].~T();
 
 		if (_first_free_index == -1) {
 			_first_free_index = index;
