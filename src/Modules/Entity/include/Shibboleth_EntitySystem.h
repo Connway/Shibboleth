@@ -39,6 +39,7 @@ public:
 
 	void update(uintptr_t) override
 	{
+		_entity_mgr->updateDisabledNodes();
 		_entity_mgr->updateDirtyNodes();
 	}
 

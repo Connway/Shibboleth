@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_JobPool.h>
 #include <Gaff_IncludeEASTLAtomic.h>
+#include <eathread/eathread_spinlock.h>
 #include <eathread/eathread_mutex.h>
 
 NS_SHIBBOLETH
@@ -41,6 +42,7 @@ public:
 	bool initAllModulesLoaded(void) override;
 
 	void update(uintptr_t thread_id_int, EntityUpdatePhase update_phase);
+	void updateDisabledNodes(void);
 	void updateDirtyNodes(void);
 
 private:
@@ -53,31 +55,9 @@ private:
 			Count
 		};
 
-		UpdateNode(const UpdateNode& node):
-			updater(node.updater),
-			prereq_count(static_cast<int32_t>(node.prereq_count)),
-			level(node.level),
-			update_phase(node.update_phase),
-			flags(node.flags)
-		{
-		}
-
-		UpdateNode(void) = default;
-
-		UpdateNode& operator=(UpdateNode&& node)
-		{
-			updater = node.updater;
-			prereq_count = static_cast<int32_t>(node.prereq_count);
-			level = node.level;
-			update_phase = node.update_phase;
-			flags = node.flags;
-
-			return *this;
-		}
-
 		EntityUpdater* updater = nullptr;
-		eastl::atomic<int32_t> prereq_count = 0;
 		int32_t level = -1;
+		int32_t index = -1;
 		EntityUpdatePhase update_phase = EntityUpdatePhase::Count;
 
 		Gaff::Flags<Flag> flags;
@@ -97,13 +77,15 @@ private:
 
 	SparseStack<UpdateNode> _update_nodes{ ENTITY_ALLOCATOR };
 
+	Vector<int32_t> _disable_nodes{ ENTITY_ALLOCATOR };
 	Vector<int32_t> _dirty_nodes{ ENTITY_ALLOCATOR };
 
 	// Job Data
 	Vector<int32_t> _nodes_to_update{ ENTITY_ALLOCATOR };
 	Vector<Gaff::JobData> _job_data{ ENTITY_ALLOCATOR };
 
-	EA::Thread::Mutex _nodes_to_update_lock;
+	EA::Thread::SpinLock _nodes_to_update_lock;
+	EA::Thread::SpinLock _disable_nodes_lock;
 	EA::Thread::Mutex _update_nodes_lock;
 	EA::Thread::Mutex _dirty_nodes_lock;
 
@@ -112,6 +94,7 @@ private:
 	Gaff::Counter _count = 0;
 
 	EntityUpdatePhase _current_update_phase = EntityUpdatePhase::Count;
+	int32_t _current_level = 0;
 
 
 	// "register" is a reserved keyword, so using enable/disable.
@@ -122,6 +105,7 @@ private:
 	void markDirty(UpdateNode& node);
 
 	void updateDirtyNode(UpdateNode& node);
+	void disableNode(UpdateNode& node);
 
 	static void UpdateEntities(uintptr_t, void* data);
 
