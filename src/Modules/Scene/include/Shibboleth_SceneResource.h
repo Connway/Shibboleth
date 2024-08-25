@@ -23,6 +23,9 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_LayerResource.h"
+#include <Shibboleth_DeferredResourcePtr.h>
+
+SHIB_REFLECTION_ALLOW_NESTED_PRIVATE_ACCESS_DECLARE(Scene)
 
 NS_SHIBBOLETH
 
@@ -38,19 +41,30 @@ public:
 	void save(ISerializeWriter& writer);
 
 private:
+	struct DeferredLayerData final
+	{
+		DeferredResourcePtr<LayerResource> layer;
+		HashString64<> name;
+	};
+
 	struct LayerData final
 	{
 		ResourcePtr<LayerResource> layer;
-		HashString64<> layer_name;
+		HashString64<> name;
 	};
 
+	Vector<DeferredLayerData> _deferred_layers;
 	Vector<LayerData> _layers;
 
 	void layerLoaded(const Vector<IResource*>&);
 
+	SHIB_REFLECTION_ALLOW_NESTED_PRIVATE_ACCESS(SceneResource::DeferredLayerData, Scene);
+	SHIB_REFLECTION_ALLOW_NESTED_PRIVATE_ACCESS(SceneResource::LayerData, Scene);
 	SHIB_REFLECTION_CLASS_DECLARE(SceneResource);
 };
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(Shibboleth::SceneResource::DeferredLayerData)
+SHIB_REFLECTION_DECLARE(Shibboleth::SceneResource::LayerData)
 SHIB_REFLECTION_DECLARE(Shibboleth::SceneResource)

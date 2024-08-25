@@ -27,6 +27,16 @@ THE SOFTWARE.
 // #include <Shibboleth_Utilities.h>
 // #include <Gaff_Function.h>
 
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneResource::DeferredLayerData)
+	.var("layer", &Shibboleth::SceneResource::DeferredLayerData::layer)
+	.var("name", &Shibboleth::SceneResource::DeferredLayerData::name)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneResource::DeferredLayerData)
+
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneResource::LayerData)
+	.var("layer", &Shibboleth::SceneResource::LayerData::layer)
+	.var("name", &Shibboleth::SceneResource::LayerData::name)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneResource::LayerData)
+
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneResource)
 	.classAttrs(
 		Shibboleth::ResourceExtensionAttribute(u8".scene.bin"),

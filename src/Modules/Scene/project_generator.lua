@@ -35,7 +35,7 @@ local GenerateProject = function()
 	ModuleProject "SceneModule"
 		language "C++"
 
-		files { source_dir .. "Shibboleth_SceneModule.cpp" }
+		files { source_dir .. "src/Shibboleth_SceneModule.cpp" }
 
 		dependson(module_link_deps)
 		links(module_link_deps)
