@@ -56,6 +56,9 @@ struct VarTypeHelper< T, GetterSetterFuncs<GetterFunc, SetterFunc> > final
 	using VariableType = VarTypeHelper< T, std::decay_t<GetVariableType> >::VariableType;
 
 	using Type = VarFunction< T, GetterSetterFuncs<GetterFunc, SetterFunc> >;
+
+	static constexpr bool k_can_copy = VarTypeHelper< T, std::decay_t<GetVariableType> >::k_can_copy;
+	static constexpr bool k_can_move = VarTypeHelper< T, std::decay_t<GetVariableType> >::k_can_move;
 };
 
 

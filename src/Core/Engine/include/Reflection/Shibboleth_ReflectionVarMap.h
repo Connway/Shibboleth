@@ -44,6 +44,11 @@ struct VarTypeHelper< T, Gaff::VectorMap<KeyType, ValueType, VecMap_Allocator> >
 
 	static constexpr bool k_key_can_copy = VarTypeHelper<T, KeyType>::k_can_copy;
 	static constexpr bool k_value_can_copy = VarTypeHelper<T, ValueType>::k_can_copy;
+	static constexpr bool k_key_can_move = VarTypeHelper<T, KeyType>::k_can_move;
+	static constexpr bool k_value_can_move = VarTypeHelper<T, ValueType>::k_can_move;
+
+	static constexpr bool k_can_copy = k_key_can_copy && k_value_can_copy;
+	static constexpr bool k_can_move = k_key_can_move && k_value_can_move;
 };
 
 

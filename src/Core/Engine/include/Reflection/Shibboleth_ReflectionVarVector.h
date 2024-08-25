@@ -67,6 +67,8 @@ struct VarTypeHelper< T, Gaff::Vector<VarType, Vec_Allocator> > final
 	static constexpr int32_t Dimensions = Refl::Dimensions< Gaff::Vector<VarType, Vec_Allocator> >;
 
 	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
+	static constexpr bool k_can_move = true;
+
 	static constexpr bool k_is_fixed_array = false;
 };
 
@@ -82,6 +84,8 @@ struct VarTypeHelper< T, eastl::array<VarType, array_size> > final
 	static constexpr int32_t Dimensions = Refl::Dimensions< eastl::array<VarType, array_size> >;
 
 	static constexpr bool k_can_copy = VarTypeHelper<T, VarType>::k_can_copy;
+	static constexpr bool k_can_move = true;
+
 	static constexpr bool k_is_fixed_array = true;
 };
 

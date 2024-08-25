@@ -43,7 +43,9 @@ struct VarTypeHelper final
 	using ReflectionType = VarType;
 	using VariableType = VarType;
 	using Type = Var<T, VarType>;
+
 	static constexpr bool k_can_copy = requires(T lhs, const T& rhs) { lhs = rhs; } || requires(const T& rhs) { T(rhs); };
+	static constexpr bool k_can_move = requires(T lhs, T&& rhs) { lhs = std::move(rhs); } || requires(T&& rhs) { T(std::move(rhs)); };
 };
 
 
@@ -147,6 +149,7 @@ NS_END
 		using VariableType = ClassType<VarType>; \
 		using Type = Var< T, ClassType<VarType> >; \
 		static constexpr bool k_can_copy = true; \
+		static constexpr bool k_can_move = true; \
 	}; \
 	NS_END
 
@@ -159,6 +162,7 @@ NS_END
 		using VariableType = ClassType; \
 		using Type = Var<T, ClassType>; \
 		static constexpr bool k_can_copy = true; \
+		static constexpr bool k_can_move = true; \
 	}; \
 	NS_END
 
@@ -176,6 +180,7 @@ NS_END
 		using VariableType = ClassType<VarType>; \
 		using Type = Var< T, ClassType<VarType> >; \
 		static constexpr bool k_can_copy = false; \
+		static constexpr bool k_can_move = false; \
 	}; \
 	NS_END
 
@@ -188,6 +193,7 @@ NS_END
 		using VariableType = ClassType; \
 		using Type = Var<T, ClassType>; \
 		static constexpr bool k_can_copy = false; \
+		static constexpr bool k_can_move = false; \
 	}; \
 	NS_END
 

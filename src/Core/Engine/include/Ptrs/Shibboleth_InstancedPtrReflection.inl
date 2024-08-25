@@ -75,13 +75,24 @@ void VarInstancedPtr<T, VarType>::setData(void* object, const void* data)
 template <class T, class VarType>
 void VarInstancedPtr<T, VarType>::setDataMove(void* object, void* data)
 {
-	if (Refl::IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
+	if constexpr (Refl::VarTypeHelper<T, VarType>::k_can_move) {
+		if (Refl::IReflectionVar::isReadOnly()) {
+			// $TODO: Log error.
+			return;
+		}
 
-	InstancedPtr<VarType>* const var = Refl::IVar<T>::template get< InstancedPtr<VarType> >(object);
-	**var = std::move(*reinterpret_cast<VarType*>(data));
+		InstancedPtr<VarType>* const var = Refl::IVar<T>::template get< InstancedPtr<VarType> >(object);
+		**var = std::move(*reinterpret_cast<VarType*>(data));
+
+	} else {
+		GAFF_REF(object, data);
+
+		GAFF_ASSERT_MSG(
+			false,
+			"VarInstancedPtr<T, VarType>::setDataMove() was called with ReflectionType of '%s'.",
+			reinterpret_cast<const char*>(Refl::Reflection<ReflectionType>::GetName())
+		);
+	}
 }
 
 template <class T, class VarType>

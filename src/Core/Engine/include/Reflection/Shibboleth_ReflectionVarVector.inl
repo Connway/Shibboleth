@@ -152,14 +152,26 @@ void VectorVar<T, ContainerType>::setElement(void* object, int32_t index, const 
 template <class T, class ContainerType>
 void VectorVar<T, ContainerType>::setElementMove(void* object, int32_t index, void* data)
 {
-	GAFF_ASSERT(index >= 0 && index < size(object));
+	if constexpr (VarTypeHelper<T, ContainerType>::k_can_move) {
+		GAFF_ASSERT(index >= 0 && index < size(object));
 
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
+		if (IReflectionVar::isReadOnly()) {
+			// $TODO: Log error.
+			return;
+		}
+
+		(*IVar<T>::template get<ContainerType>(object))[index] = std::move(*reinterpret_cast<VarType*>(data));
+
+	} else {
+		GAFF_REF(object, index, data);
+
+		GAFF_ASSERT_MSG(
+			false,
+			"VectorVar<T, ContainerType>::setElementMove() was called with ReflectionType of '%s'. Element name: '%s'.",
+			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName()),
+			reinterpret_cast<const char*>(_base_name.data())
+		);
 	}
-
-	(*IVar<T>::template get<ContainerType>(object))[index] = std::move(*reinterpret_cast<VarType*>(data));
 }
 
 template <class T, class ContainerType>

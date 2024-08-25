@@ -42,7 +42,9 @@ struct VarTypeHelper< T, Shibboleth::InstancedPtr<VarType> > final
 	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
 	using VariableType = VarType;
 	using Type = Shibboleth::VarInstancedPtr<T, VarType>;
+
 	static constexpr bool k_can_copy = false;
+	static constexpr bool k_can_move = false;
 };
 
 NS_END

@@ -56,6 +56,7 @@ struct VarTypeHelper< T, const IReflectionDefinition* > final
 {
 	using Type = VarReflectionDefinition<T>;
 	static constexpr bool k_can_copy = true;
+	static constexpr bool k_can_move = true;
 };
 
 NS_END

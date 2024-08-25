@@ -132,15 +132,30 @@ void* MapVar<T, ContainerType>::addMapEntry(void* object, const void* key, const
 template <class T, class ContainerType>
 void* MapVar<T, ContainerType>::addMapEntryMove(void* object, void* key, void* value)
 {
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
+	if constexpr (VarTypeHelper<T, ContainerType>::k_key_can_move && VarTypeHelper<T, ContainerType>::k_value_can_move) {
+		if (IReflectionVar::isReadOnly()) {
+			// $TODO: Log error.
+			return nullptr;
+		}
+
+		auto& entry = (*IVar<T>::template get<ContainerType>(object))[std::move(*reinterpret_cast<KeyVarType*>(key))];
+		entry = std::move(*reinterpret_cast<ValueVarType*>(value));
+
+		return &entry;
+
+	} else {
+		GAFF_REF(object, key);
+
+		GAFF_ASSERT_MSG(
+			false,
+			"MapVar<T, ContainerType>::addMapEntryMove() was called with [Key/Value]ReflectionType of '%s'. Element name: '%s'.",
+			reinterpret_cast<const char*>(Reflection<KeyReflectionType>::GetName()),
+			reinterpret_cast<const char*>(Reflection<ValueReflectionType>::GetName()),
+			reinterpret_cast<const char*>(_base_name.data())
+		);
+
 		return nullptr;
 	}
-
-	auto& entry = (*IVar<T>::template get<ContainerType>(object))[std::move(*reinterpret_cast<KeyVarType*>(key))];
-	entry = std::move(*reinterpret_cast<ValueVarType*>(value));
-
-	return &entry;
 }
 
 template <class T, class ContainerType>
@@ -172,12 +187,27 @@ void* MapVar<T, ContainerType>::addMapEntry(void* object, const void* key)
 template <class T, class ContainerType>
 void* MapVar<T, ContainerType>::addMapEntryMove(void* object, void* key)
 {
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
+	if constexpr (VarTypeHelper<T, ContainerType>::k_key_can_move) {
+		if (IReflectionVar::isReadOnly()) {
+			// $TODO: Log error.
+			return nullptr;
+		}
+
+		return &(*IVar<T>::template get<ContainerType>(object))[std::move(*reinterpret_cast<KeyVarType*>(key))];
+
+	} else {
+		GAFF_REF(object, key);
+
+		GAFF_ASSERT_MSG(
+			false,
+			"MapVar<T, ContainerType>::addMapEntryMove() was called with [Key/Value]ReflectionType of '%s'. Element name: '%s'.",
+			reinterpret_cast<const char*>(Reflection<KeyReflectionType>::GetName()),
+			reinterpret_cast<const char*>(Reflection<ValueReflectionType>::GetName()),
+			reinterpret_cast<const char*>(_base_name.data())
+		);
+
 		return nullptr;
 	}
-
-	return &(*IVar<T>::template get<ContainerType>(object))[std::move(*reinterpret_cast<KeyVarType*>(key))];
 }
 
 template <class T, class ContainerType>

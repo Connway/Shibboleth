@@ -55,7 +55,12 @@ struct VarTypeHelper< T, Gaff::Hash<HashStorage> > final
 {
 	static_assert(std::is_same_v<HashStorage, Gaff::Hash32Storage> || std::is_same_v<HashStorage, Gaff::Hash32Storage>, "Hash storage is not 32-bit or 64-bit.");
 
+	// using ReflectionType = Gaff::Hash<HashStorage>;
+	// using VariableType = Gaff::Hash<HashStorage>;
 	using Type = VarHash<T, HashStorage>;
+
+	static constexpr bool k_can_copy = true;
+	static constexpr bool k_can_move = true;
 };
 
 NS_END

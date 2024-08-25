@@ -89,6 +89,7 @@ struct VarTypeHelper< T, Gaff::Flags<Enum> > final
 {
 	using Type = VarFlags<T, Enum>;
 	static constexpr bool k_can_copy = true;
+	static constexpr bool k_can_move = true;
 };
 
 NS_END

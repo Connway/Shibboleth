@@ -290,13 +290,25 @@ void Var<T, VarType>::setData(void* object, const void* data)
 template <class T, class VarType>
 void Var<T, VarType>::setDataMove(void* object, void* data)
 {
-	if (IReflectionVar::isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
+	if constexpr (VarTypeHelper<T, VarType>::k_can_move) {
+		if (IReflectionVar::isReadOnly()) {
+			// $TODO: Log error.
+			return;
+		}
 
-	VarType* const var = IVar<T>::template get<VarType>(object);
-	*var = std::move(*reinterpret_cast<VarType*>(data));
+		VarType* const var = IVar<T>::template get<VarType>(object);
+		*var = std::move(*reinterpret_cast<VarType*>(data));
+
+	} else {
+		GAFF_REF(object, data);
+
+		GAFF_ASSERT_MSG(
+			false,
+			"Var<T, VarType>::setDataMove() was called with ReflectionType of '%s'.",
+			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName())
+		);
+
+	}
 }
 
 template <class T, class VarType>
