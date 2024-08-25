@@ -22,9 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_Entity.h"
+#include <Ptrs/Shibboleth_InstancedPtr.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_IResource.h>
-#include <Shibboleth_Entity.h>
 
 NS_SHIBBOLETH
 
@@ -37,7 +38,7 @@ public:
 	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
 private:
-	Entity _entity_definition;
+	InstancedPtr<Entity> _definition;
 
 	SHIB_REFLECTION_CLASS_DECLARE(EntityResource);
 };

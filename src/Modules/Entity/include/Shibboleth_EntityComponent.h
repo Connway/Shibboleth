@@ -42,7 +42,6 @@ public:
 	EntityComponent(void) = default;
 
 	virtual bool init(void);
-	virtual bool clone(EntityComponent*& new_component, const ISerializeReader* overrides);
 	virtual void destroy(void);
 
 	Entity* getOwner(void) const;
@@ -50,6 +49,9 @@ public:
 	const U8String& getName(void) const;
 	void setName(const U8String& name);
 	void setName(U8String&& name);
+
+protected:
+	virtual void cloneInternal(EntityComponent& new_component, const ISerializeReader* overrides) const;
 
 private:
 	EntityUpdater _updater;

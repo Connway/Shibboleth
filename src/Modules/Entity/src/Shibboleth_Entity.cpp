@@ -24,15 +24,12 @@ THE SOFTWARE.
 #include "Shibboleth_EntitySceneComponent.h"
 #include "Shibboleth_EntityManager.h"
 #include "Shibboleth_EntityDefines.h"
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityFlag)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityFlag)
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
 	.template ctor<Shibboleth::EntityManager&>()
 
-	.var("flags", &Shibboleth::Entity::_flags)
-	.var("name", &Shibboleth::Entity::_name)
+	.var("components", &Shibboleth::Entity::_components, Shibboleth::OptionalAttribute{})
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Entity)
 
 
@@ -55,7 +52,7 @@ bool Entity::init(void)
 	bool success = true;
 
 	for (auto& comp : _components) {
-		if (!comp->init()) {
+		if (!comp.init()) {
 			// $TODO: Log error.
 			success = false;
 		}
@@ -89,24 +86,15 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 		ref_var->setData(new_entity->getBasePointer(), orig_data);
 	}
 
-	bool success = true;
-
-	new_entity->_components.reserve(_components.size());
-
 	// Clone all components
 	for (auto& comp : _components) {
 		if (overrides) {
-			overrides->enterElement(comp->getName().data());
+			overrides->enterElement(comp.getName().data());
 		}
 
-		EntityComponent* component = nullptr;
+		EntityComponent& component = new_entity->_components.push(comp.getReflectionDefinition());
 
-		if (!comp->clone(component, (overrides && overrides->isObject()) ? overrides : nullptr)) {
-			// $TODO: Log error.
-			success = false;
-		}
-
-		new_entity->_components.emplace_back(component);
+		comp.cloneInternal(component, (overrides && overrides->isObject()) ? overrides : nullptr);
 
 		if (overrides) {
 			overrides->exitElement();
@@ -114,16 +102,15 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 	}
 
 	// Set up scene components.
-	for (int32_t i = 0; i < static_cast<int32_t>(_components.size()); ++i) {
-		auto& comp = _components[i];
-
+	for (int32_t i = 0; i < _components.size(); ++i) {
+		EntityComponent* const comp = _components[i];
 		EntitySceneComponent* const scene_comp = comp->getReflectionDefinition().getInterface<EntitySceneComponent>(comp->getBasePointer());
 
 		if (!scene_comp) {
 			continue;
 		}
 
-		EntitySceneComponent* const new_scene_comp = static_cast<EntitySceneComponent*>(new_entity->_components[i].get());
+		EntitySceneComponent* const new_scene_comp = static_cast<EntitySceneComponent*>(new_entity->_components[i]);
 
 		if (scene_comp->_parent) {
 			EntitySceneComponent* const new_parent = static_cast<EntitySceneComponent*>(new_entity->findComponent(scene_comp->_parent->getName()));
@@ -134,7 +121,7 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 			if (_root_scene_comp) {
 				// $TODO: Log error.
 			} else {
-				new_entity->_root_scene_comp = static_cast<EntitySceneComponent*>(new_entity->_components[i].get());
+				new_entity->_root_scene_comp = static_cast<EntitySceneComponent*>(new_entity->_components[i]);
 			}
 		}
 	}
@@ -143,7 +130,7 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 		new_entity->_root_scene_comp->updateToWorld();
 	}
 
-	return success;
+	return true;
 }
 
 void Entity::addToWorld(void)
@@ -169,30 +156,12 @@ EntityComponent* Entity::addComponent(const Refl::IReflectionDefinition& ref_def
 	GAFF_ASSERT(ref_def.hasInterface(CLASS_HASH(Shibboleth::EntityComponent)));
 	GAFF_ASSERT(ref_def.getFactory<>());
 
-	static ProxyAllocator s_allocator("Entity");
-	EntityComponent* const comp = ref_def.createT<EntityComponent>(CLASS_HASH(Shibboleth::EntityComponent), s_allocator);
+	EntityComponent& comp = _components.push(ref_def);
 
-	if (comp) {
-		addComponent(*comp);
-	} else {
-		// $TODO: Log error.
-	}
+	comp._owner = this;
+	comp.init();
 
-	return comp;
-}
-
-void Entity::addComponent(const Vector<EntityComponent*>& components)
-{
-	for (EntityComponent* comp : components) {
-		addComponent(*comp);
-	}
-}
-
-void Entity::addComponent(EntityComponent& component)
-{
-	_components.emplace_back(&component);
-	component._owner = this;
-	component.init();
+	return &comp;
 }
 
 int32_t Entity::removeComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs)
@@ -210,11 +179,11 @@ int32_t Entity::removeComponent(const Vector<const Refl::IReflectionDefinition*>
 
 bool Entity::removeComponent(const Refl::IReflectionDefinition& ref_def)
 {
-	for (auto& comp : _components) {
-		if (&comp->getReflectionDefinition() == &ref_def) {
-			const int32_t index = static_cast<int32_t>(eastl::distance(_components.begin(), &comp));
-			removeComponent(index);
+	for (int32_t i = 0; i < _components.size(); ++i) {
+		EntityComponent* const comp = _components[i];
 
+		if (&comp->getReflectionDefinition() == &ref_def) {
+			removeComponent(i);
 			return true;
 		}
 	}
@@ -224,9 +193,9 @@ bool Entity::removeComponent(const Refl::IReflectionDefinition& ref_def)
 
 void Entity::removeComponent(int32_t index)
 {
-	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_components.size())));
+	GAFF_ASSERT(Gaff::ValidIndex(index, _components.size()));
 	_components[index]->destroy();
-	_components.erase_unsorted(_components.begin() + index);
+	_components.erase(index);
 }
 
 int32_t Entity::removeComponents(const Vector<const Refl::IReflectionDefinition*>& ref_defs)
@@ -244,10 +213,10 @@ int32_t Entity::removeComponents(const Refl::IReflectionDefinition& ref_def)
 {
 	int32_t count = 0;
 
-	for (int32_t i = 0; i < static_cast<int32_t>(_components.size());) {
+	for (int32_t i = 0; i < _components.size();) {
 		if (&_components[i]->getReflectionDefinition() == &ref_def) {
 			_components[i]->destroy();
-			_components.erase_unsorted(_components.begin() + i);
+			_components.erase(i);
 			++count;
 
 		} else {
@@ -263,8 +232,8 @@ Vector<const EntityComponent*> Entity::getComponents(const Refl::IReflectionDefi
 	Vector<const EntityComponent*> comps;
 
 	for (const auto& comp : _components) {
-		if (&comp->getReflectionDefinition() == &ref_def) {
-			comps.emplace_back(comp.get());
+		if (&comp.getReflectionDefinition() == &ref_def) {
+			comps.emplace_back(&comp);
 		}
 	}
 
@@ -276,9 +245,9 @@ Vector<EntityComponent*> Entity::getComponents(const Refl::IReflectionDefinition
 {
 	Vector<EntityComponent*> comps;
 
-	for (const auto& comp : _components) {
-		if (&comp->getReflectionDefinition() == &ref_def) {
-			comps.emplace_back(comp.get());
+	for (auto& comp : _components) {
+		if (&comp.getReflectionDefinition() == &ref_def) {
+			comps.emplace_back(&comp);
 		}
 	}
 
@@ -293,9 +262,9 @@ const EntityComponent* Entity::getComponent(const Refl::IReflectionDefinition& r
 
 EntityComponent* Entity::getComponent(const Refl::IReflectionDefinition& ref_def)
 {
-	for (const auto& comp : _components) {
-		if (&comp->getReflectionDefinition() == &ref_def) {
-			return comp.get();
+	for (auto& comp : _components) {
+		if (&comp.getReflectionDefinition() == &ref_def) {
+			return &comp;
 		}
 	}
 
@@ -309,7 +278,7 @@ const EntityComponent& Entity::getComponent(int32_t index) const
 
 EntityComponent& Entity::getComponent(int32_t index)
 {
-	GAFF_ASSERT(Gaff::ValidIndex(index, static_cast<int32_t>(_components.size())));
+	GAFF_ASSERT(Gaff::ValidIndex(index, _components.size()));
 	return *_components[index];
 }
 
@@ -321,8 +290,8 @@ const EntityComponent* Entity::findComponent(const U8String& name) const
 EntityComponent* Entity::findComponent(const U8String& name)
 {
 	for (auto& comp : _components) {
-		if (comp->getName() == name) {
-			return comp.get();
+		if (comp.getName() == name) {
+			return &comp;
 		}
 	}
 
@@ -336,7 +305,7 @@ bool Entity::hasComponent(const Refl::IReflectionDefinition& ref_def) const
 
 int32_t Entity::getNumComponents(void) const
 {
-	return static_cast<int32_t>(_components.size());
+	return _components.size();
 }
 
 const EntitySceneComponent* Entity::getRootComponent(void) const

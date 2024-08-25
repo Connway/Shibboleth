@@ -39,7 +39,9 @@ struct VarTypeHelper< T, Shibboleth::DeferredResourcePtr<VarType> > final
 	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
 	using VariableType = VarType;
 	using Type = Shibboleth::VarDeferredResourcePtr<T, VarType>;
+
 	static constexpr bool k_can_copy = false;
+	static constexpr bool k_can_move = false;
 };
 
 NS_END

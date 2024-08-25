@@ -48,47 +48,6 @@ bool EntityComponent::init(void)
 	return true;
 }
 
-bool EntityComponent::clone(EntityComponent*& new_component, const ISerializeReader* overrides)
-{
-	const Refl::IReflectionDefinition& ref_def = getReflectionDefinition();
-
-	new_component = ref_def.template createT<EntityComponent>(s_allocator);
-
-	if (!new_component) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	// $TODO: Offer a path for calling a copy function instead.
-
-	// Copy all reflected variables.
-	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
-		Refl::IReflectionVar* const ref_var = ref_def.getVar(i);
-
-		if (ref_var->isNoCopy()) {
-			continue;
-		}
-
-		const void* const orig_data = ref_var->getData(getBasePointer());
-		ref_var->setData(new_component->getBasePointer(), orig_data);
-	}
-
-	if (overrides) {
-		bool success = true;
-
-		if (!ref_def.load(*overrides, getBasePointer())) {
-			// $TODO: Log error.
-			success = false;
-		}
-
-		if (!success) {
-			return false;
-		}
-	}
-
-	return new_component != nullptr;
-}
-
 void EntityComponent::destroy(void)
 {
 }
@@ -111,6 +70,32 @@ void EntityComponent::setName(const U8String& name)
 void EntityComponent::setName(U8String&& name)
 {
 	_name = std::move(name);
+}
+
+void EntityComponent::cloneInternal(EntityComponent& new_component, const ISerializeReader* overrides) const
+{
+	const Refl::IReflectionDefinition& ref_def = getReflectionDefinition();
+	GAFF_ASSERT(&new_component.getReflectionDefinition() == &ref_def);
+
+	// $TODO: Offer a path for calling a copy function instead.
+
+	// Copy all reflected variables.
+	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
+		Refl::IReflectionVar* const ref_var = ref_def.getVar(i);
+
+		if (ref_var->isNoCopy()) {
+			continue;
+		}
+
+		const void* const orig_data = ref_var->getData(getBasePointer());
+		ref_var->setData(new_component.getBasePointer(), orig_data);
+	}
+
+	if (overrides) {
+		if (!ref_def.load(*overrides, new_component.getBasePointer())) {
+			// $TODO: Log error.
+		}
+	}
 }
 
 NS_END

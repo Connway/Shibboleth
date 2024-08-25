@@ -23,19 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_EntityComponent.h"
-//#include <Gaff_IncludeEASTLAtomic.h>
-//#include <Gaff_RefPtr.h>
-//#include <Gaff_Hash.h>
+#include "Shibboleth_EntityDefines.h"
+#include <Containers/Shibboleth_InstancedArray.h>
 
 NS_SHIBBOLETH
 
 class EntitySceneComponent;
 class EntityManager;
-
-enum class EntityFlag
-{
-	Count
-};
 
 class Entity : public Refl::IReflectionObject
 {
@@ -118,8 +112,6 @@ public:
 
 	void addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
 	EntityComponent* addComponent(const Refl::IReflectionDefinition& ref_def);
-	void addComponent(const Vector<EntityComponent*>& components);
-	void addComponent(EntityComponent& component);
 
 	int32_t removeComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
 	bool removeComponent(const Refl::IReflectionDefinition& ref_def);
@@ -160,13 +152,18 @@ protected:
 	EntityManager& _entity_mgr;
 
 private:
+	// enum class Flag
+	// {
+	// 	Count
+	// };
+
 	// Make this a hash map instead to speed up findComponent()?
-	Vector< UniquePtr<EntityComponent> > _components;
+	InstancedArray<EntityComponent> _components{ ENTITY_ALLOCATOR };
 	EntitySceneComponent* _root_scene_comp = nullptr;
 
 	U8String _name;
 
-	Gaff::Flags<EntityFlag> _flags;
+	// Gaff::Flags<Flag> _flags;
 
 	friend class EntityComponent;
 	friend class EntityManager;
@@ -179,5 +176,4 @@ private:
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::EntityFlag)
 SHIB_REFLECTION_DECLARE(Shibboleth::Entity)
