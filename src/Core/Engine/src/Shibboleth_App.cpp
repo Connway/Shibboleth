@@ -327,8 +327,8 @@ bool App::initInternal(void)
 	_reflection_mgr.registerTypeBucket<Refl::IAttribute>();
 
 	// Init engine reflection.
-	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(InitMode::Count); ++mode_count) {
-		Gen::Engine::InitReflection(static_cast<InitMode>(mode_count));
+	for (int32_t mode_count = 0; mode_count < static_cast<int32_t>(Gen::InitMode::Count); ++mode_count) {
+		Gen::Engine::InitReflection(static_cast<Gen::InitMode>(mode_count));
 	}
 
 	// Initialize engine configs.

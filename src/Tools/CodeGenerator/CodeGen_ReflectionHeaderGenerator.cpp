@@ -38,7 +38,7 @@ static constexpr const char/*8_t*/* const k_gen_header =
 #ifdef SHIB_STATIC
 {}
 
-namespace
+namespace Gen
 {{
 	enum class InitMode : int8_t
 	{{
@@ -63,27 +63,27 @@ namespace Gen::{}
 	}}
 
 	template <class T>
-	void InitReflectionT(InitMode mode)
+	void InitReflectionT(Gen::InitMode mode)
 	{{
 		if constexpr (std::is_enum<T>::value) {{
-			if (mode == InitMode::Enums) {{
+			if (mode == Gen::InitMode::Enums) {{
 				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}}
 		}} else if constexpr (std::is_base_of<Refl::IAttribute, T>::value) {{
-			if (mode == InitMode::Attributes) {{
+			if (mode == Gen::InitMode::Attributes) {{
 				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}}
 		}} else {{
-			if (mode == InitMode::Classes) {{
+			if (mode == Gen::InitMode::Classes) {{
 				Refl::Reflection<T>::Init();
 				RegisterOwningModule<T>();
 			}}
 		}}
 	}}
 
-	static void InitReflection(InitMode mode)
+	void InitReflection(Gen::InitMode mode)
 	{{
 {}
 	}}

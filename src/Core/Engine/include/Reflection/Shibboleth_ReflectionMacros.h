@@ -31,6 +31,20 @@ THE SOFTWARE.
 
 #define SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(type) friend class Refl::Reflection<type>
 
+#define SHIB_REFLECTION_ALLOW_NESTED_PRIVATE_ACCESS_DECLARE(module_name) \
+	namespace Gen \
+	{ \
+		enum class InitMode : int8_t; \
+	} \
+	namespace Gen::module_name \
+	{ \
+		void InitReflection(Gen::InitMode mode); \
+	}
+
+#define SHIB_REFLECTION_ALLOW_NESTED_PRIVATE_ACCESS(type, module_name) \
+	SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(type); \
+	friend void Gen::module_name::InitReflection(Gen::InitMode mode)
+
 #define SHIB_REFLECTION_CLASS_DECLARE(type) \
 	public: \
 		const Refl::IReflectionDefinition& getReflectionDefinition(void) const override; \

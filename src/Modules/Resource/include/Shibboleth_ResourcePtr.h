@@ -161,7 +161,7 @@ Shibboleth::ResourcePtr<Derived> ReflectionCast(Shibboleth::ResourcePtr<Base>&& 
 			resource.release();
 		}
 
-		return Shibboleth::ResourcePtr<Derived>(derived, Shibboleth::ResourcePtr<Derived>::NoCountChange());
+		return Shibboleth::ResourcePtr<Derived>(derived, typename Shibboleth::ResourcePtr<Derived>::NoCountChange());
 	}
 }
 

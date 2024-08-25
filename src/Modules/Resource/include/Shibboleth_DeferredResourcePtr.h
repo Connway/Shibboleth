@@ -215,7 +215,7 @@ Shibboleth::DeferredResourcePtr<Derived> ReflectionCast(Shibboleth::DeferredReso
 				resource.release();
 			}
 
-			return Shibboleth::DeferredResourcePtr<Derived>(derived, Shibboleth::DeferredResourcePtr<Derived>::NoCountChange());
+			return Shibboleth::DeferredResourcePtr<Derived>(derived, typename Shibboleth::DeferredResourcePtr<Derived>::NoCountChange());
 
 		} else {
 			if (resource.getReflectionDefinition()->template hasInterface<Derived>()) {

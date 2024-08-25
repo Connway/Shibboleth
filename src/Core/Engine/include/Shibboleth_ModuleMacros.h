@@ -36,15 +36,15 @@ THE SOFTWARE.
 			}; \
 			void Module::initReflectionEnums(void) \
 			{ \
-				Gen::ModuleName::InitReflection(InitMode::Enums); \
+				Gen::ModuleName::InitReflection(Gen::InitMode::Enums); \
 			} \
 			void Module::initReflectionAttributes(void) \
 			{ \
-				Gen::ModuleName::InitReflection(InitMode::Attributes); \
+				Gen::ModuleName::InitReflection(Gen::InitMode::Attributes); \
 			} \
 			void Module::initReflectionClasses(void) \
 			{ \
-				Gen::ModuleName::InitReflection(InitMode::Classes); \
+				Gen::ModuleName::InitReflection(Gen::InitMode::Classes); \
 			} \
 		NS_END
 
