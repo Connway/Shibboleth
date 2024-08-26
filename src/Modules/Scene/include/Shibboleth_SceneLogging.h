@@ -20,45 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_SceneManager.h"
-#include "Shibboleth_SceneLogging.h"
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneManager)
-	.template base<Shibboleth::IManager>()
-	.template ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneManager)
-
+#include <Log/Shibboleth_LogManager.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(SceneManager)
+static constexpr const char8_t* const k_log_channel_name_scene = u8"Scene";
+static constexpr Gaff::Hash32 k_log_channel_scene = Gaff::FNV1aHash32StringConst(k_log_channel_name_scene);
 
-SceneManager::~SceneManager(void)
-{
-	//_curr_scene = nullptr;
-}
+#define LogWarningScene(msg, ...) LogWarning(Shibboleth::k_log_channel_scene, msg, ##__VA_ARGS__)
+#define LogErrorScene(msg, ...) LogError(Shibboleth::k_log_channel_scene, msg, ##__VA_ARGS__)
+#define LogInfoScene(msg, ...) LogInfo(Shibboleth::k_log_channel_scene, msg, ##__VA_ARGS__)
 
-bool SceneManager::initAllModulesLoaded(void)
-{
-	//const Gaff::JSON starting_scene = GetApp().getConfigs().getObject(u8"scene_starting_scene");
-
-	//if (!starting_scene.isNull() && !starting_scene.isString()) {
-	//	LogErrorDefault("No starting scene has been set (or is malformed).");
-	//	return false;
-
-	//} else if (starting_scene.isString()) {
-	//	const char8_t* const scene = starting_scene.getString();
-	//	_curr_scene = GetApp().getManagerTFast<ResourceManager>().requestResourceT<ECSSceneResource>(HashStringView64<>(scene, eastl::CharStrlen(scene)));
-	//}
-
-	return true;
-}
-
-bool SceneManager::init(void)
-{
-	GetApp().getLogManager().addChannel(HashStringView32<>{ k_log_channel_name_scene });
-
-	return true;
-}
+#define LogInfoStringScene(msg, ...) Shibboleth::GetApp().getLogManager().logMessage(Shibboleth::LogType::Info, Shibboleth::k_log_channel_scene, msg);
 
 NS_END

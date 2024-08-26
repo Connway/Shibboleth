@@ -20,45 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_SceneManager.h"
-#include "Shibboleth_SceneLogging.h"
+#pragma once
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneManager)
-	.template base<Shibboleth::IManager>()
-	.template ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneManager)
+#include <Shibboleth_ProxyAllocator.h>
 
-
-NS_SHIBBOLETH
-
-SHIB_REFLECTION_CLASS_DEFINE(SceneManager)
-
-SceneManager::~SceneManager(void)
-{
-	//_curr_scene = nullptr;
-}
-
-bool SceneManager::initAllModulesLoaded(void)
-{
-	//const Gaff::JSON starting_scene = GetApp().getConfigs().getObject(u8"scene_starting_scene");
-
-	//if (!starting_scene.isNull() && !starting_scene.isString()) {
-	//	LogErrorDefault("No starting scene has been set (or is malformed).");
-	//	return false;
-
-	//} else if (starting_scene.isString()) {
-	//	const char8_t* const scene = starting_scene.getString();
-	//	_curr_scene = GetApp().getManagerTFast<ResourceManager>().requestResourceT<ECSSceneResource>(HashStringView64<>(scene, eastl::CharStrlen(scene)));
-	//}
-
-	return true;
-}
-
-bool SceneManager::init(void)
-{
-	GetApp().getLogManager().addChannel(HashStringView32<>{ k_log_channel_name_scene });
-
-	return true;
-}
-
-NS_END
+#define SCENE_ALLOCATOR_POOL_NAME "Scene"
+#define SCENE_ALLOCATOR Shibboleth::ProxyAllocator{ SCENE_ALLOCATOR_POOL_NAME }

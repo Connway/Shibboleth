@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_SceneDefines.h"
 #include <Shibboleth_EntityResource.h>
 #include <Shibboleth_ResourcePtr.h>
 
@@ -35,8 +36,16 @@ private:
 	static bool Load(const ISerializeReader& reader, LayerEntityData& instance);
 	static void Save(ISerializeWriter& writer, const LayerEntityData& instance);
 
-	ResourcePtr<EntityResource> _entity_resource;
 	// Modifier operations
+	// VectorMap< HashString64<>, InstancedArray<EntityComponent> > _add_components{ SCENE_ALLOCATOR };
+	// Vector< HashString64<> > _remove_components{ SCENE_ALLOCATOR };
+
+	// $TODO: Overrides.
+
+	ResourcePtr<EntityResource> _entity;
+	HashString64<> _name;
+
+	UniquePtr<Entity> _modified_entity_template;
 
 	SHIB_REFLECTION_CLASS_DECLARE(LayerEntityData);
 };
@@ -44,28 +53,13 @@ private:
 class LayerResource final : public IResource
 {
 public:
-	static constexpr bool Creatable = true;
-
 	LayerResource(void);
 	~LayerResource(void) override;
 
 	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
 private:
-	Vector< ResourcePtr<EntityResource> > _entity_resources;
-	Vector<Entity*> _entities;
-	//ResourceCallbackID _callback_id;
-
-	//bool loadOverrides(
-	//	const ISerializeReader& reader,
-	//	ECSManager& ecs_mgr,
-	//	const ECSArchetype& base_archetype,
-	//	Gaff::Hash32 layer_name,
-	//	Gaff::Hash32 scene_name,
-	//	Gaff::Hash64& outArchetype
-	//);
-
-	//void archetypeLoaded(const Vector<IResource*>&);
+	Vector< ResourcePtr<EntityResource> > _entities;
 
 	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
 };

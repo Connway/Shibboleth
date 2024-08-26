@@ -25,46 +25,27 @@ THE SOFTWARE.
 #include "Shibboleth_LayerResource.h"
 #include <Shibboleth_DeferredResourcePtr.h>
 
-SHIB_REFLECTION_ALLOW_NESTED_PRIVATE_ACCESS_DECLARE(Scene)
-
 NS_SHIBBOLETH
-
-class LayerResource;
 
 class SceneResource final : public IResource
 {
 public:
-	SceneResource(void);
-	~SceneResource(void) override;
+	const LayerResource* getDeferredLayer(const HashStringView64<>& name) const;
+	LayerResource* getDeferredLayer(const HashStringView64<>& name);
 
-	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
-	void save(ISerializeWriter& writer);
+	const LayerResource* getLayer(const HashStringView64<>& name) const;
+	LayerResource* getLayer(const HashStringView64<>& name);
+
+	void unloadLayer(const HashStringView64<>& name);
+	void loadLayer(const HashStringView64<>& name);
 
 private:
-	struct DeferredLayerData final
-	{
-		DeferredResourcePtr<LayerResource> layer;
-		HashString64<> name;
-	};
+	VectorMap< HashString64<>, DeferredResourcePtr<LayerResource> > _deferred_layers{ SCENE_ALLOCATOR };
+	VectorMap< HashString64<>, ResourcePtr<LayerResource> > _layers{ SCENE_ALLOCATOR };
 
-	struct LayerData final
-	{
-		ResourcePtr<LayerResource> layer;
-		HashString64<> name;
-	};
-
-	Vector<DeferredLayerData> _deferred_layers;
-	Vector<LayerData> _layers;
-
-	void layerLoaded(const Vector<IResource*>&);
-
-	SHIB_REFLECTION_ALLOW_NESTED_PRIVATE_ACCESS(SceneResource::DeferredLayerData, Scene);
-	SHIB_REFLECTION_ALLOW_NESTED_PRIVATE_ACCESS(SceneResource::LayerData, Scene);
 	SHIB_REFLECTION_CLASS_DECLARE(SceneResource);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::SceneResource::DeferredLayerData)
-SHIB_REFLECTION_DECLARE(Shibboleth::SceneResource::LayerData)
 SHIB_REFLECTION_DECLARE(Shibboleth::SceneResource)

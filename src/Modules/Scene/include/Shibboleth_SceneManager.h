@@ -22,12 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-//#include "Shibboleth_ECSSceneResource.h"
-//#include "Shibboleth_ECSArchetype.h"
-//#include "Shibboleth_ECSEntity.h"
-//#include "Shibboleth_ECSQuery.h"
 #include <Shibboleth_IManager.h>
-//#include <eathread/eathread_mutex.h>
 
 NS_SHIBBOLETH
 
@@ -37,6 +32,7 @@ public:
 	~SceneManager(void);
 
 	bool initAllModulesLoaded(void) override;
+	bool init(void) override;
 
 private:
 

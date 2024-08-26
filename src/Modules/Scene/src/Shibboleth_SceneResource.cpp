@@ -21,21 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_SceneResource.h"
+#include "Shibboleth_SceneLogging.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
-// #include <Shibboleth_ResourceManager.h>
-// #include <Shibboleth_ResourceLogging.h>
-// #include <Shibboleth_Utilities.h>
-// #include <Gaff_Function.h>
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneResource::DeferredLayerData)
-	.var("layer", &Shibboleth::SceneResource::DeferredLayerData::layer)
-	.var("name", &Shibboleth::SceneResource::DeferredLayerData::name)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneResource::DeferredLayerData)
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneResource::LayerData)
-	.var("layer", &Shibboleth::SceneResource::LayerData::layer)
-	.var("name", &Shibboleth::SceneResource::LayerData::name)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneResource::LayerData)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneResource)
 	.classAttrs(
@@ -45,28 +32,77 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneResource)
 
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
+
+	.var("deferred_layers", &Shibboleth::SceneResource::_deferred_layers)
+	.var("layers", &Shibboleth::SceneResource::_layers)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneResource)
+
+namespace
+{
+	static constexpr auto k_comparison = [](const auto& rhs, const auto& lhs) -> bool { return lhs < rhs; };
+}
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(SceneResource)
 
-SceneResource::SceneResource(void)
+const LayerResource* SceneResource::getDeferredLayer(const HashStringView64<>& name) const
 {
+	return const_cast<SceneResource*>(this)->getDeferredLayer(name);
 }
 
-SceneResource::~SceneResource(void)
+LayerResource* SceneResource::getDeferredLayer(const HashStringView64<>& name)
 {
+	const auto it = _deferred_layers.find_as(name, k_comparison);
+	return (it != _deferred_layers.end()) ? it->second.get() : nullptr;
 }
 
-void SceneResource::load(const ISerializeReader& /*reader*/, uintptr_t /*thread_id_int*/)
+const LayerResource* SceneResource::getLayer(const HashStringView64<>& name) const
 {
-
+	return const_cast<SceneResource*>(this)->getLayer(name);
 }
 
-void SceneResource::save(ISerializeWriter& /*writer*/)
+LayerResource* SceneResource::getLayer(const HashStringView64<>& name)
 {
+	const auto it = _layers.find_as(name, k_comparison);
 
+	if (it != _layers.end()) {
+		return it->second.get();
+	}
+
+	return getDeferredLayer(name);
+}
+
+void SceneResource::unloadLayer(const HashStringView64<>& name)
+{
+	const auto it = _deferred_layers.find_as(name, k_comparison);
+
+	if (it == _deferred_layers.end()) {
+		return;
+	}
+
+	if (!it->second.get()) {
+		LogWarningScene("SceneResource::unloadLayer: Layer '%s' is already unloaded.", it->second.getFilePath().getBuffer());
+		return;
+	}
+
+	it->second.release();
+}
+
+void SceneResource::loadLayer(const HashStringView64<>& name)
+{
+	const auto it = _deferred_layers.find_as(name, k_comparison);
+
+	if (it == _deferred_layers.end()) {
+		return;
+	}
+
+	if (it->second.get()) {
+		LogWarningScene("SceneResource::loadLayer: Layer '%s' is already loaded.", it->second.getFilePath().getBuffer());
+		return;
+	}
+
+	it->second.requestLoad();
 }
 
 NS_END
