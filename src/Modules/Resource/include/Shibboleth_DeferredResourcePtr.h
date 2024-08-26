@@ -190,6 +190,11 @@ public:
 		_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
 	}
 
+	void release(void)
+	{
+		_resource = nullptr;
+	}
+
 private:
 	const Refl::IReflectionDefinition* _ref_def = &Refl::Reflection<T>::GetReflectionDefinition();
 	HashString64<> _file_path;

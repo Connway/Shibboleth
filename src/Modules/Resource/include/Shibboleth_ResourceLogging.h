@@ -30,6 +30,7 @@ NS_SHIBBOLETH
 
 static constexpr const char8_t* const k_log_channel_name_resource = u8"Resource";
 static constexpr Gaff::Hash32 k_log_channel_resource = Gaff::FNV1aHash32StringConst(k_log_channel_name_resource);
+
 #define LogWarningResource(msg, ...) LogWarning(Shibboleth::k_log_channel_resource, msg, ##__VA_ARGS__)
 #define LogErrorResource(msg, ...) LogError(Shibboleth::k_log_channel_resource, msg, ##__VA_ARGS__)
 #define LogInfoResource(msg, ...) LogInfo(Shibboleth::k_log_channel_resource, msg, ##__VA_ARGS__)
