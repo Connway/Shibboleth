@@ -83,7 +83,7 @@ bool RenderManager::init(void)
 	IApp& app = GetApp();
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_graphics));
 
-	const GraphicsConfig config = GetConfigRef<GraphicsConfig>();
+	const GraphicsConfig& config = GetConfigRef<GraphicsConfig>();
 
 	const_cast<GraphicsConfig&>(config).texture_filtering_sampler.requestLoad();
 

@@ -20,33 +20,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_SceneConfig.h"
 
-#include "Shibboleth_SceneDefines.h"
-#include <Shibboleth_EntityResource.h>
-#include <Shibboleth_ResourcePtr.h>
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneConfig)
+	.classAttrs(
+		Shibboleth::GlobalConfigAttribute()
+	)
+
+	.var("starting_scene", &Shibboleth::SceneConfig::starting_scene)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneConfig)
+
 
 NS_SHIBBOLETH
 
-struct LayerEntityData final
-{
-	static bool Load(const ISerializeReader& reader, LayerEntityData& instance);
-	static void Save(ISerializeWriter& writer, const LayerEntityData& instance);
-
-	InstancedPtr<Entity> entity_definition{ ENTITY_ALLOCATOR };
-	ResourcePtr<EntityResource> entity_base;
-	HashString64<> name;
-};
-
-class LayerResource final : public IResource
-{
-private:
-	Vector<LayerEntityData> _entities{ ENTITY_ALLOCATOR };
-
-	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
-};
+SHIB_REFLECTION_CLASS_DEFINE(SceneConfig)
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::LayerEntityData)
-SHIB_REFLECTION_DECLARE(Shibboleth::LayerResource)

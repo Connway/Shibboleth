@@ -29,8 +29,6 @@ NS_SHIBBOLETH
 class SceneManager final : public IManager
 {
 public:
-	~SceneManager(void);
-
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 

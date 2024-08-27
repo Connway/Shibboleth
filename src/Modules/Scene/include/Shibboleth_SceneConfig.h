@@ -22,31 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_SceneDefines.h"
-#include <Shibboleth_EntityResource.h>
-#include <Shibboleth_ResourcePtr.h>
+#include "Shibboleth_SceneResource.h"
+#include <Shibboleth_DeferredResourcePtr.h>
+#include <Config/Shibboleth_Config.h>
 
 NS_SHIBBOLETH
 
-struct LayerEntityData final
+class SceneConfig final : public Refl::IReflectionObject
 {
-	static bool Load(const ISerializeReader& reader, LayerEntityData& instance);
-	static void Save(ISerializeWriter& writer, const LayerEntityData& instance);
+public:
+	DeferredResourcePtr<SceneResource> starting_scene;
 
-	InstancedPtr<Entity> entity_definition{ ENTITY_ALLOCATOR };
-	ResourcePtr<EntityResource> entity_base;
-	HashString64<> name;
-};
-
-class LayerResource final : public IResource
-{
-private:
-	Vector<LayerEntityData> _entities{ ENTITY_ALLOCATOR };
-
-	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
+	SHIB_REFLECTION_CLASS_DECLARE(SceneConfig);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::LayerEntityData)
-SHIB_REFLECTION_DECLARE(Shibboleth::LayerResource)
+SHIB_REFLECTION_DECLARE(Shibboleth::SceneConfig)
