@@ -367,21 +367,21 @@ const char8_t* ReflectionDefinition<T>::getFriendlyName(void) const
 }
 
 template <class T>
-bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, void* object, bool refl_load) const
+bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, void* object, Gaff::Flags<LoadFlags> flags) const
 {
-	return load(reader, *reinterpret_cast<T*>(object), refl_load);
+	return load(reader, *reinterpret_cast<T*>(object), flags);
 }
 
 template <class T>
-void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const void* object, bool refl_save) const
+void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const void* object, Gaff::Flags<SaveFlags> flags) const
 {
-	save(writer, *reinterpret_cast<const T*>(object), refl_save);
+	save(writer, *reinterpret_cast<const T*>(object), flags);
 }
 
 template <class T>
-bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, T& object, bool refl_load) const
+bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags<LoadFlags> flags) const
 {
-	if (_serialize_load && !refl_load) {
+	if (_serialize_load && !flags.testAny(LoadFlags::ReflectionLoad)) {
 		return _serialize_load(reader, object);
 
 	} else {
@@ -410,9 +410,9 @@ bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, T
 }
 
 template <class T>
-void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const T& object, bool refl_save) const
+void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const T& object, Gaff::Flags<SaveFlags> flags) const
 {
-	if (_serialize_save && !refl_save) {
+	if (_serialize_save && !flags.testAny(SaveFlags::ReflectionSave)) {
 		_serialize_save(writer, object);
 
 	} else {

@@ -108,15 +108,15 @@ void ReflectionBase<T>::registerOnDefinedCallback(eastl::function<void(void)>&& 
 }
 
 template <class T>
-bool ReflectionBase<T>::load(const Shibboleth::ISerializeReader& reader, T& object, bool refl_load)
+bool ReflectionBase<T>::load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags<Refl::IReflectionDefinition::LoadFlags> flags)
 {
-	return _ref_def->load(reader, object, refl_load);
+	return _ref_def->load(reader, object, flags);
 }
 
 template <class T>
-void ReflectionBase<T>::save(Shibboleth::ISerializeWriter& writer, const T& object, bool refl_save)
+void ReflectionBase<T>::save(Shibboleth::ISerializeWriter& writer, const T& object, Gaff::Flags<Refl::IReflectionDefinition::SaveFlags> flags)
 {
-	_ref_def->save(writer, object, refl_save);
+	_ref_def->save(writer, object, flags);
 }
 
 NS_END

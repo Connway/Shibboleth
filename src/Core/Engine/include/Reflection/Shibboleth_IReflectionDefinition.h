@@ -47,6 +47,21 @@ class IAttribute;
 class IReflectionDefinition
 {
 public:
+	enum class LoadFlags
+	{
+		ReflectionLoad,	// Forcing loading via reflection vars, bypassing overridden serialization functions.
+		SparseData,		// All reflection variables will be considered optional.
+
+		Count
+	};
+
+	enum class SaveFlags
+	{
+		ReflectionSave,	// Forcing saving via reflection vars, bypassing overridden serialization functions.
+
+		Count
+	};
+
 	template <class T, class... Args>
 	using ConstructFuncT = void (*)(T*, Args&&...);
 
@@ -622,8 +637,8 @@ public:
 
 	virtual const char8_t* getFriendlyName(void) const = 0;
 
-	virtual bool load(const Shibboleth::ISerializeReader& reader, void* object, bool refl_load = false) const = 0;
-	virtual void save(Shibboleth::ISerializeWriter& writer, const void* object, bool refl_save = false) const = 0;
+	virtual bool load(const Shibboleth::ISerializeReader& reader, void* object, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const = 0;
+	virtual void save(Shibboleth::ISerializeWriter& writer, const void* object, Gaff::Flags<SaveFlags> flags = Gaff::Flags<SaveFlags>{}) const = 0;
 
 	virtual Gaff::Hash64 getInstanceHash(const void* object, Gaff::Hash64 init = Gaff::k_init_hash64) const = 0;
 

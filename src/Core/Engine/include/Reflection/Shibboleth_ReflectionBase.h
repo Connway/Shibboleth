@@ -86,8 +86,8 @@ public:
 	void registerOnDefinedCallback(const eastl::function<void (void)>& callback);
 	void registerOnDefinedCallback(eastl::function<void (void)>&& callback);
 
-	bool load(const Shibboleth::ISerializeReader& reader, T& object, bool refl_load = false);
-	void save(Shibboleth::ISerializeWriter& writer, const T& object, bool refl_save = false);
+	bool load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags<Refl::IReflectionDefinition::LoadFlags> flags = Gaff::Flags<Refl::IReflectionDefinition::LoadFlags>{});
+	void save(Shibboleth::ISerializeWriter& writer, const T& object, Gaff::Flags<Refl::IReflectionDefinition::SaveFlags> flags = Gaff::Flags<Refl::IReflectionDefinition::SaveFlags>{});
 
 protected:
 	Shibboleth::Vector< eastl::function<void (void)> > _on_defined_callbacks{ Shibboleth::ProxyAllocator("Reflection") };

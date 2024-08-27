@@ -75,10 +75,10 @@ public:
 
 	const char8_t* getFriendlyName(void) const override;
 
-	bool load(const Shibboleth::ISerializeReader& reader, void* object, bool refl_load = false) const override;
-	void save(Shibboleth::ISerializeWriter& writer, const void* object, bool refl_save = false) const override;
-	bool load(const Shibboleth::ISerializeReader& reader, T& object, bool refl_load = false) const;
-	void save(Shibboleth::ISerializeWriter& writer, const T& object, bool refl_save = false) const;
+	bool load(const Shibboleth::ISerializeReader& reader, void* object, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const override;
+	void save(Shibboleth::ISerializeWriter& writer, const void* object, Gaff::Flags<SaveFlags> flags = Gaff::Flags<SaveFlags>{}) const override;
+	bool load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const;
+	void save(Shibboleth::ISerializeWriter& writer, const T& object, Gaff::Flags<SaveFlags> flags = Gaff::Flags<SaveFlags>{}) const;
 
 	Gaff::Hash64 getInstanceHash(const void* object, Gaff::Hash64 init = Gaff::k_init_hash64) const override;
 	Gaff::Hash64 getInstanceHash(const T& object, Gaff::Hash64 init = Gaff::k_init_hash64) const;
@@ -659,18 +659,18 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		bool isPolymorphic(void) const override { return std::is_polymorphic<class_type>::value; } \
 		bool isBuiltIn(void) const override { return true; } \
 		const char8_t* getFriendlyName(void) const override { return GAFF_STR_U8(class_type); } \
-		bool load(const Shibboleth::ISerializeReader& reader, void* object, bool refl_load = false) const override { return load(reader, *reinterpret_cast<class_type*>(object), refl_load); } \
-		void save(Shibboleth::ISerializeWriter& writer, const void* object, bool refl_save = false) const override { save(writer, *reinterpret_cast<const class_type*>(object), refl_save); } \
-		bool load(const Shibboleth::ISerializeReader& reader, class_type& out, bool refl_load = false) const \
+		bool load(const Shibboleth::ISerializeReader& reader, void* object, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const override { return load(reader, *reinterpret_cast<class_type*>(object), flags); } \
+		void save(Shibboleth::ISerializeWriter& writer, const void* object, Gaff::Flags<SaveFlags> flags = Gaff::Flags<SaveFlags>{}) const override { save(writer, *reinterpret_cast<const class_type*>(object), flags); } \
+		bool load(const Shibboleth::ISerializeReader& reader, class_type& out, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const \
 		{ \
-			GAFF_REF(refl_load); \
+			GAFF_REF(flags); \
 			if (!reader.is##serialize_type()) { \
 				return false; \
 			} \
 			out = reader.read##serialize_type(); \
 			return true; \
 		} \
-		void save(Shibboleth::ISerializeWriter& writer, const class_type& value, bool refl_save = false) const { GAFF_REF(refl_save); writer.write##serialize_type(value); } \
+		void save(Shibboleth::ISerializeWriter& writer, const class_type& value, Gaff::Flags<SaveFlags> flags = Gaff::Flags<SaveFlags>{}) const { GAFF_REF(flags); writer.write##serialize_type(value); } \
 		Gaff::Hash64 getInstanceHash(const void* object, Gaff::Hash64 init = Gaff::k_init_hash64) const override { return Gaff::FNV1aHash64(reinterpret_cast<const char*>(object), sizeof(class_type), init); } \
 		const void* getInterface(Gaff::Hash64, const void*) const override { return nullptr; } \
 		void* getInterface(Gaff::Hash64, void*) const override { return nullptr; } \
