@@ -149,6 +149,12 @@ Flags<Enum>::Flags(const Flags<Enum>& rhs):
 }
 
 template <class Enum>
+Flags<Enum>::Flags(void):
+	Flags(0)
+{
+}
+
+template <class Enum>
 bool Flags<Enum>::testAll(StorageType flags) const
 {
 	BitsetType temp;

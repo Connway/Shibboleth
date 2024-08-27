@@ -112,9 +112,10 @@ public:
 	template <class... Enum2>
 	Flags(Enum flag, Enum2... rest);
 
-	Flags(BitsetType flags);
-	Flags(StorageType flags = 0);
+	explicit Flags(BitsetType flags);
+	explicit Flags(StorageType flags);
 	Flags(const Flags& rhs);
+	Flags(void);
 
 	bool testAll(StorageType flags) const;
 	bool testAny(StorageType flags) const;
