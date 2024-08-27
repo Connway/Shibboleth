@@ -36,16 +36,10 @@ private:
 	static bool Load(const ISerializeReader& reader, LayerEntityData& instance);
 	static void Save(ISerializeWriter& writer, const LayerEntityData& instance);
 
-	// Modifier operations
-	// VectorMap< HashString64<>, InstancedArray<EntityComponent> > _add_components{ SCENE_ALLOCATOR };
-	// Vector< HashString64<> > _remove_components{ SCENE_ALLOCATOR };
-
-	// $TODO: Overrides.
-
-	ResourcePtr<EntityResource> _entity;
+	ResourcePtr<EntityResource> _entity_base;
 	HashString64<> _name;
 
-	UniquePtr<Entity> _modified_entity_template;
+	InstancedPtr<Entity> _modified_entity_definition;
 
 	SHIB_REFLECTION_CLASS_DECLARE(LayerEntityData);
 };

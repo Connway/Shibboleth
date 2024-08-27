@@ -27,8 +27,10 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerEntityData)
-	// .serialize(&Shibboleth::LayerEntityData::Load, &Shibboleth::LayerEntityData::Save)
-	// .var("Entity Resource", &Shibboleth::LayerEntityData::_entity_resource)
+	.serialize(&Shibboleth::LayerEntityData::Load, &Shibboleth::LayerEntityData::Save)
+
+	.var("entity_base", &Shibboleth::LayerEntityData::_entity_base)
+	.var("name", &Shibboleth::LayerEntityData::_name)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::LayerEntityData)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerResource)
@@ -49,7 +51,25 @@ SHIB_REFLECTION_CLASS_DEFINE(LayerResource)
 
 bool LayerEntityData::Load(const ISerializeReader& reader, LayerEntityData& instance)
 {
-	GAFF_REF(reader, instance);
+	const auto& ref_def = Refl::Reflection<LayerEntityData>::GetReflectionDefinition();
+
+	if (!ref_def.load(reader, instance, Refl::IReflectionDefinition::LoadFlags::ReflectionLoad)) {
+		return false;
+	}
+
+	const auto overrides_guard = reader.enterElementGuard(u8"overrides");
+
+	if (reader.isNull()) {
+		return true;
+	}
+
+	if (!reader.isObject()) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	// $TODO: Clone entity and apply overrides.
+
 	return true;
 }
 

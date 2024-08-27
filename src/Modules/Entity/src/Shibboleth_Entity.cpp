@@ -74,17 +74,44 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 
 	// $TODO: Offer a path for calling a copy function instead.
 
+	bool success = true;
+
 	// Copy all reflected variables.
+	if (overrides) {
+		overrides->enterElement(u8"modify_entity");
+
+		if (!overrides->isObject()) {
+			// $TODO: Log error.
+			success = false;
+		}
+	}
+
 	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
 		Refl::IReflectionVar* const ref_var = ref_def.getVar(i);
 
-		if (ref_var->isNoCopy()) {
-			continue;
+		if (overrides) {
+			const HashStringView32<> var_name = ref_def.getVarName(i);
+			overrides->enterElement(var_name.getBuffer());
 		}
 
-		const void* const orig_data = ref_var->getData(getBasePointer());
-		ref_var->setData(new_entity->getBasePointer(), orig_data);
+		if (!overrides || overrides->isNull()) {
+			const void* const orig_data = ref_var->getData(getBasePointer());
+			ref_var->setData(new_entity->getBasePointer(), orig_data);
+
+		} else {
+			void* const new_data = ref_var->getData(new_entity->getBasePointer());
+			ref_var->getReflection().getReflectionDefinition().load(*overrides, new_data, Refl::IReflectionDefinition::LoadFlags::SparseData);
+		}
+
+		if (overrides) {
+			overrides->exitElement();
+		}
 	}
+
+	if (overrides) {
+		overrides->exitElement();
+	}
+
 
 	// Clone all components
 	for (auto& comp : _components) {
@@ -100,6 +127,43 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 			overrides->exitElement();
 		}
 	}
+
+	// // Add components to entity.
+	// {
+	// 	const auto guard = reader.enterElementGuard(u8"add_components");
+
+	// 	if (reader.isObject()) {
+
+	// 	} else {
+	// 		// $TODO: Log error.
+	// 		success = false;
+	// 	}
+	// }
+
+	// // Remove components from entity.
+	// {
+	// 	const auto guard = reader.enterElementGuard(u8"remove_components");
+
+	// 	if (reader.isArray()) {
+
+	// 	} else {
+	// 		// $TODO: Log error.
+	// 		success = false;
+	// 	}
+	// }
+
+	// // Modify component properties.
+	// {
+	// 	const auto guard = reader.enterElementGuard(u8"modify_components");
+
+	// 	if (reader.isObject()) {
+
+	// 	} else {
+	// 		// $TODO: Log error.
+	// 		success = false;
+	// 	}
+	// }
+
 
 	// Set up scene components.
 	for (int32_t i = 0; i < _components.size(); ++i) {
@@ -130,7 +194,7 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 		new_entity->_root_scene_comp->updateToWorld();
 	}
 
-	return true;
+	return success;
 }
 
 void Entity::addToWorld(void)
