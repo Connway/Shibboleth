@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_EntityComponent.h"
 #include "Shibboleth_EntityDefines.h"
 #include <Containers/Shibboleth_InstancedArray.h>
+#include <Ptrs/Shibboleth_ManagerRef.h>
 
 NS_SHIBBOLETH
 
@@ -101,11 +102,11 @@ public:
 		return (comp) ? static_cast<T*>(comp) : nullptr;
 	}
 
-	Entity(EntityManager& entity_mgr);
-	~Entity(void) = default;
+	Entity(void) = default;
 
 	virtual bool init(void);
-	virtual bool clone(Entity*& new_entity, const ISerializeReader* overrides);
+	virtual bool clone(Entity& new_entity, const ISerializeReader* overrides) const;
+	bool clone(Entity*& new_entity, const ISerializeReader* overrides) const;
 
 	virtual void addToWorld(void);
 	virtual void removeFromWorld(void);
@@ -128,8 +129,10 @@ public:
 	const EntityComponent& getComponent(int32_t index) const;
 	EntityComponent& getComponent(int32_t index);
 
-	const EntityComponent* findComponent(const U8String& name) const;
-	EntityComponent* findComponent(const U8String& name);
+	const EntityComponent* findComponent(const HashString64<>& name) const;
+	EntityComponent* findComponent(const HashString64<>& name);
+	const EntityComponent* findComponent(const Gaff::Hash64& name) const;
+	EntityComponent* findComponent(const Gaff::Hash64& name);
 
 	bool hasComponent(const Refl::IReflectionDefinition& ref_def) const;
 	int32_t getNumComponents(void) const;
@@ -149,7 +152,7 @@ public:
 
 protected:
 	EntityUpdater _updater;
-	EntityManager& _entity_mgr;
+	ManagerRef<EntityManager> _entity_mgr;
 
 private:
 	// enum class Flag

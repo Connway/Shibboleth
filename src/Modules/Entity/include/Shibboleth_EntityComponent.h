@@ -44,21 +44,23 @@ public:
 	virtual bool init(void);
 	virtual void destroy(void);
 
+	virtual bool clone(EntityComponent& new_component, const ISerializeReader* overrides) const;
+	bool clone(EntityComponent*& new_component, const ISerializeReader* overrides) const;
+
 	Entity* getOwner(void) const;
 
-	const U8String& getName(void) const;
+	const HashString64<>& getName(void) const;
+	void setName(const HashString64<>& name);
+	void setName(HashString64<>&& name);
+	void setName(const HashStringView64<>& name);
 	void setName(const U8String& name);
-	void setName(U8String&& name);
-
-protected:
-	virtual void cloneInternal(EntityComponent& new_component, const ISerializeReader* overrides) const;
 
 private:
 	EntityUpdater _updater;
 
 	Entity* _owner = nullptr;
 
-	U8String _name;
+	HashString64<> _name;
 
 	Gaff::Flags<EntityComponentFlag> _flags;
 

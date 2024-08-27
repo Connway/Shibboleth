@@ -43,4 +43,9 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(EntityResource)
 
+const Entity* EntityResource::getDefinition(void) const
+{
+	return _definition.get();
+}
+
 NS_END

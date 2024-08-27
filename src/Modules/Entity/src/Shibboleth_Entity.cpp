@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
-	.template ctor<Shibboleth::EntityManager&>()
+	.template ctor<>()
 
 	.var("components", &Shibboleth::Entity::_components, Shibboleth::OptionalAttribute{})
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Entity)
@@ -41,11 +41,6 @@ namespace
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(Entity)
-
-Entity::Entity(EntityManager& entity_mgr):
-	_entity_mgr(entity_mgr)
-{
-}
 
 bool Entity::init(void)
 {
@@ -61,22 +56,26 @@ bool Entity::init(void)
 	return success;
 }
 
-bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
+bool Entity::clone(Entity& new_entity, const ISerializeReader* overrides) const
 {
 	const Refl::IReflectionDefinition& ref_def = getReflectionDefinition();
-
-	new_entity = ref_def.template createT<Entity>(s_allocator);
-
-	if (!new_entity) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	// $TODO: Offer a path for calling a copy function instead.
+	GAFF_ASSERT(new_entity.getReflectionDefinition().hasInterface(ref_def));
 
 	bool success = true;
 
+
 	// Copy all reflected variables.
+	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
+		Refl::IReflectionVar* const ref_var = ref_def.getVar(i);
+
+		if (ref_var->isNoCopy()) {
+			continue;
+		}
+
+		const void* const orig_data = ref_var->getData(getBasePointer());
+		ref_var->setData(new_entity.getBasePointer(), orig_data);
+	}
+
 	if (overrides) {
 		overrides->enterElement(u8"modify_entity");
 
@@ -84,24 +83,76 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 			// $TODO: Log error.
 			success = false;
 		}
+
+		for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
+			Refl::IReflectionVar* const ref_var = ref_def.getVar(i);
+			const HashStringView32<> var_name = ref_def.getVarName(i);
+
+			overrides->enterElement(var_name.getBuffer());
+
+			if (overrides->isNull()) {
+				continue;
+			}
+
+			void* const new_data = ref_var->getData(new_entity.getBasePointer());
+
+			if (!ref_var->getReflection().getReflectionDefinition().load(*overrides, new_data, Refl::IReflectionDefinition::LoadFlags::SparseData)) {
+				success = false;
+			}
+
+			overrides->exitElement();
+		}
+
+		overrides->exitElement();
 	}
 
-	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
-		Refl::IReflectionVar* const ref_var = ref_def.getVar(i);
 
-		if (overrides) {
-			const HashStringView32<> var_name = ref_def.getVarName(i);
-			overrides->enterElement(var_name.getBuffer());
-		}
+	// Clone all components.
+	Vector<Gaff::Hash64> remove_components{ ENTITY_ALLOCATOR };
 
-		if (!overrides || overrides->isNull()) {
-			const void* const orig_data = ref_var->getData(getBasePointer());
-			ref_var->setData(new_entity->getBasePointer(), orig_data);
+	if (overrides) {
+		overrides->enterElement(u8"remove_components");
+
+		if (overrides->isArray()) {
+			remove_components.reserve(static_cast<size_t>(overrides->size()));
+
+			overrides->forEachInArray([&](int32_t) -> bool
+			{
+				if (!overrides->isString()) {
+					// $TODO: Log error.
+					return false;
+				}
+
+				const char8_t* const component_name = overrides->readString();
+
+				remove_components.emplace_back(Gaff::FNV1aHash64String(component_name));
+
+				overrides->freeString(component_name);
+
+				return false;
+			});
 
 		} else {
-			void* const new_data = ref_var->getData(new_entity->getBasePointer());
-			ref_var->getReflection().getReflectionDefinition().load(*overrides, new_data, Refl::IReflectionDefinition::LoadFlags::SparseData);
+			// $TODO: Log error.
+			success = false;
 		}
+
+		overrides->exitElement();
+
+		overrides->enterElement(u8"modify_components");
+	}
+
+	for (auto& comp : _components) {
+		if (Gaff::Contains(remove_components, comp.getName().getHash())) {
+			continue;
+		}
+
+		if (overrides) {
+			overrides->enterElement(comp.getName().getBuffer());
+		}
+
+		EntityComponent& component = new_entity._components.push(comp.getReflectionDefinition());
+		comp.clone(component, (overrides && !overrides->isNull()) ? overrides : nullptr);
 
 		if (overrides) {
 			overrides->exitElement();
@@ -112,21 +163,6 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 		overrides->exitElement();
 	}
 
-
-	// Clone all components
-	for (auto& comp : _components) {
-		if (overrides) {
-			overrides->enterElement(comp.getName().data());
-		}
-
-		EntityComponent& component = new_entity->_components.push(comp.getReflectionDefinition());
-
-		comp.cloneInternal(component, (overrides && overrides->isObject()) ? overrides : nullptr);
-
-		if (overrides) {
-			overrides->exitElement();
-		}
-	}
 
 	// // Add components to entity.
 	// {
@@ -167,17 +203,17 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 
 	// Set up scene components.
 	for (int32_t i = 0; i < _components.size(); ++i) {
-		EntityComponent* const comp = _components[i];
-		EntitySceneComponent* const scene_comp = comp->getReflectionDefinition().getInterface<EntitySceneComponent>(comp->getBasePointer());
+		const EntityComponent* const comp = _components[i];
+		const EntitySceneComponent* const scene_comp = comp->getReflectionDefinition().getInterface<EntitySceneComponent>(comp->getBasePointer());
 
 		if (!scene_comp) {
 			continue;
 		}
 
-		EntitySceneComponent* const new_scene_comp = static_cast<EntitySceneComponent*>(new_entity->_components[i]);
+		EntitySceneComponent* const new_scene_comp = static_cast<EntitySceneComponent*>(new_entity._components[i]);
 
 		if (scene_comp->_parent) {
-			EntitySceneComponent* const new_parent = static_cast<EntitySceneComponent*>(new_entity->findComponent(scene_comp->_parent->getName()));
+			EntitySceneComponent* const new_parent = static_cast<EntitySceneComponent*>(new_entity.findComponent(scene_comp->_parent->getName()));
 			new_scene_comp->_parent = new_parent;
 
 		// We are the root scene component.
@@ -185,16 +221,28 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides)
 			if (_root_scene_comp) {
 				// $TODO: Log error.
 			} else {
-				new_entity->_root_scene_comp = static_cast<EntitySceneComponent*>(new_entity->_components[i]);
+				new_entity._root_scene_comp = static_cast<EntitySceneComponent*>(new_entity._components[i]);
 			}
 		}
 	}
 
-	if (new_entity->_root_scene_comp) {
-		new_entity->_root_scene_comp->updateToWorld();
+	if (new_entity._root_scene_comp) {
+		new_entity._root_scene_comp->updateToWorld();
 	}
 
 	return success;
+}
+
+bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides) const
+{
+	new_entity = getReflectionDefinition().template createT<Entity>(s_allocator);
+
+	if (!new_entity) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	return clone(*new_entity, overrides);
 }
 
 void Entity::addToWorld(void)
@@ -346,15 +394,25 @@ EntityComponent& Entity::getComponent(int32_t index)
 	return *_components[index];
 }
 
-const EntityComponent* Entity::findComponent(const U8String& name) const
+const EntityComponent* Entity::findComponent(const HashString64<>& name) const
 {
 	return const_cast<Entity*>(this)->findComponent(name);
 }
 
-EntityComponent* Entity::findComponent(const U8String& name)
+EntityComponent* Entity::findComponent(const HashString64<>& name)
+{
+	return findComponent(name.getHash());
+}
+
+const EntityComponent* Entity::findComponent(const Gaff::Hash64& name) const
+{
+	return const_cast<Entity*>(this)->findComponent(name);
+}
+
+EntityComponent* Entity::findComponent(const Gaff::Hash64& name)
 {
 	for (auto& comp : _components) {
-		if (comp.getName() == name) {
+		if (comp.getName().getHash() == name) {
 			return &comp;
 		}
 	}

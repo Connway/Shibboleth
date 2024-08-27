@@ -27,10 +27,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponentFlag)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponentFlag)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponent)
+	.template ctor<>()
+
 	.var("flags", &Shibboleth::EntityComponent::_flags)
 	.var("name", &Shibboleth::EntityComponent::_name)
-
-	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponent)
 
 
@@ -52,32 +52,12 @@ void EntityComponent::destroy(void)
 {
 }
 
-Entity* EntityComponent::getOwner(void) const
-{
-	return _owner;
-}
-
-const U8String& EntityComponent::getName(void) const
-{
-	return _name;
-}
-
-void EntityComponent::setName(const U8String& name)
-{
-	_name = name;
-}
-
-void EntityComponent::setName(U8String&& name)
-{
-	_name = std::move(name);
-}
-
-void EntityComponent::cloneInternal(EntityComponent& new_component, const ISerializeReader* overrides) const
+bool EntityComponent::clone(EntityComponent& new_component, const ISerializeReader* overrides) const
 {
 	const Refl::IReflectionDefinition& ref_def = getReflectionDefinition();
-	GAFF_ASSERT(&new_component.getReflectionDefinition() == &ref_def);
+	GAFF_ASSERT(new_component.getReflectionDefinition().hasInterface(ref_def));
 
-	// $TODO: Offer a path for calling a copy function instead.
+	bool success = true;
 
 	// Copy all reflected variables.
 	for (int32_t i = 0; i < ref_def.getNumVars(); ++i) {
@@ -92,10 +72,55 @@ void EntityComponent::cloneInternal(EntityComponent& new_component, const ISeria
 	}
 
 	if (overrides) {
-		if (!ref_def.load(*overrides, new_component.getBasePointer())) {
+		if (!ref_def.load(*overrides, new_component.getBasePointer(), Refl::IReflectionDefinition::LoadFlags::SparseData)) {
 			// $TODO: Log error.
+			success = false;
 		}
 	}
+
+	return success;
+}
+
+bool EntityComponent::clone(EntityComponent*& new_component, const ISerializeReader* overrides) const
+{
+	new_component = getReflectionDefinition().template createT<EntityComponent>(s_allocator);
+
+	if (!new_component) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	return clone(*new_component, overrides);
+}
+
+Entity* EntityComponent::getOwner(void) const
+{
+	return _owner;
+}
+
+const HashString64<>& EntityComponent::getName(void) const
+{
+	return _name;
+}
+
+void EntityComponent::setName(const HashString64<>& name)
+{
+	_name = name;
+}
+
+void EntityComponent::setName(HashString64<>&& name)
+{
+	_name = std::move(name);
+}
+
+void EntityComponent::setName(const HashStringView64<>& name)
+{
+	_name = name;
+}
+
+void EntityComponent::setName(const U8String& name)
+{
+	_name = name;
 }
 
 NS_END

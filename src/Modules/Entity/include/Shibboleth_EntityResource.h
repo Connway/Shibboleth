@@ -35,10 +35,10 @@ public:
 	EntityResource(void);
 	~EntityResource(void);
 
-	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
+	const Entity* getDefinition(void) const;
 
 private:
-	InstancedPtr<Entity> _definition;
+	InstancedPtr<Entity> _definition{ ENTITY_ALLOCATOR };
 
 	SHIB_REFLECTION_CLASS_DECLARE(EntityResource);
 };

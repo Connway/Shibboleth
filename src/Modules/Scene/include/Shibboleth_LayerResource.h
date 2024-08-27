@@ -28,32 +28,20 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class LayerEntityData final : public Refl::IReflectionObject
+struct LayerEntityData final
 {
-public:
-
-private:
 	static bool Load(const ISerializeReader& reader, LayerEntityData& instance);
 	static void Save(ISerializeWriter& writer, const LayerEntityData& instance);
 
-	ResourcePtr<EntityResource> _entity_base;
-	HashString64<> _name;
-
-	InstancedPtr<Entity> _modified_entity_definition;
-
-	SHIB_REFLECTION_CLASS_DECLARE(LayerEntityData);
+	InstancedPtr<Entity> entity_definition{ ENTITY_ALLOCATOR };
+	ResourcePtr<EntityResource> entity_base;
+	HashString64<> name;
 };
 
-class LayerResource final : public IResource
+class LayerResource final : public IRes	ource
 {
-public:
-	LayerResource(void);
-	~LayerResource(void) override;
-
-	void load(const ISerializeReader& reader, uintptr_t thread_id_int) override;
-
 private:
-	Vector< ResourcePtr<EntityResource> > _entities;
+	Vector<LayerEntityData> _entities{ ENTITY_ALLOCATOR };
 
 	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
 };
