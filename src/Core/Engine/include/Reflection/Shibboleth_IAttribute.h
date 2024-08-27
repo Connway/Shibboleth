@@ -94,7 +94,7 @@ NS_END
 		Refl::IAttribute* AttributeName::clone(void) const \
 		{ \
 			IAllocator& allocator = GetAllocator(); \
-			if constexpr (requires(const AttributeName& value) { AttributeName(value); }) { \
+			if constexpr (std::copy_constructible<AttributeName>) { \
 				return SHIB_ALLOCT_POOL(AttributeName, allocator.getPoolIndex("Reflection"), allocator, *this); \
 			} else { \
 				return SHIB_ALLOCT_POOL(AttributeName, allocator.getPoolIndex("Reflection"), allocator); \

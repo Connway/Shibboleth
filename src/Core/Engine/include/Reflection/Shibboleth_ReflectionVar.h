@@ -44,8 +44,8 @@ struct VarTypeHelper final
 	using VariableType = VarType;
 	using Type = Var<T, VarType>;
 
-	static constexpr bool k_can_copy = requires(T lhs, const T& rhs) { lhs = rhs; } || requires(const T& rhs) { T(rhs); };
-	static constexpr bool k_can_move = requires(T lhs, T&& rhs) { lhs = std::move(rhs); } || requires(T&& rhs) { T(std::move(rhs)); };
+	static constexpr bool k_can_copy = std::assignable_from<T, T>;
+	static constexpr bool k_can_move = std::assignable_from<T, T&&>;
 };
 
 
