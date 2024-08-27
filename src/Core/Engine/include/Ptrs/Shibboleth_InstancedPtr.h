@@ -82,6 +82,11 @@ public:
 		_ptr.reset(ptr);
 	}
 
+	T* release(void)
+	{
+		return _ptr.release();
+	}
+
 	template <class U>
 	InstancedPtr& operator=(InstancedPtr<U>&& rhs)
 	{
