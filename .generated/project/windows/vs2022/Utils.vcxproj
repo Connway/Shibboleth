@@ -132,8 +132,6 @@
     <None Include="..\..\..\..\azure-pipelines.yml" />
     <None Include="..\..\..\..\src\Dependencies\DEPENDENCY_README.txt" />
     <None Include="..\..\..\..\utils\build_actions.lua" />
-    <None Include="..\..\..\..\utils\lua_functions.lua" />
-    <None Include="..\..\..\..\utils\lua_options.lua" />
     <None Include="..\..\..\..\utils\misc_functions.lua" />
     <None Include="..\..\..\..\utils\module_suffix.lua" />
     <None Include="..\..\..\..\utils\premake-qt\_manifest.lua" />

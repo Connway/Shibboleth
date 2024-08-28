@@ -23,12 +23,6 @@
     <None Include="..\..\..\..\utils\build_actions.lua">
       <Filter>utils</Filter>
     </None>
-    <None Include="..\..\..\..\utils\lua_functions.lua">
-      <Filter>utils</Filter>
-    </None>
-    <None Include="..\..\..\..\utils\lua_options.lua">
-      <Filter>utils</Filter>
-    </None>
     <None Include="..\..\..\..\utils\misc_functions.lua">
       <Filter>utils</Filter>
     </None>

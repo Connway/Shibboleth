@@ -4,28 +4,40 @@
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\mimalloc">
+      <UniqueIdentifier>{4630B1F0-3229-D042-5B5B-B5C747B3AF4E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\prim">
+      <UniqueIdentifier>{548C35CF-4059-90DA-6972-7E82559EC568}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\include\mimalloc-atomic.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\include\mimalloc-internal.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\include\mimalloc-new-delete.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\include\mimalloc-override.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\include\mimalloc-types.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\include\mimalloc.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\include\mimalloc\atomic.h">
+      <Filter>include\mimalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\include\mimalloc\internal.h">
+      <Filter>include\mimalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\include\mimalloc\prim.h">
+      <Filter>include\mimalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\include\mimalloc\track.h">
+      <Filter>include\mimalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\include\mimalloc\types.h">
+      <Filter>include\mimalloc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\mimalloc\src\bitmap.h">
       <Filter>src</Filter>
@@ -53,6 +65,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\mimalloc\src\init.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\mimalloc\src\libc.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\mimalloc\src\options.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -62,10 +77,13 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\mimalloc\src\page.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\mimalloc\src\prim\prim.c">
+      <Filter>src\prim</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\mimalloc\src\random.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\mimalloc\src\region.c">
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\mimalloc\src\segment-map.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\mimalloc\src\segment.c">

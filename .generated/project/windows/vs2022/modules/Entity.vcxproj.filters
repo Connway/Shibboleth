@@ -4,6 +4,9 @@
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Gen_ReflectionInit.h">
@@ -13,6 +16,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntityComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntityDefines.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntityManager.h">
@@ -27,19 +33,35 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntitySystem.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_IEntityUpdateable.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\Entity\include\Shibboleth_EntityUpdater.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_Entity.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityComponent.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntityResource.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntitySceneComponent.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_EntitySystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\Shibboleth_IEntityUpdateable.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\src\Shibboleth_Entity.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\src\Shibboleth_EntityComponent.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\src\Shibboleth_EntityManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\src\Shibboleth_EntityModule.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\src\Shibboleth_EntityResource.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\src\Shibboleth_EntitySceneComponent.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\src\Shibboleth_EntitySystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Entity\src\Shibboleth_EntityUpdater.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Entity\project_generator.lua" />
