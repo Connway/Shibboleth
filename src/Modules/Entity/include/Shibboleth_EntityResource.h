@@ -32,9 +32,6 @@ NS_SHIBBOLETH
 class EntityResource final : public IResource
 {
 public:
-	EntityResource(void);
-	~EntityResource(void);
-
 	const Entity* getDefinition(void) const;
 
 private:
