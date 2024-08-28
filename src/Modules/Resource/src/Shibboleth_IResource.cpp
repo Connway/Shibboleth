@@ -174,6 +174,11 @@ bool IResource::isLoaded(void) const
 	return _state == ResourceState::Loaded;
 }
 
+void IResource::addIncomingReference(IResource& resource)
+{
+	Gaff::PushBackUnique(_incoming_references, &resource);
+}
+
 void IResource::succeeded(void)
 {
 	_state = ResourceState::Loaded;

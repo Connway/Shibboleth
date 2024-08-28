@@ -66,7 +66,7 @@ namespace
 		const Shibboleth::IFile* out_file;
 	};
 
-	static void ResourceFileLoadRawJob(uintptr_t /*id_int*/, void* data)
+	static void ResourceFileLoadRawJob(uintptr_t /*thread_id_int*/, void* data)
 	{
 		RawJobData* const job_data = reinterpret_cast<RawJobData*>(data);
 
@@ -76,9 +76,9 @@ namespace
 		job_data->out_file = Shibboleth::GetApp().getFileSystem().openFile(final_path.data());
 	}
 
-	static void ResourceFileLoadJob(uintptr_t /*id_int*/, void* data)
+	static void ResourceFileLoadJob(uintptr_t /*thread_id_int*/, void* data)
 	{
-		Shibboleth::IResource* res = reinterpret_cast<Shibboleth::IResource*>(data);
+		Shibboleth::IResource* const res = reinterpret_cast<Shibboleth::IResource*>(data);
 		res->load();
 	}
 
@@ -92,10 +92,6 @@ namespace
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(ResourceManager)
-
-ResourceManager::ResourceManager(void)
-{
-}
 
 ResourceManager::~ResourceManager(void)
 {
@@ -136,7 +132,7 @@ bool ResourceManager::initAllModulesLoaded(void)
 		ref_def->getClassAttrs(ext_attrs);
 
 		GAFF_ASSERT_MSG(factory_func, "Resource '%s' does not have a default constructor!", ref_def->getReflectionInstance().getName());
-		GAFF_ASSERT_MSG(creatable || !ext_attrs.empty(), "Resource '%s' is not creatable and does not have any ResourceExtensionAttribute's!", ref_def->getReflectionInstance().getName());
+		GAFF_ASSERT_MSG(creatable || !ext_attrs.empty(), "Resource '%s' is not creatable and does not have any ResourceExtensionAttributes!", ref_def->getReflectionInstance().getName());
 
 		for (const ResourceExtensionAttribute* ext_attr : ext_attrs) {
 			GAFF_ASSERT_MSG(
@@ -389,7 +385,7 @@ void ResourceManager::checkAndRemoveResources(void)
 			// Remove all callbacks that involve this resource.
 			const EA::Thread::AutoMutex callback_lock(_callback_lock);
 
-			for (int32_t j = 0; j < _callbacks.size();) {
+			for (int32_t j = 0; j < static_cast<int32_t>(_callbacks.size());) {
 				const auto it = _callbacks.begin() + j;
 
 				if (Gaff::Contains(it->second.resources, resource)) {

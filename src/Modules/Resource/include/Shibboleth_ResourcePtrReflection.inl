@@ -114,7 +114,15 @@ template <class T, class VarType>
 bool VarResourcePtr<T, VarType>::load(const ISerializeReader& reader, T& object)
 {
 	ResourcePtr<VarType>* const var = Refl::IVar<T>::template get< ResourcePtr<VarType> >(&object);
-	return load(reader, var);
+	const bool result = load(reader, var);
+
+	if constexpr (std::derived_from<T, IResource>) {
+		if (*var) {
+			(*var)->addIncomingReference(object);
+		}
+	}
+
+	return result;
 }
 
 template <class T, class VarType>

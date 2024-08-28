@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ResourceDefines.h"
 #include <Reflection/Shibboleth_Reflection.h>
 #include <Containers/Shibboleth_Vector.h>
 #include <Shibboleth_HashString.h>
@@ -72,6 +73,8 @@ public:
 	bool isPending(void) const;
 	bool isLoaded(void) const;
 
+	void addIncomingReference(IResource& resource);
+
 protected:
 	void succeeded(void);
 	void failed(void);
@@ -79,8 +82,8 @@ protected:
 private:
 	mutable eastl::atomic<int32_t> _count = 0;
 
-	//Vector<IResource*> _incoming_references;
-	//Vector<IResource*> _outgoing_references;
+	Vector<IResource*> _incoming_references{ RESOURCE_ALLOCATOR };
+	// Vector<IResource*> _outgoing_references{ RESOURCE_ALLOCATOR };
 
 	ResourceState _state = ResourceState::Deferred;
 	HashString64<> _file_path;

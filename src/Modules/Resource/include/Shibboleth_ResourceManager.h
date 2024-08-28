@@ -43,7 +43,6 @@ public:
 	using ResourceStateCallbackSignature = void (const Vector<const IResource*>&);
 	using ResourceStateCallback = eastl::function<ResourceStateCallbackSignature>;
 
-	ResourceManager(void);
 	~ResourceManager(void);
 
 	bool initAllModulesLoaded(void) override;
