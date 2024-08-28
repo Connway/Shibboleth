@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_HashString.h>
 #include <Gaff_IncludeEASTLAtomic.h>
 #include <Gaff_RefPtr.h>
+#include <eathread/eathread_spinlock.h>
 #include <EASTL/functional.h>
 
 NS_SHIBBOLETH
@@ -84,6 +85,8 @@ private:
 
 	Vector<IResource*> _incoming_references{ RESOURCE_ALLOCATOR };
 	// Vector<IResource*> _outgoing_references{ RESOURCE_ALLOCATOR };
+
+	EA::Thread::SpinLock _incoming_references_lock;
 
 	ResourceState _state = ResourceState::Deferred;
 	HashString64<> _file_path;

@@ -176,6 +176,7 @@ bool IResource::isLoaded(void) const
 
 void IResource::addIncomingReference(IResource& resource)
 {
+	EA::Thread::AutoSpinLock lock(_incoming_references_lock);
 	Gaff::PushBackUnique(_incoming_references, &resource);
 }
 
