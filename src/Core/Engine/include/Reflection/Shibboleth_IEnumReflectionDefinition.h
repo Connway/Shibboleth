@@ -39,6 +39,16 @@ class IAttribute;
 class IEnumReflectionDefinition
 {
 public:
+	enum class LoadFlags
+	{
+		Count
+	};
+
+	enum class SaveFlags
+	{
+		Count
+	};
+
 	virtual ~IEnumReflectionDefinition(void) {}
 
 	virtual const IReflection& getReflectionInstance(void) const = 0;
@@ -46,11 +56,8 @@ public:
 
 	virtual Gaff::Hash64 getInstanceHash(const void* object, Gaff::Hash64 init = Gaff::k_init_hash64) const = 0;
 
-	bool load(const Shibboleth::ISerializeReader& reader, void* object, bool) const { return load(reader, object); }
-	void save(Shibboleth::ISerializeWriter& writer, const void* object, bool) const { save(writer, object); }
-
-	virtual bool load(const Shibboleth::ISerializeReader& reader, void* object) const = 0;
-	virtual void save(Shibboleth::ISerializeWriter& writer, const void* object) const = 0;
+	virtual bool load(const Shibboleth::ISerializeReader& reader, void* object, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const = 0;
+	virtual void save(Shibboleth::ISerializeWriter& writer, const void* object, Gaff::Flags<SaveFlags> flags = Gaff::Flags<SaveFlags>{}) const = 0;
 
 	virtual int32_t getNumEntries(void) const = 0;
 	virtual Shibboleth::HashStringView32<> getEntryNameFromValue(int32_t value) const = 0;

@@ -26,7 +26,7 @@ local GenerateProject = function()
 	ModuleProject "EntityModule"
 		language "C++"
 
-		files { source_dir .. "Shibboleth_EntityModule.cpp" }
+		files { source_dir .. "src/Shibboleth_EntityModule.cpp" }
 
 		local deps =
 		{

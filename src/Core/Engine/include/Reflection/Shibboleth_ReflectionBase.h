@@ -37,6 +37,8 @@ struct RefDefTypeHelper<T, true> final
 {
 	using Type = EnumReflectionDefinition<T>;
 	using Interface = IEnumReflectionDefinition;
+	using LoadFlags = IEnumReflectionDefinition::LoadFlags;
+	using SaveFlags = IEnumReflectionDefinition::SaveFlags;
 };
 
 template <class T>
@@ -44,6 +46,8 @@ struct RefDefTypeHelper<T, false> final
 {
 	using Type = ReflectionDefinition<T>;
 	using Interface = IReflectionDefinition;
+	using LoadFlags = IReflectionDefinition::LoadFlags;
+	using SaveFlags = IReflectionDefinition::SaveFlags;
 };
 
 template <class T>
@@ -51,6 +55,12 @@ using RefDefInterface = typename RefDefTypeHelper<T, std::is_enum<T>::value>::In
 
 template <class T>
 using RefDefType = typename RefDefTypeHelper<T, std::is_enum<T>::value>::Type;
+
+template <class T>
+using RefDefLoadFlags = typename RefDefTypeHelper<T, std::is_enum<T>::value>::LoadFlags;
+
+template <class T>
+using RefDefSaveFlags = typename RefDefTypeHelper<T, std::is_enum<T>::value>::SaveFlags;
 
 void AddToAttributeReflectionChain(IReflection* reflection);
 IReflection* GetAttributeReflectionChainHead(void);
@@ -86,8 +96,8 @@ public:
 	void registerOnDefinedCallback(const eastl::function<void (void)>& callback);
 	void registerOnDefinedCallback(eastl::function<void (void)>&& callback);
 
-	bool load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags<Refl::IReflectionDefinition::LoadFlags> flags = Gaff::Flags<Refl::IReflectionDefinition::LoadFlags>{});
-	void save(Shibboleth::ISerializeWriter& writer, const T& object, Gaff::Flags<Refl::IReflectionDefinition::SaveFlags> flags = Gaff::Flags<Refl::IReflectionDefinition::SaveFlags>{});
+	bool load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags< RefDefLoadFlags<T> > flags = Gaff::Flags< RefDefLoadFlags<T> >{});
+	void save(Shibboleth::ISerializeWriter& writer, const T& object, Gaff::Flags< RefDefSaveFlags<T> > flags = Gaff::Flags< RefDefSaveFlags<T> >{});
 
 protected:
 	Shibboleth::Vector< eastl::function<void (void)> > _on_defined_callbacks{ Shibboleth::ProxyAllocator("Reflection") };

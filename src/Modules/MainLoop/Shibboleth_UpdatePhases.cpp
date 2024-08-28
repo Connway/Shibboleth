@@ -27,7 +27,7 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::UpdateRow)
 	.template ctor<>()
 
-	.var("systems", &Shibboleth::UpdateRow::systems, Shibboleth::InstancedOptionalAttribute(u8"!", nullptr, false))
+	.var("systems", &Shibboleth::UpdateRow::systems, Shibboleth::InstancedOptionalAttribute{ u8"!", Shibboleth::InstancedOptionalAttribute::Flag::StripPrefix })
 SHIB_REFLECTION_DEFINE_END(Shibboleth::UpdateRow)
 
 

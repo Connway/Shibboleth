@@ -22,15 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Hash.h"
-#include "Gaff_IncludeEASTLArray.h"
+#include "Gaff_Platform.h"
 
-NS_GAFF
+MSVC_DISABLE_WARNING_PUSH(4100)
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wunused-parameter")
 
-template <class... T>
-constexpr Hash64 CalcTemplateHash(Hash64 init, eastl::array<const char*, sizeof...(T)> type_names);
+#include <EASTL/array.h>
 
-template <class... T>
-constexpr Hash64 CalcTemplateHash(Hash64 init);
-
-NS_END
+GCC_CLANG_DISABLE_WARNING_POP()
+MSVC_DISABLE_WARNING_POP()

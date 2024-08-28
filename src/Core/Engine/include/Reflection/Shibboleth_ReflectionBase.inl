@@ -108,13 +108,13 @@ void ReflectionBase<T>::registerOnDefinedCallback(eastl::function<void(void)>&& 
 }
 
 template <class T>
-bool ReflectionBase<T>::load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags<Refl::IReflectionDefinition::LoadFlags> flags)
+bool ReflectionBase<T>::load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags< RefDefLoadFlags<T> > flags)
 {
 	return _ref_def->load(reader, object, flags);
 }
 
 template <class T>
-void ReflectionBase<T>::save(Shibboleth::ISerializeWriter& writer, const T& object, Gaff::Flags<Refl::IReflectionDefinition::SaveFlags> flags)
+void ReflectionBase<T>::save(Shibboleth::ISerializeWriter& writer, const T& object, Gaff::Flags< RefDefSaveFlags<T> > flags)
 {
 	_ref_def->save(writer, object, flags);
 }

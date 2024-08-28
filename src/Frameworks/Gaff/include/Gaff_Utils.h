@@ -23,11 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Defines.h"
-
-GCC_CLANG_DISABLE_WARNING_PUSH("-Wunused-parameter")
-#include <EASTL/array.h>
-GCC_CLANG_DISABLE_WARNING_POP()
-
+#include "Gaff_IncludeEASTLArray.h"
 #include <cstring>
 #include <ctime>
 

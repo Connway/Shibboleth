@@ -35,9 +35,9 @@ THE SOFTWARE.
 #include <Gleam_Transform.h>
 #include <Gleam_Texture.h>
 #include <Gleam_Vec2.h>
+#include <Gaff_IncludeEASTLArray.h>
 #include <eathread/eathread_spinlock.h>
 #include <eathread/eathread.h>
-#include <EASTL/array.h>
 
 NS_GLEAM
 	class RenderOutput;

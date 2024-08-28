@@ -57,15 +57,10 @@ public:
 	Gaff::Hash64 getInstanceHash(const void* object, Gaff::Hash64 init = Gaff::k_init_hash64) const override { return Gaff::FNV1aHash64(reinterpret_cast<const char*>(object), sizeof(Enum), init); }
 	Gaff::Hash64 getInstanceHash(Enum value, Gaff::Hash64 init = Gaff::k_init_hash64) const { return getInstanceHash(&value, init); }
 
-	bool load(const Shibboleth::ISerializeReader& reader, void* value, bool) const { return load(reader, value); }
-	void save(Shibboleth::ISerializeWriter& writer, const void* value, bool) const { save(writer, value); }
-	bool load(const Shibboleth::ISerializeReader& reader, Enum& value, bool) const { return load(reader, value); }
-	void save(Shibboleth::ISerializeWriter& writer, Enum value, bool) const { save(writer, value); }
-
-	bool load(const Shibboleth::ISerializeReader& reader, void* value) const override;
-	void save(Shibboleth::ISerializeWriter& writer, const void* value) const override;
-	bool load(const Shibboleth::ISerializeReader& reader, Enum& value) const;
-	void save(Shibboleth::ISerializeWriter& writer, Enum value) const;
+	bool load(const Shibboleth::ISerializeReader& reader, void* value, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const override { return load(reader, *reinterpret_cast<Enum*>(value), flags); }
+	void save(Shibboleth::ISerializeWriter& writer, const void* value, Gaff::Flags<SaveFlags> flags = Gaff::Flags<SaveFlags>{}) const override { save(writer, *reinterpret_cast<const Enum*>(value), flags); }
+	bool load(const Shibboleth::ISerializeReader& reader, Enum& value, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const;
+	void save(Shibboleth::ISerializeWriter& writer, Enum value, Gaff::Flags<SaveFlags> flags = Gaff::Flags<SaveFlags>{}) const;
 
 	int32_t getNumEntries(void) const override;
 	Shibboleth::HashStringView32<> getEntryNameFromValue(int32_t value) const override;

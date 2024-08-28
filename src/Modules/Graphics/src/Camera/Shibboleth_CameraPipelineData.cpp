@@ -147,7 +147,7 @@ int32_t CameraPipelineData::createRenderData(
 
 void CameraPipelineData::removeRenderData(int32_t id)
 {
-	_render_data.remove(id);
+	_render_data.removeAt(id);
 }
 
 bool CameraPipelineData::createGBuffer(GBuffer& g_buffer, Gleam::RenderDevice& rd, const Gleam::IVec2& size, bool create_render_texture)

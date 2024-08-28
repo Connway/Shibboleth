@@ -110,10 +110,10 @@ void PlayerManager::removePlayer(int32_t index)
 	const int32_t local_index = _local_players.find(static_cast<const LocalPlayer*>(player));
 
 	if (local_index != -1) {
-		_local_players.remove(local_index);
+		_local_players.removeAt(local_index);
 	}
 
-	_players.remove(index);
+	_players.removeAt(index);
 }
 
 const LocalPlayer& PlayerManager::getLocalPlayer(int32_t index) const

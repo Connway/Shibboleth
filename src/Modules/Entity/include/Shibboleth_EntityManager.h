@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include <Containers/Shibboleth_Vector.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_JobPool.h>
-#include <Gaff_IncludeEASTLAtomic.h>
+#include <Gaff_IncludeEASTLArray.h>
 #include <eathread/eathread_spinlock.h>
 #include <eathread/eathread_mutex.h>
 

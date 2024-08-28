@@ -32,10 +32,10 @@ class StateMachineComponent final : public EntityComponent
 {
 public:
 	bool init(void) override;
-	bool clone(EntityComponent*& new_component, const ISerializeReader* overrides) override;
+	bool clone(EntityComponent& new_component, const ISerializeReader* overrides) const override;
 	//void destroy(void) override;
 
-	void update(float dt) override;
+	//void update(float dt) override;
 
 private:
 	UniquePtr<Esprit::StateMachine::Instance> _instance;

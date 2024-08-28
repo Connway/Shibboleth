@@ -463,8 +463,8 @@ bool InputManagerOld::removePlayer(int32_t player_id)
 		return false;
 	}
 
-	_binding_instances.remove(player_id);
-	_alias_values.remove(player_id);
+	_binding_instances.removeAt(player_id);
+	_alias_values.removeAt(player_id);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(_device_player_map.size()); ++i) {
 		const auto it = _device_player_map.begin() + i;

@@ -56,12 +56,12 @@ bool StateMachineComponent::init()
 	return true;
 }
 
-bool StateMachineComponent::clone(EntityComponent*& new_component, const ISerializeReader* overrides)
+bool StateMachineComponent::clone(EntityComponent& new_component, const ISerializeReader* overrides) const
 {
 	return EntityComponent::clone(new_component, overrides);
 }
 
-void StateMachineComponent::update(float /*dt*/)
+/*void StateMachineComponent::update(float dt)
 {
 	if (!_resource) {
 		// $TODO: Log error
@@ -88,7 +88,7 @@ void StateMachineComponent::update(float /*dt*/)
 	//}
 
 	sm->update(*_instance);
-}
+}*/
 
 
 

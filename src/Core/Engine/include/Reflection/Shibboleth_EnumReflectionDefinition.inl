@@ -37,19 +37,7 @@ int32_t EnumReflectionDefinition<Enum>::size(void) const
 }
 
 template <class Enum>
-bool EnumReflectionDefinition<Enum>::load(const Shibboleth::ISerializeReader& reader, void* value) const
-{
-	return load(reader, *reinterpret_cast<Enum*>(value));
-}
-
-template <class Enum>
-void EnumReflectionDefinition<Enum>::save(Shibboleth::ISerializeWriter& writer, const void* value) const
-{
-	save(writer, *reinterpret_cast<const Enum*>(value));
-}
-
-template <class Enum>
-bool EnumReflectionDefinition<Enum>::load(const Shibboleth::ISerializeReader& reader, Enum& value) const
+bool EnumReflectionDefinition<Enum>::load(const Shibboleth::ISerializeReader& reader, Enum& value, Gaff::Flags<LoadFlags> /*flags*/) const
 {
 	const char8_t* const name = reader.readString();
 	const int32_t intValue = getEntryValue(name);
@@ -63,7 +51,7 @@ bool EnumReflectionDefinition<Enum>::load(const Shibboleth::ISerializeReader& re
 }
 
 template <class Enum>
-void EnumReflectionDefinition<Enum>::save(Shibboleth::ISerializeWriter& writer, Enum value) const
+void EnumReflectionDefinition<Enum>::save(Shibboleth::ISerializeWriter& writer, Enum value, Gaff::Flags<SaveFlags> /*flags*/) const
 {
 	const Shibboleth::HashStringView32<> name = getEntryName(value);
 	GAFF_ASSERT(name.getBuffer());

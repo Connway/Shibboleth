@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ReflectionVar.h"
-#include <EASTL/array.h>
+#include <Gaff_IncludeEASTLArray.h>
 
 NS_REFLECTION
 

@@ -132,8 +132,8 @@ void EntityManager::markDirty(UpdateNode& node)
 
 	// If this cache misses too much, we could store a copy of the indices locally.
 	for (const EntityUpdater* const updater : node.updater->_depends_on_me) {
-		UpdateNode& node = _update_nodes[updater->_node_id];
-		markDirty(node);
+		UpdateNode& dependent_node = _update_nodes[updater->_node_id];
+		markDirty(dependent_node);
 	}
 }
 
@@ -189,8 +189,8 @@ void EntityManager::disableNode(UpdateNode& node)
 
 	// Mark all dependent nodes as dirty. Their phase and level needs to be recalculated.
 	for (const EntityUpdater* const dependent : node.updater->_depends_on_me) {
-		UpdateNode& node = _update_nodes[dependent->_node_id];
-		markDirty(node);
+		UpdateNode& dependent_node = _update_nodes[dependent->_node_id];
+		markDirty(dependent_node);
 	}
 
 	node.updater->_node_id = -1;
