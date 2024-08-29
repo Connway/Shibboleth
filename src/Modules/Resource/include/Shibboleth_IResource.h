@@ -77,6 +77,8 @@ public:
 	void addIncomingReference(IResource& resource);
 
 protected:
+	virtual void dependenciesLoaded(void);
+
 	void succeeded(void);
 	void failed(void);
 
@@ -87,6 +89,8 @@ private:
 	// Vector<IResource*> _outgoing_references{ RESOURCE_ALLOCATOR };
 
 	EA::Thread::SpinLock _incoming_references_lock;
+	eastl::atomic<int32_t> _dependency_count = 0;
+	bool _dependency_success = true; // Not atomic because this value will only have false written to it. Doesn't matter if there's a race.
 
 	ResourceState _state = ResourceState::Deferred;
 	HashString64<> _file_path;
@@ -94,6 +98,7 @@ private:
 	ResourceManager* _res_mgr = nullptr;
 
 	const IFile* loadFile(const char8_t* file_path);
+	void finishedLoading(void);
 
 	friend class ResourceManager;
 
