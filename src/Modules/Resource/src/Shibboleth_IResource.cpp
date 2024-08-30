@@ -223,6 +223,11 @@ ResourceState IResource::getState(void) const
 	return _state;
 }
 
+bool IResource::isDeferred(void) const
+{
+	return _state == ResourceState::Deferred;
+}
+
 bool IResource::hasFailed(void) const
 {
 	return _state == ResourceState::Failed;

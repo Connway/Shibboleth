@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_SceneResource.h"
+#include <Shibboleth_DeferredResourcePtr.h>
 #include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
@@ -32,7 +34,10 @@ public:
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 
+	void changePrimaryScene(const DeferredResourcePtr<SceneResource>& scene);
+
 private:
+	DeferredResourcePtr<SceneResource> _primary_scene;
 
 	SHIB_REFLECTION_CLASS_DECLARE(SceneManager);
 };

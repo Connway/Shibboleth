@@ -56,6 +56,25 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(LayerResource)
 
+void LayerEntityData::Save(ISerializeWriter& writer, const LayerEntityData& instance)
+{
+	const auto& ref_def = Refl::Reflection<LayerEntityData>::GetReflectionDefinition();
+
+	if (instance.entity_base) {
+		// Save entity_base and name.
+		Entity* const entity_definition = const_cast<LayerEntityData&>(instance).entity_definition.release();
+
+		ref_def.save(writer, instance, Refl::IReflectionDefinition::SaveFlags::ReflectionSave);
+
+		const_cast<LayerEntityData&>(instance).entity_definition.reset(entity_definition);
+
+		// $TODO: Write delta of entity_base and entity_definition in "overrides" field.
+
+	} else {
+		ref_def.save(writer, instance, Refl::IReflectionDefinition::SaveFlags::ReflectionSave);
+	}
+}
+
 bool LayerEntityData::postLoad(const ISerializeReader& reader)
 {
 	if (entity_base) {
@@ -89,25 +108,6 @@ bool LayerEntityData::postLoad(const ISerializeReader& reader)
 
 	// If entity_base is null, assuming we are serializing entity_definition directly.
 	return true;
-}
-
-void LayerEntityData::Save(ISerializeWriter& writer, const LayerEntityData& instance)
-{
-	const auto& ref_def = Refl::Reflection<LayerEntityData>::GetReflectionDefinition();
-
-	if (instance.entity_base) {
-		// Save entity_base and name.
-		Entity* const entity_definition = const_cast<LayerEntityData&>(instance).entity_definition.release();
-
-		ref_def.save(writer, instance, Refl::IReflectionDefinition::SaveFlags::ReflectionSave);
-
-		const_cast<LayerEntityData&>(instance).entity_definition.reset(entity_definition);
-
-		// $TODO: Write delta of entity_base and entity_definition in "overrides" field.
-
-	} else {
-		ref_def.save(writer, instance, Refl::IReflectionDefinition::SaveFlags::ReflectionSave);
-	}
 }
 
 void LayerResource::dependenciesLoaded(const ISerializeReader& reader, uintptr_t thread_id_int)

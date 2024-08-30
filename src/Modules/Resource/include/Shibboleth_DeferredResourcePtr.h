@@ -68,11 +68,17 @@ public:
 	explicit DeferredResourcePtr(const HashString64<>& file_path, const Refl::IReflectionDefinition* ref_def = &Refl::Reflection<T>::GetReflectionDefinition()):
 		_ref_def(ref_def), _file_path(file_path), _resource(nullptr)
 	{
+		if (!_file_path.empty()) {
+			_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
+		}
 	}
 
 	explicit DeferredResourcePtr(HashString64<>&& file_path, const Refl::IReflectionDefinition* ref_def = &Refl::Reflection<T>::GetReflectionDefinition()):
 		_ref_def(ref_def), _file_path(std::move(file_path)), _resource(nullptr)
 	{
+		if (!_file_path.empty()) {
+			_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
+		}
 	}
 
 	DeferredResourcePtr(const DeferredResourcePtr<T>& res_ptr) = default;
@@ -114,7 +120,11 @@ public:
 	{
 		_ref_def = &rhs->getReflectionDefinition();
 		_file_path = (rhs) ? rhs->getFilePath() : HashString64<>();
-		_resource = rhs;
+
+		if (!_file_path.empty()) {
+			_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
+		}
+
 		return *this;
 	}
 
@@ -122,7 +132,11 @@ public:
 	{
 		_ref_def = &Refl::Reflection<T>::GetReflectionDefinition();
 		_file_path = rhs;
-		_resource = nullptr;
+
+		if (!_file_path.empty()) {
+			_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
+		}
+
 		return *this;
 	}
 
@@ -131,6 +145,11 @@ public:
 		_ref_def = &Refl::Reflection<T>::GetReflectionDefinition();
 		_file_path = std::move(rhs);
 		_resource = nullptr;
+
+		if (!_file_path.empty()) {
+			_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
+		}
+
 		return *this;
 	}
 
@@ -182,12 +201,6 @@ public:
 	const HashString64<>& getFilePath(void) const
 	{
 		return _file_path;
-	}
-
-	void requestLoad(void)
-	{
-		GAFF_ASSERT(!_file_path.empty() && _ref_def);
-		_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
 	}
 
 	void release(void)

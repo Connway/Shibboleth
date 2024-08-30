@@ -102,7 +102,7 @@ void SceneResource::loadLayer(const HashStringView64<>& name)
 		return;
 	}
 
-	it->second.requestLoad();
+	it->second->requestLoad();
 }
 
 NS_END

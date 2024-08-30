@@ -98,6 +98,7 @@ public:
 	const HashString64<>& getFilePath(void) const;
 	ResourceState getState(void) const;
 
+	bool isDeferred(void) const;
 	bool hasFailed(void) const;
 	bool isPending(void) const;
 	bool isLoaded(void) const;

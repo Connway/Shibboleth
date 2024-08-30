@@ -28,7 +28,7 @@ NS_SHIBBOLETH
 
 ResourcePtr<IResource> DeferredResourceRequestResourceHelper(const HashString64<>& file_path, const Refl::IReflectionDefinition& ref_def)
 {
-	return GetManagerTFast<ResourceManager>().requestResource(file_path, ref_def);
+	return GetManagerTFast<ResourceManager>().requestResource(file_path, ref_def, true);
 }
 
 NS_END

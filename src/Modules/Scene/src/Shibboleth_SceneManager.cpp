@@ -27,6 +27,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneManager)
 	.template base<Shibboleth::IManager>()
 	.template ctor<>()
+
+	.var(u8"primary_scene", &Shibboleth::SceneManager::_primary_scene)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneManager)
 
 
@@ -37,7 +39,7 @@ SHIB_REFLECTION_CLASS_DEFINE(SceneManager)
 bool SceneManager::initAllModulesLoaded(void)
 {
 	const SceneConfig& config = GetConfigRef<SceneConfig>();
-	const_cast<SceneConfig&>(config).starting_scene.requestLoad();
+	changePrimaryScene(config.starting_scene);
 
 	return true;
 }
@@ -46,6 +48,22 @@ bool SceneManager::init(void)
 {
 	GetApp().getLogManager().addChannel(HashStringView32<>{ k_log_channel_name_scene });
 	return true;
+}
+
+void SceneManager::changePrimaryScene(const DeferredResourcePtr<SceneResource>& scene)
+{
+	GAFF_ASSERT(scene && !scene->hasFailed());
+
+	if (_primary_scene) {
+		// $TODO: Unload old scene.
+	}
+
+	_primary_scene = scene;
+
+	if (_primary_scene->isDeferred()) {
+		// $TODO: Display loading screen scene.
+		_primary_scene->requestLoad();
+	}
 }
 
 NS_END
