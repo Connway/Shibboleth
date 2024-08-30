@@ -56,6 +56,57 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::IResource)
 
 NS_SHIBBOLETH
 
+void IResourceTracker::addIncomingReference(IResourceTracker& tracker)
+{
+	EA::Thread::AutoSpinLock lock(_incoming_references_lock);
+
+	if (Gaff::PushBackUnique(_incoming_references, &tracker)) {
+		++tracker._dependency_count;
+	}
+}
+
+const Vector<IResourceTracker*>& IResourceTracker::getIncomingReferences(void) const
+{
+	return _incoming_references;
+}
+
+bool IResourceTracker::haveDependenciesSucceeded(void) const
+{
+	return !_dependency_success;
+}
+
+bool IResourceTracker::hasDependenciesFailed(void) const
+{
+	return !_dependency_success;
+}
+
+bool IResourceTracker::areDependenciesLoaded(void) const
+{
+	return _dependency_count <= 0;
+}
+
+void IResourceTracker::dependenciesLoaded(void)
+{
+	finishedLoading(true);
+}
+
+void IResourceTracker::finishedLoading(bool success)
+{
+	for (IResourceTracker* incoming_reference : getIncomingReferences()) {
+		const int32_t count = --incoming_reference->_dependency_count;
+
+		if (!success) {
+			incoming_reference->_dependency_success = false;
+		}
+
+		if (count <= 0) {
+			incoming_reference->dependenciesLoaded();
+		}
+	}
+}
+
+
+
 SHIB_REFLECTION_CLASS_DEFINE(IResource)
 
 static void LoadJob(uintptr_t thread_id_int, void* data)
@@ -84,13 +135,22 @@ void IResource::requestLoad(void)
 	_res_mgr->requestLoad(*this);
 }
 
-void IResource::load(const ISerializeReader& reader, uintptr_t /*thread_id_int*/)
+void IResource::load(const ISerializeReader& reader, uintptr_t thread_id_int)
 {
-	getReflectionDefinition().load(reader, getBasePointer());
+	const auto& ref_def = getReflectionDefinition();
 
-	if (!_dependency_count) {
-		succeeded();
+	if (!ref_def.load(reader, getBasePointer())) {
+		failed();
+		return;
 	}
+
+	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
+
+	while (!areDependenciesLoaded()) {
+		GetApp().getJobPool().help(thread_id);
+	}
+
+	dependenciesLoaded(reader, thread_id_int);
 }
 
 void IResource::load(const IFile& file, uintptr_t thread_id_int)
@@ -178,18 +238,19 @@ bool IResource::isLoaded(void) const
 	return _state == ResourceState::Loaded;
 }
 
-void IResource::addIncomingReference(IResource& resource)
+void IResource::dependenciesLoaded(const ISerializeReader& /*reader*/, uintptr_t /*thread_id_int*/)
 {
-	EA::Thread::AutoSpinLock lock(_incoming_references_lock);
-
-	if (Gaff::PushBackUnique(_incoming_references, &resource)) {
-		++resource._dependency_count;
-	}
+	dependenciesLoaded();
 }
 
 void IResource::dependenciesLoaded(void)
 {
-	if (_dependency_success) {
+	// Derived class handled setting our state already.
+	if (!isPending()) {
+		return;
+	}
+
+	if (haveDependenciesSucceeded()) {
 		succeeded();
 	} else {
 		failed();
@@ -199,13 +260,13 @@ void IResource::dependenciesLoaded(void)
 void IResource::succeeded(void)
 {
 	_state = ResourceState::Loaded;
-	finishedLoading();
+	finishedLoading(true);
 }
 
 void IResource::failed(void)
 {
 	_state = ResourceState::Failed;
-	finishedLoading();
+	finishedLoading(false);
 }
 
 const IFile* IResource::loadFile(const char8_t* file_path)
@@ -221,24 +282,6 @@ const IFile* IResource::loadFile(const char8_t* file_path)
 	}
 
 	return file;
-}
-
-void IResource::finishedLoading(void)
-{
-	GAFF_ASSERT(isLoaded() || hasFailed());
-	const bool success = isLoaded();
-
-	for (IResource* incoming_reference : _incoming_references) {
-		const int32_t count = --incoming_reference->_dependency_count;
-
-		if (!success) {
-			incoming_reference->_dependency_success = false;
-		}
-
-		if (count <= 0) {
-			incoming_reference->dependenciesLoaded();
-		}
-	}
 }
 
 NS_END

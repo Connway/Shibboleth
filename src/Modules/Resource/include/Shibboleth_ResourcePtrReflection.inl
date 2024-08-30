@@ -116,7 +116,7 @@ bool VarResourcePtr<T, VarType>::load(const ISerializeReader& reader, T& object)
 	ResourcePtr<VarType>* const var = Refl::IVar<T>::template get< ResourcePtr<VarType> >(&object);
 	const bool result = load(reader, var);
 
-	if constexpr (std::derived_from<T, IResource>) {
+	if constexpr (std::derived_from<T, IResourceTracker>) {
 		if (*var) {
 			(*var)->addIncomingReference(object);
 		}

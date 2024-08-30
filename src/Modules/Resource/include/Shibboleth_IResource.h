@@ -34,6 +34,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class ResourceManager;
+class IResource;
 class IFile;
 
 struct ResourceCallbackID final
@@ -51,7 +52,34 @@ enum class ResourceState
 	Deferred
 };
 
-class IResource : public Refl::IReflectionObject
+class IResourceTracker
+{
+public:
+	virtual ~IResourceTracker(void) = default;
+
+	virtual void addIncomingReference(IResourceTracker& tracker);
+
+	const Vector<IResourceTracker*>& getIncomingReferences(void) const;
+
+	bool haveDependenciesSucceeded(void) const;
+	bool hasDependenciesFailed(void) const;
+	bool areDependenciesLoaded(void) const;
+
+protected:
+	virtual void dependenciesLoaded(void);
+
+	void finishedLoading(bool success);
+
+private:
+	Vector<IResourceTracker*> _incoming_references{ RESOURCE_ALLOCATOR };
+	// Vector<IResource*> _outgoing_references{ RESOURCE_ALLOCATOR };
+
+	EA::Thread::SpinLock _incoming_references_lock;
+	eastl::atomic<int32_t> _dependency_count = 0;
+	bool _dependency_success = true; // Not atomic because this value will only have false written to it. Doesn't matter if there's a race.
+};
+
+class IResource : public Refl::IReflectionObject, public IResourceTracker
 {
 public:
 	static constexpr bool Creatable = false;
@@ -74,10 +102,9 @@ public:
 	bool isPending(void) const;
 	bool isLoaded(void) const;
 
-	void addIncomingReference(IResource& resource);
-
 protected:
-	virtual void dependenciesLoaded(void);
+	virtual void dependenciesLoaded(const ISerializeReader& reader, uintptr_t thread_id_int);
+	void dependenciesLoaded(void) override;
 
 	void succeeded(void);
 	void failed(void);
@@ -85,20 +112,12 @@ protected:
 private:
 	mutable eastl::atomic<int32_t> _count = 0;
 
-	Vector<IResource*> _incoming_references{ RESOURCE_ALLOCATOR };
-	// Vector<IResource*> _outgoing_references{ RESOURCE_ALLOCATOR };
-
-	EA::Thread::SpinLock _incoming_references_lock;
-	eastl::atomic<int32_t> _dependency_count = 0;
-	bool _dependency_success = true; // Not atomic because this value will only have false written to it. Doesn't matter if there's a race.
-
 	ResourceState _state = ResourceState::Deferred;
 	HashString64<> _file_path;
 
 	ResourceManager* _res_mgr = nullptr;
 
 	const IFile* loadFile(const char8_t* file_path);
-	void finishedLoading(void);
 
 	friend class ResourceManager;
 
