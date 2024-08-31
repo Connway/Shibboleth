@@ -108,8 +108,8 @@ public:
 	virtual bool clone(Entity& new_entity, const ISerializeReader* overrides) const;
 	bool clone(Entity*& new_entity, const ISerializeReader* overrides) const;
 
-	virtual void addToWorld(void);
-	virtual void removeFromWorld(void);
+	virtual void start(void);
+	virtual void end(void);
 
 	void addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs);
 	EntityComponent* addComponent(const Refl::IReflectionDefinition& ref_def);

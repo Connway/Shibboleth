@@ -122,6 +122,7 @@ public:
 	const IFile* loadFileAndWait(const char8_t* file_path, uintptr_t thread_id_int);
 
 	ResourceCallbackID registerCallback(const Vector<const IResource*>& resources, const ResourceStateCallback& callback);
+	ResourceCallbackID registerCallback(const IResource& resource, const ResourceStateCallback& callback);
 	void removeCallback(ResourceCallbackID id);
 
 	template<class T, class U = T>

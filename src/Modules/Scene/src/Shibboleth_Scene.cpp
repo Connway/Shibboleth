@@ -20,44 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_Scene.h"
 
-#include "Shibboleth_SceneResource.h"
-#include "Shibboleth_Scene.h"
-#include <Shibboleth_DeferredResourcePtr.h>
-#include <Shibboleth_IManager.h>
-#include "Shibboleth_Scene.h"
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Scene)
+	.template ctor<>()
+SHIB_REFLECTION_DEFINE_END(Shibboleth::Scene)
+
 
 NS_SHIBBOLETH
 
-class ResourceManager;
-
-class SceneManager final : public IManager
+void Scene::start(void)
 {
-public:
-	bool initAllModulesLoaded(void) override;
-	bool init(void) override;
+}
 
-	void changePrimaryScene(const DeferredResourcePtr<SceneResource>& scene);
-
-	// $TODO: Create scene API
-	// $TODO: Request additional scene resources to be loaded.
-
-private:
-	Vector< UniquePtr<Scene> > _scenes{ ENTITY_ALLOCATOR };
-
-	DeferredResourcePtr<SceneResource> _primary_scene_resource;
-	UniquePtr<Scene> _primary_scene; // $TODO: Add this to _scenes instead? _scenes[0] is always primary scene?
-
-	ResourceManager* _res_mgr = nullptr;
-
-	Scene* instantiateScene(const SceneResource& scene_resource);
-	void primarySceneLoaded(const Vector<const IResource*>&);
-	void loadingScreenFadedIn(void);
-
-	SHIB_REFLECTION_CLASS_DECLARE(SceneManager);
-};
+void Scene::end(void)
+{
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Shibboleth::SceneManager)

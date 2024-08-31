@@ -23,12 +23,14 @@ THE SOFTWARE.
 #include "Shibboleth_SceneManager.h"
 #include "Shibboleth_SceneLogging.h"
 #include "Shibboleth_SceneConfig.h"
+#include <Shibboleth_ResourceManager.h>
+#include <Gaff_Function.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneManager)
 	.template base<Shibboleth::IManager>()
 	.template ctor<>()
 
-	.var(u8"primary_scene", &Shibboleth::SceneManager::_primary_scene)
+	.var(u8"primary_scene_resource", &Shibboleth::SceneManager::_primary_scene_resource)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneManager)
 
 
@@ -38,6 +40,8 @@ SHIB_REFLECTION_CLASS_DEFINE(SceneManager)
 
 bool SceneManager::initAllModulesLoaded(void)
 {
+	_res_mgr = &GetManagerTFast<ResourceManager>();
+
 	const SceneConfig& config = GetConfigRef<SceneConfig>();
 	changePrimaryScene(config.starting_scene);
 
@@ -54,15 +58,44 @@ void SceneManager::changePrimaryScene(const DeferredResourcePtr<SceneResource>& 
 {
 	GAFF_ASSERT(scene && !scene->hasFailed());
 
-	if (_primary_scene) {
-		// $TODO: Unload old scene.
+	// $TODO: Tell loading screen to display. Register for callback to call loadingScreenFadedIn().
+	loadingScreenFadedIn();
+
+	_primary_scene_resource = scene;
+
+	if (_primary_scene_resource->isDeferred()) {
+		// $TODO: Display loading screen scene.
+		_primary_scene_resource->requestLoad();
 	}
 
-	_primary_scene = scene;
+	_res_mgr->registerCallback(*_primary_scene_resource, Gaff::MemberFunc(this, &SceneManager::primarySceneLoaded));
+}
 
-	if (_primary_scene->isDeferred()) {
-		// $TODO: Display loading screen scene.
-		_primary_scene->requestLoad();
+Scene* SceneManager::instantiateScene(const SceneResource& scene_resource)
+{
+	GAFF_REF(scene_resource);
+	return nullptr;
+}
+
+void SceneManager::primarySceneLoaded(const Vector<const IResource*>&)
+{
+	// $TODO: Tell loading screen we are done loading.
+
+	// $TODO: Instantiate scene and tell it to start.
+
+	Scene* const scene = instantiateScene(*_primary_scene_resource);
+	_primary_scene.reset(scene);
+
+	scene->start();
+
+	// $TODO: Call start() on all entities.
+}
+
+void SceneManager::loadingScreenFadedIn(void)
+{
+	if (_primary_scene) {
+		_primary_scene->end();
+		_primary_scene.reset(nullptr);
 	}
 }
 

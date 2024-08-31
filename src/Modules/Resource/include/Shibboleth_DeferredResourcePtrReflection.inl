@@ -144,7 +144,15 @@ template <class T, class VarType>
 bool VarDeferredResourcePtr<T, VarType>::load(const ISerializeReader& reader, T& object)
 {
 	DeferredResourcePtr<VarType>* const var = Refl::IVar<T>::template get< DeferredResourcePtr<VarType> >(&object);
-	return load(reader, var);
+	const bool success = load(reader, var);
+
+	if constexpr (std::derived_from<T, IResourceTracker>) {
+		if (*var) {
+			(*var)->addIncomingReference(object);
+		}
+	}
+
+	return success;
 }
 
 template <class T, class VarType>

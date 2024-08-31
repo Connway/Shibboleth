@@ -310,6 +310,12 @@ ResourceCallbackID ResourceManager::registerCallback(const Vector<const IResourc
 	return id;
 }
 
+ResourceCallbackID ResourceManager::registerCallback(const IResource& resource, const ResourceStateCallback& callback)
+{
+	const Vector<const IResource*> resource_vector{ { &resource }, RESOURCE_ALLOCATOR };
+	return registerCallback(resource_vector, callback);
+}
+
 void ResourceManager::removeCallback(ResourceCallbackID id)
 {
 	const EA::Thread::AutoMutex lock(_callback_lock);

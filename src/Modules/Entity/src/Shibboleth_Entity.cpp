@@ -245,15 +245,12 @@ bool Entity::clone(Entity*& new_entity, const ISerializeReader* overrides) const
 	return clone(*new_entity, overrides);
 }
 
-void Entity::addToWorld(void)
+void Entity::start(void)
 {
-	// _world = world;
-	// broadcast event
 }
 
-void Entity::removeFromWorld(void)
+void Entity::end(void)
 {
-	// broadcast event
 }
 
 void Entity::addComponent(const Vector<const Refl::IReflectionDefinition*>& ref_defs)
