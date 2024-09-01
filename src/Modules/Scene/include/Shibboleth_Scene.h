@@ -26,11 +26,20 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class SceneResource;
+
 class Scene final
 {
 public:
+	Scene(SceneResource& scene_resource);
+
 	void start(void);
 	void end(void);
+
+private:
+	SceneResource& _scene_resource;
+
+	void init(void);
 };
 
 NS_END

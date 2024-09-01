@@ -33,6 +33,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneManager)
 	.var(u8"primary_scene_resource", &Shibboleth::SceneManager::_primary_scene_resource)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneManager)
 
+namespace
+{
+	static Shibboleth::ProxyAllocator s_allocator{ SCENE_ALLOCATOR };
+}
 
 NS_SHIBBOLETH
 
@@ -71,19 +75,11 @@ void SceneManager::changePrimaryScene(const DeferredResourcePtr<SceneResource>& 
 	_res_mgr->registerCallback(*_primary_scene_resource, Gaff::MemberFunc(this, &SceneManager::primarySceneLoaded));
 }
 
-Scene* SceneManager::instantiateScene(const SceneResource& scene_resource)
-{
-	GAFF_REF(scene_resource);
-	return nullptr;
-}
-
 void SceneManager::primarySceneLoaded(const Vector<const IResource*>&)
 {
 	// $TODO: Tell loading screen we are done loading.
 
-	// $TODO: Instantiate scene and tell it to start.
-
-	Scene* const scene = instantiateScene(*_primary_scene_resource);
+	Scene* const scene = SHIB_ALLOCT(Scene, s_allocator, *_primary_scene_resource);
 	_primary_scene.reset(scene);
 
 	scene->start();

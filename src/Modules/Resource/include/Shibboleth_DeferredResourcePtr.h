@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-ResourcePtr<IResource> DeferredResourceRequestResourceHelper(const HashString64<>& _file_path, const Refl::IReflectionDefinition& ref_def);
+IResource* DeferredResourceRequestResourceHelper(const HashString64<>& _file_path, const Refl::IReflectionDefinition& ref_def);
 
 template <class T>
 class DeferredResourcePtr final
@@ -49,6 +49,9 @@ public:
 		_file_path((resource) ? resource->getFilePath() : HashString64<>()),
 		_resource(resource)
 	{
+		if (_resource && _resource->isLoaded()) {
+			_resource->requestLoad(); // Add to load count.
+		}
 	}
 
 	template <class U>
@@ -69,7 +72,7 @@ public:
 		_ref_def(ref_def), _file_path(file_path), _resource(nullptr)
 	{
 		if (!_file_path.empty()) {
-			_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
+			_resource.reset(ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def)));
 		}
 	}
 
@@ -77,11 +80,15 @@ public:
 		_ref_def(ref_def), _file_path(std::move(file_path)), _resource(nullptr)
 	{
 		if (!_file_path.empty()) {
-			_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
+			_resource.reset(ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def)));
 		}
 	}
 
-	DeferredResourcePtr(const DeferredResourcePtr<T>& res_ptr) = default;
+	DeferredResourcePtr(const DeferredResourcePtr<T>& res_ptr):
+		DeferredResourcePtr(res_ptr.get())
+	{
+	}
+
 	DeferredResourcePtr(DeferredResourcePtr<T>&& res_ptr) = default;
 	DeferredResourcePtr(void) = default;
 
@@ -113,16 +120,22 @@ public:
 		return (*this) <=> rhs_ptr;
 	}
 
-	DeferredResourcePtr<T>& operator=(const DeferredResourcePtr<T>& rhs) = default;
 	DeferredResourcePtr<T>& operator=(DeferredResourcePtr<T>&& rhs) = default;
+
+	DeferredResourcePtr<T>& operator=(const DeferredResourcePtr<T>& rhs)
+	{
+		*this = const_cast<T*>(rhs.get());
+		return *this;
+	}
 
 	DeferredResourcePtr<T>& operator=(T* rhs)
 	{
 		_ref_def = &rhs->getReflectionDefinition();
 		_file_path = (rhs) ? rhs->getFilePath() : HashString64<>();
+		_resource = rhs;
 
-		if (!_file_path.empty()) {
-			_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
+		if (rhs && rhs->isLoaded()) {
+			_resource->requestLoad(); // Add to the load count.
 		}
 
 		return *this;
@@ -134,7 +147,7 @@ public:
 		_file_path = rhs;
 
 		if (!_file_path.empty()) {
-			_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
+			_resource.reset(ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def)));
 		}
 
 		return *this;
@@ -147,7 +160,7 @@ public:
 		_resource = nullptr;
 
 		if (!_file_path.empty()) {
-			_resource = ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def));
+			_resource.reset(ReflectionCast<T>(DeferredResourceRequestResourceHelper(_file_path, *_ref_def)));
 		}
 
 		return *this;
@@ -180,7 +193,7 @@ public:
 
 	operator ResourcePtr<T>(void) const
 	{
-		return _resource;
+		return ResourcePtr<T>(_resource.get());
 	}
 
 	const T* get(void) const
@@ -203,16 +216,17 @@ public:
 		return _file_path;
 	}
 
-	void release(void)
+	T* release(void)
 	{
-		_resource = nullptr;
+		// No unload request. Assuming the caller will make an unload request.
+		return _resource.release();
 	}
 
 private:
 	const Refl::IReflectionDefinition* _ref_def = &Refl::Reflection<T>::GetReflectionDefinition();
 	HashString64<> _file_path;
 
-	ResourcePtr<T> _resource;
+	Gaff::RefPtr<T> _resource;
 };
 
 NS_END

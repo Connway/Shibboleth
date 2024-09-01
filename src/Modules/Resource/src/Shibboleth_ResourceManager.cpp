@@ -66,11 +66,13 @@ namespace
 		const Shibboleth::IFile* out_file;
 	};
 
+	static Shibboleth::ProxyAllocator s_allocator{ RESOURCE_ALLOCATOR };
+
 	static void ResourceFileLoadRawJob(uintptr_t /*thread_id_int*/, void* data)
 	{
 		RawJobData* const job_data = reinterpret_cast<RawJobData*>(data);
 
-		Shibboleth::U8String final_path(Shibboleth::ProxyAllocator("Resource"));
+		Shibboleth::U8String final_path(s_allocator);
 		final_path.sprintf(u8"Resources/%s", job_data->file_path);
 
 		job_data->out_file = Shibboleth::GetApp().getFileSystem().openFile(final_path.data());
@@ -115,8 +117,7 @@ bool ResourceManager::initAllModulesLoaded(void)
 		return true;
 	}
 
-	ProxyAllocator allocator("Resource");
-	_resource_buckets = ArrayPtr<ResourceBucket>(SHIB_ALLOC_ARRAYT(ResourceBucket, type_bucket->size(), allocator), type_bucket->size());
+	_resource_buckets = ArrayPtr<ResourceBucket>(SHIB_ALLOC_ARRAYT(ResourceBucket, type_bucket->size(), s_allocator), type_bucket->size());
 
 	Vector<const Refl::IReflectionDefinition*> sorted_type_bucket = *type_bucket;
 	Vector<const ResourceExtensionAttribute*> ext_attrs;
@@ -157,6 +158,16 @@ bool ResourceManager::initAllModulesLoaded(void)
 	return true;
 }
 
+DeferredResourcePtr<IResource> ResourceManager::requestDeferredResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
+{
+	return DeferredResourcePtr<IResource>{ requestResource(name, ref_def, false) };
+}
+
+ResourcePtr<IResource> ResourceManager::requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
+{
+	return ResourcePtr<IResource>{ requestResource(name, ref_def, false) };
+}
+
 ResourcePtr<IResource> ResourceManager::createResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
 {
 	if (!ref_def.getClassAttr<CreatableAttribute>()) {
@@ -182,7 +193,7 @@ ResourcePtr<IResource> ResourceManager::createResource(HashStringView64<> name, 
 		return ResourcePtr<IResource>();
 	}
 
-	void* const data = factory(_allocator);
+	void* const data = factory(s_allocator);
 	IResource* const resource = ref_def.GET_INTERFACE(Shibboleth::IResource, data);
 	resource->_state = ResourceState::Loaded;
 	resource->_file_path = name;
@@ -191,53 +202,6 @@ ResourcePtr<IResource> ResourceManager::createResource(HashStringView64<> name, 
 	it_bucket->resources.insert(it_res, resource);
 
 	return ResourcePtr<IResource>(resource);
-}
-
-ResourcePtr<IResource> ResourceManager::requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def, bool delay_load)
-{
-	const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
-	GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
-
-	const EA::Thread::AutoMutex lock(it_bucket->lock);
-	const auto it_res = Gaff::LowerBound(it_bucket->resources, name.getHash(), ResourceHashCompare);
-
-	if (it_res != it_bucket->resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
-		return ResourcePtr<IResource>(*it_res);
-	}
-
-	const size_t pos = Gaff::ReverseFind(name.getBuffer(), u8'.');
-
-	if (pos == GAFF_SIZE_T_FAIL) {
-		// $TODO: Log error
-		return ResourcePtr<IResource>();
-	}
-
-	// Search for res_factory that handles this resource file.
-	const Gaff::Hash32 res_file_hash = Gaff::FNV1aHash32String(name.getBuffer() + pos);
-	const auto it_fact = _resource_factories.find(res_file_hash);
-
-	if (it_fact == _resource_factories.end()) {
-		// $TODO: Log error
-		return ResourcePtr<IResource>();
-	}
-
-	// Assume all resources always inherit from IResource first.
-	IResource* const resource = static_cast<IResource*>(it_fact->second(_allocator));
-	resource->_file_path = name;
-	resource->_res_mgr = this;
-
-	it_bucket->resources.insert(it_res, resource);
-
-	if (!delay_load) {
-		requestLoad(*resource);
-	}
-
-	return ResourcePtr<IResource>(resource);
-}
-
-ResourcePtr<IResource> ResourceManager::requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
-{
-	return requestResource(name, ref_def, false);
 }
 
 ResourcePtr<IResource> ResourceManager::getResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def)
@@ -312,7 +276,7 @@ ResourceCallbackID ResourceManager::registerCallback(const Vector<const IResourc
 
 ResourceCallbackID ResourceManager::registerCallback(const IResource& resource, const ResourceStateCallback& callback)
 {
-	const Vector<const IResource*> resource_vector{ { &resource }, RESOURCE_ALLOCATOR };
+	const Vector<const IResource*> resource_vector{ { &resource }, s_allocator };
 	return registerCallback(resource_vector, callback);
 }
 
@@ -356,52 +320,116 @@ EA::Thread::Mutex& ResourceManager::getResourceBucketLock(const Refl::IReflectio
 	return it_bucket->lock;
 }
 
+IResource* ResourceManager::requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def, bool delay_load)
+{
+	const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
+	GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
+
+	const EA::Thread::AutoMutex lock(it_bucket->lock);
+	const auto it_res = Gaff::LowerBound(it_bucket->resources, name.getHash(), ResourceHashCompare);
+
+	if (it_res != it_bucket->resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
+		return *it_res;
+	}
+
+	const size_t pos = Gaff::ReverseFind(name.getBuffer(), u8'.');
+
+	if (pos == GAFF_SIZE_T_FAIL) {
+		// $TODO: Log error
+		return nullptr;
+	}
+
+	// Search for res_factory that handles this resource file.
+	const Gaff::Hash32 res_file_hash = Gaff::FNV1aHash32String(name.getBuffer() + pos);
+	const auto it_fact = _resource_factories.find(res_file_hash);
+
+	if (it_fact == _resource_factories.end()) {
+		// $TODO: Log error
+		return nullptr;
+	}
+
+	// Assume all resources always inherit from IResource first.
+	IResource* const resource = static_cast<IResource*>(it_fact->second(s_allocator));
+	resource->_file_path = name;
+	resource->_res_mgr = this;
+
+	it_bucket->resources.insert(it_res, resource);
+
+	if (!delay_load) {
+		requestLoad(*resource);
+	}
+
+	return resource;
+}
+
 void ResourceManager::checkAndRemoveResources(void)
 {
-	const EA::Thread::AutoMutex pending_lock(_removal_lock);
+	{
+		const EA::Thread::AutoMutex removal_lock(_removal_lock);
 
-	for (int32_t i = 0; i < static_cast<int32_t>(_pending_removals.size());) {
-		const IResource* const resource = _pending_removals[i];
+		for (int32_t i = 0; i < static_cast<int32_t>(_pending_removals.size());) {
+			const IResource* const resource = _pending_removals[i];
 
-		// Don't remove if a thread is still loading it.
-		if (resource->getState() == ResourceState::Pending) {
-			++i;
+			// Don't remove if a thread is still loading it.
+			if (resource->getState() == ResourceState::Pending) {
+				++i;
 
-		} else {
-			_pending_removals.erase_unsorted(_pending_removals.begin() + i);
+			} else {
+				_pending_removals.erase_unsorted(_pending_removals.begin() + i);
 
-			// Resource gained a reference since pending removal.
-			if (resource->getRefCount() > 0) {
-				return;
-			}
-
-			const Refl::IReflectionDefinition& ref_def = resource->getReflectionDefinition();
-			const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
-			GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
-
-			const EA::Thread::AutoMutex bucket_lock(it_bucket->lock);
-			const auto it_res = Gaff::LowerBound(it_bucket->resources, resource->getFilePath().getHash(), ResourceHashCompare);
-
-			if (it_res != it_bucket->resources.end() && *it_res == resource) {
-				it_bucket->resources.erase(it_res);
-			}
-
-			SHIB_FREET(resource, GetAllocator());
-
-			// Remove all callbacks that involve this resource.
-			const EA::Thread::AutoMutex callback_lock(_callback_lock);
-
-			for (int32_t j = 0; j < static_cast<int32_t>(_callbacks.size());) {
-				const auto it = _callbacks.begin() + j;
-
-				if (Gaff::Contains(it->second.resources, resource)) {
-					_callbacks.erase(it);
+				// Resource gained a reference since pending removal.
+				if (resource->getRefCount() > 0) {
 					continue;
 				}
 
-				++j;
+				// Get resource bucket.
+				const Refl::IReflectionDefinition& ref_def = resource->getReflectionDefinition();
+				const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
+				GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
+
+				// Remove resource from resource bucket.
+				const EA::Thread::AutoMutex bucket_lock(it_bucket->lock);
+				const auto it_res = Gaff::LowerBound(it_bucket->resources, resource->getFilePath().getHash(), ResourceHashCompare);
+
+				GAFF_ASSERT(it_res != it_bucket->resources.end() && *it_res == resource);
+
+				it_bucket->resources.erase(it_res);
+				SHIB_FREET(resource, s_allocator);
+
+				// Remove all callbacks that involve this resource.
+				const EA::Thread::AutoMutex callback_lock(_callback_lock);
+
+				for (int32_t j = 0; j < static_cast<int32_t>(_callbacks.size());) {
+					const auto it = _callbacks.begin() + j;
+
+					if (Gaff::Contains(it->second.resources, resource)) {
+						_callbacks.erase(it);
+						continue;
+					}
+
+					++j;
+				}
 			}
 		}
+	}
+
+	{
+		const EA::Thread::AutoMutex unload_lock(_unload_lock);
+
+		for (IResource* resource : _pending_unloads) {
+			// Resource gained a load request since unload was requested.
+			if (resource->_load_count > 0) {
+				continue;
+			}
+
+			const Refl::IReflectionDefinition& ref_def = resource->getReflectionDefinition();
+
+			// "unload" the resource be calling the destructor and then calling placement new.
+			Gaff::Deconstruct(resource);
+			ref_def.template construct<>(resource->getBasePointer());
+		}
+
+		_pending_unloads.clear();
 	}
 }
 
@@ -438,29 +466,20 @@ void ResourceManager::checkCallbacks(void)
 
 void ResourceManager::removeResource(const IResource& resource)
 {
-	// Resource load job has already been submitted. Wait until it is finished.
-	if (resource.getState() == ResourceState::Pending) {
-		const EA::Thread::AutoMutex lock(_removal_lock);
-		_pending_removals.emplace_back(&resource);
+	const EA::Thread::AutoMutex lock(_removal_lock);
+	_pending_removals.emplace_back(&resource);
+}
 
-	} else {
-		const Refl::IReflectionDefinition& ref_def = resource.getReflectionDefinition();
-		const auto it_bucket = Gaff::LowerBound(_resource_buckets, &ref_def);
-		GAFF_ASSERT(it_bucket != _resource_buckets.end() && it_bucket->ref_def == &ref_def);
-
-		const EA::Thread::AutoMutex lock(it_bucket->lock);
-		const auto it_res = Gaff::LowerBound(it_bucket->resources, resource.getFilePath().getHash(), ResourceHashCompare);
-
-		if (it_res != it_bucket->resources.end() && *it_res == &resource) {
-			it_bucket->resources.erase(it_res);
-			SHIB_FREET(&resource, GetAllocator());
-		}
-	}
+void ResourceManager::requestUnload(IResource& resource)
+{
+	const EA::Thread::AutoMutex lock(_unload_lock);
+	_pending_unloads.emplace_back(&resource);
 }
 
 void ResourceManager::requestLoad(IResource& resource)
 {
-	if (resource._state != ResourceState::Deferred) {
+	// $TODO: Assert instead? Only internal APIs are calling this.
+	if (!resource.isDeferred()) {
 		LogErrorResource(
 			"Call to ResourceManager::requestLoad() called on resource '%s' and is not marked for deferred load.",
 			resource._file_path.getBuffer()

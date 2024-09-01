@@ -30,14 +30,28 @@ NS_SHIBBOLETH
 class SceneResource final : public IResource
 {
 public:
+	int32_t getNumDeferredLayers(void) const;
+	int32_t getNumLayers(void) const;
+
 	const LayerResource* getDeferredLayer(const HashStringView64<>& name) const;
 	LayerResource* getDeferredLayer(const HashStringView64<>& name);
+	const LayerResource* getDeferredLayer(Gaff::Hash64 name) const;
+	LayerResource* getDeferredLayer(Gaff::Hash64 name);
+	const LayerResource* getDeferredLayer(int32_t index) const;
+	LayerResource* getDeferredLayer(int32_t index);
+
 
 	const LayerResource* getLayer(const HashStringView64<>& name) const;
 	LayerResource* getLayer(const HashStringView64<>& name);
+	const LayerResource* getLayer(Gaff::Hash64 name) const;
+	LayerResource* getLayer(Gaff::Hash64 name);
+	const LayerResource* getLayer(int32_t index) const;
+	LayerResource* getLayer(int32_t index);
 
+	LayerResource* loadLayer(const HashStringView64<>& name);
+	LayerResource* loadLayer(Gaff::Hash64 name);
 	void unloadLayer(const HashStringView64<>& name);
-	void loadLayer(const HashStringView64<>& name);
+	void unloadLayer(Gaff::Hash64 name);
 
 private:
 	VectorMap< HashString64<>, DeferredResourcePtr<LayerResource> > _deferred_layers{ SCENE_ALLOCATOR };

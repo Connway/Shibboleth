@@ -85,6 +85,7 @@ public:
 	static constexpr bool Creatable = false;
 
 	bool waitUntilLoaded(void) const;
+	void requestUnload(void);
 	void requestLoad(void);
 
 	virtual void load(const ISerializeReader& reader, uintptr_t thread_id_int);
@@ -111,7 +112,8 @@ protected:
 	void failed(void);
 
 private:
-	mutable eastl::atomic<int32_t> _count = 0;
+	mutable eastl::atomic<int32_t> _load_count = 0;
+	mutable eastl::atomic<int32_t> _ref_count = 0;
 
 	ResourceState _state = ResourceState::Deferred;
 	HashString64<> _file_path;

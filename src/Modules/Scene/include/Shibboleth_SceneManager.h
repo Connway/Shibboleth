@@ -24,9 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_SceneResource.h"
 #include "Shibboleth_Scene.h"
-#include <Shibboleth_DeferredResourcePtr.h>
 #include <Shibboleth_IManager.h>
-#include "Shibboleth_Scene.h"
 
 NS_SHIBBOLETH
 
@@ -51,7 +49,6 @@ private:
 
 	ResourceManager* _res_mgr = nullptr;
 
-	Scene* instantiateScene(const SceneResource& scene_resource);
 	void primarySceneLoaded(const Vector<const IResource*>&);
 	void loadingScreenFadedIn(void);
 

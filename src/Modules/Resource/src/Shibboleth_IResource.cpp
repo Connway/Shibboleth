@@ -125,14 +125,23 @@ bool IResource::waitUntilLoaded(void) const
 	return getState() == ResourceState::Loaded;
 }
 
+void IResource::requestUnload(void)
+{
+	const int32_t load_count = --_load_count;
+	GAFF_ASSERT(load_count >= 0);
+
+	if (load_count <= 0) {
+		_res_mgr->requestUnload(*this);
+	}
+}
+
 void IResource::requestLoad(void)
 {
-	if (_state != ResourceState::Deferred) {
-		// $TODO: Log warning.
-		return;
-	}
+	++_load_count;
 
-	_res_mgr->requestLoad(*this);
+	if (_state == ResourceState::Deferred) {
+		_res_mgr->requestLoad(*this);
+	}
 }
 
 void IResource::load(const ISerializeReader& reader, uintptr_t thread_id_int)
@@ -196,12 +205,12 @@ void IResource::load(void)
 
 void IResource::addRef(void) const
 {
-	++_count;
+	++_ref_count;
 }
 
 void IResource::release(void) const
 {
-	const int32_t new_count = --_count;
+	const int32_t new_count = --_ref_count;
 
 	if (!new_count) {
 		_res_mgr->removeResource(*this);
@@ -210,7 +219,7 @@ void IResource::release(void) const
 
 int32_t IResource::getRefCount(void) const
 {
-	return _count;
+	return _ref_count;
 }
 
 const HashString64<>& IResource::getFilePath(void) const

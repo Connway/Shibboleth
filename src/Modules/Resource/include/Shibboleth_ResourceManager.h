@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_DeferredResourcePtr.h"
 #include "Shibboleth_ResourcePtr.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Containers/Shibboleth_VectorMap.h>
@@ -49,24 +50,45 @@ public:
 
 
 	template <class T, class U = T>
-	ResourcePtr<U> requestResourceT(HashStringView64<> name, bool delay_load = false)
+	DeferredResourcePtr<U> requestDeferredResourceT(HashStringView64<> name)
 	{
 		static_assert(std::is_base_of_v<IResource, T>, "T is not derived from IResource.");
 		static_assert(std::is_base_of_v<T, U>, "U is not derived from T.");
 
-		ResourcePtr<IResource> resource = requestResource(name, Refl::Reflection<T>::GetReflectionDefinition(), delay_load);
+		DeferredResourcePtr<IResource> resource = requestDeferredResource(name, Refl::Reflection<T>::GetReflectionDefinition());
 		return ReflectionCast<U>(std::move(resource));
 	}
 
 	template <class T, class U = T>
-	ResourcePtr<T> requestResourceT(const char8_t* name, bool delay_load = false)
+	DeferredResourcePtr<T> requestDeferredResourceT(const char8_t* name)
 	{
-		return requestResourceT<T, U>(HashStringView64<>(name, eastl::CharStrlen(name)), delay_load);
+		return requestDeferredResourceT<T, U>(HashStringView64<>(name, eastl::CharStrlen(name)));
 	}
 
-	ResourcePtr<IResource> requestResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def, bool delay_load = false)
+	DeferredResourcePtr<IResource> requestDeferredResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def)
 	{
-		return requestResource(HashStringView64<>(name, eastl::CharStrlen(name)), ref_def, delay_load);
+		return requestDeferredResource(HashStringView64<>(name, eastl::CharStrlen(name)), ref_def);
+	}
+
+	template <class T, class U = T>
+	ResourcePtr<U> requestResourceT(HashStringView64<> name)
+	{
+		static_assert(std::is_base_of_v<IResource, T>, "T is not derived from IResource.");
+		static_assert(std::is_base_of_v<T, U>, "U is not derived from T.");
+
+		ResourcePtr<IResource> resource = requestResource(name, Refl::Reflection<T>::GetReflectionDefinition());
+		return ReflectionCast<U>(std::move(resource));
+	}
+
+	template <class T, class U = T>
+	ResourcePtr<T> requestResourceT(const char8_t* name)
+	{
+		return requestResourceT<T, U>(HashStringView64<>(name, eastl::CharStrlen(name)));
+	}
+
+	ResourcePtr<IResource> requestResource(const char8_t* name, const Refl::IReflectionDefinition& ref_def)
+	{
+		return requestResource(HashStringView64<>(name, eastl::CharStrlen(name)), ref_def);
 	}
 
 	template <class T, class U = T>
@@ -112,9 +134,9 @@ public:
 		return getResource(HashStringView64<>(name, eastl::CharStrlen(name)), ref_def);
 	}
 
-	ResourcePtr<IResource> createResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
-	ResourcePtr<IResource> requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def, bool delay_load);
+	DeferredResourcePtr<IResource> requestDeferredResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
 	ResourcePtr<IResource> requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
+	ResourcePtr<IResource> createResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
 	ResourcePtr<IResource> getResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def);
 
 	void waitForResource(const IResource& resource) const;
@@ -228,8 +250,10 @@ private:
 
 	ArrayPtr<ResourceBucket> _resource_buckets;
 
-	EA::Thread::Mutex _removal_lock;
 	Vector<const IResource*> _pending_removals{ ProxyAllocator("Resource") };
+	Vector<IResource*> _pending_unloads{ ProxyAllocator("Resource") };
+	EA::Thread::Mutex _removal_lock;
+	EA::Thread::Mutex _unload_lock;
 
 	VectorMap<Gaff::Hash32, FactoryFunc> _resource_factories{ ProxyAllocator("Resource") };
 
@@ -237,12 +261,13 @@ private:
 	VectorMap<Gaff::Hash64, CallbackData> _callbacks{ ProxyAllocator("Resource") };
 	EA::Thread::Mutex _callback_lock;
 
-	ProxyAllocator _allocator{ "Resource" };
+	IResource* requestResource(HashStringView64<> name, const Refl::IReflectionDefinition& ref_def, bool delay_load);
 
 	void checkAndRemoveResources(void);
 	void checkCallbacks(void);
 
 	void removeResource(const IResource& resource);
+	void requestUnload(IResource& resource);
 	void requestLoad(IResource& resource);
 
 #ifdef _DEBUG

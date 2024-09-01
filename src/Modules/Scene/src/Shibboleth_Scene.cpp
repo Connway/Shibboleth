@@ -21,13 +21,23 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Scene.h"
+#include "Shibboleth_SceneResource.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Scene)
-	.template ctor<>()
+	.template ctor<Shibboleth::SceneResource&>()
+
+	.func(u8"start", &Shibboleth::Scene::start)
+	.func(u8"end", &Shibboleth::Scene::end)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Scene)
 
 
 NS_SHIBBOLETH
+
+Scene::Scene(SceneResource& scene_resource):
+	_scene_resource(scene_resource)
+{
+	init();
+}
 
 void Scene::start(void)
 {
@@ -35,6 +45,17 @@ void Scene::start(void)
 
 void Scene::end(void)
 {
+}
+
+void Scene::init(void)
+{
+	for (int32_t i = 0; i < _scene_resource.getNumLayers(); ++i) {
+		const LayerResource* const layer = _scene_resource.getLayer(i);
+
+		if (!layer) {
+			continue;
+		}
+	}
 }
 
 NS_END

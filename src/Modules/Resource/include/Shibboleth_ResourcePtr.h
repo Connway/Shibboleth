@@ -43,6 +43,9 @@ public:
 	explicit ResourcePtr(T* resource):
 		_resource(resource)
 	{
+		if (_resource) {
+			_resource->requestLoad();
+		}
 	}
 
 	template <class U>
@@ -62,6 +65,13 @@ public:
 	ResourcePtr(const ResourcePtr<T>& res_ptr) = default;
 	ResourcePtr(ResourcePtr<T>&& res_ptr) = default;
 	ResourcePtr(void) = default;
+
+	~ResourcePtr(void)
+	{
+		if (_resource) {
+			_resource->requestUnload();
+		}
+	}
 
 	std::strong_ordering operator<=>(const T* rhs) const
 	{
@@ -91,12 +101,25 @@ public:
 		return (*this) <=> rhs_ptr;
 	}
 
-	ResourcePtr<T>& operator=(const ResourcePtr<T>& rhs) = default;
+	ResourcePtr<T>& operator=(const ResourcePtr<T>& rhs)
+	{
+		*this = rhs.get();
+	}
+
 	ResourcePtr<T>& operator=(ResourcePtr<T>&& rhs) = default;
 
 	ResourcePtr<T>& operator=(T* rhs)
 	{
+		if (_resource) {
+			_resource->requestUnload();
+		}
+
 		_resource = rhs;
+
+		if (_resource) {
+			_resource->requestLoad();
+		}
+
 		return *this;
 	}
 
@@ -137,6 +160,7 @@ public:
 
 	T* release(void)
 	{
+		// No unload request. Assuming the caller will make an unload request.
 		return _resource.release();
 	}
 

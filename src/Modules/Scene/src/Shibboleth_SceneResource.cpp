@@ -46,6 +46,16 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(SceneResource)
 
+int32_t SceneResource::getNumDeferredLayers(void) const
+{
+	return static_cast<int32_t>(_deferred_layers.size());
+}
+
+int32_t SceneResource::getNumLayers(void) const
+{
+	return static_cast<int32_t>(_layers.size());
+}
+
 const LayerResource* SceneResource::getDeferredLayer(const HashStringView64<>& name) const
 {
 	return const_cast<SceneResource*>(this)->getDeferredLayer(name);
@@ -53,8 +63,29 @@ const LayerResource* SceneResource::getDeferredLayer(const HashStringView64<>& n
 
 LayerResource* SceneResource::getDeferredLayer(const HashStringView64<>& name)
 {
+	return getDeferredLayer(name.getHash());
+}
+
+const LayerResource* SceneResource::getDeferredLayer(Gaff::Hash64 name) const
+{
+	return const_cast<SceneResource*>(this)->getDeferredLayer(name);
+}
+
+LayerResource* SceneResource::getDeferredLayer(Gaff::Hash64 name)
+{
 	const auto it = _deferred_layers.find_as(name, k_comparison);
 	return (it != _deferred_layers.end()) ? it->second.get() : nullptr;
+}
+
+const LayerResource* SceneResource::getDeferredLayer(int32_t index) const
+{
+	return const_cast<SceneResource*>(this)->getDeferredLayer(index);
+}
+
+LayerResource* SceneResource::getDeferredLayer(int32_t index)
+{
+	GAFF_ASSERT(Gaff::ValidIndex(index, _deferred_layers));
+	return _deferred_layers.at(index).second.get();
 }
 
 const LayerResource* SceneResource::getLayer(const HashStringView64<>& name) const
@@ -63,6 +94,16 @@ const LayerResource* SceneResource::getLayer(const HashStringView64<>& name) con
 }
 
 LayerResource* SceneResource::getLayer(const HashStringView64<>& name)
+{
+	return getLayer(name.getHash());
+}
+
+const LayerResource* SceneResource::getLayer(Gaff::Hash64 name) const
+{
+	return const_cast<SceneResource*>(this)->getLayer(name);
+}
+
+LayerResource* SceneResource::getLayer(Gaff::Hash64 name)
 {
 	const auto it = _layers.find_as(name, k_comparison);
 
@@ -73,36 +114,53 @@ LayerResource* SceneResource::getLayer(const HashStringView64<>& name)
 	return getDeferredLayer(name);
 }
 
-void SceneResource::unloadLayer(const HashStringView64<>& name)
+const LayerResource* SceneResource::getLayer(int32_t index) const
 {
-	const auto it = _deferred_layers.find_as(name, k_comparison);
-
-	if (it == _deferred_layers.end()) {
-		return;
-	}
-
-	if (!it->second.get()) {
-		LogWarningScene("SceneResource::unloadLayer: Layer '%s' is already unloaded.", it->second.getFilePath().getBuffer());
-		return;
-	}
-
-	it->second.release();
+	return const_cast<SceneResource*>(this)->getLayer(index);
 }
 
-void SceneResource::loadLayer(const HashStringView64<>& name)
+LayerResource* SceneResource::getLayer(int32_t index)
 {
-	const auto it = _deferred_layers.find_as(name, k_comparison);
+	GAFF_ASSERT(Gaff::ValidIndex(index, _layers));
+	return _layers.at(index).second.get();
+}
 
-	if (it == _deferred_layers.end()) {
+LayerResource* SceneResource::loadLayer(const HashStringView64<>& name)
+{
+	return loadLayer(name.getHash());
+}
+
+LayerResource* SceneResource::loadLayer(Gaff::Hash64 name)
+{
+	LayerResource* layer = getDeferredLayer(name);
+
+	if (!layer) {
+		return nullptr;
+	}
+
+	if (layer->isLoaded()) {
+		LogWarningScene("SceneResource::loadLayer: Layer '%s' is already loaded.", layer->getFilePath().getBuffer());
+		return nullptr;
+	}
+
+	layer->requestLoad();
+	return layer;
+}
+
+void SceneResource::unloadLayer(const HashStringView64<>& name)
+{
+	LayerResource* layer = getDeferredLayer(name);
+
+	if (!layer) {
 		return;
 	}
 
-	if (it->second.get()) {
-		LogWarningScene("SceneResource::loadLayer: Layer '%s' is already loaded.", it->second.getFilePath().getBuffer());
+	if (layer->isDeferred()) {
+		LogWarningScene("SceneResource::unloadLayer: Layer '%s' is already unloaded.", layer->getFilePath().getBuffer());
 		return;
 	}
 
-	it->second->requestLoad();
+	layer->requestUnload();
 }
 
 NS_END
