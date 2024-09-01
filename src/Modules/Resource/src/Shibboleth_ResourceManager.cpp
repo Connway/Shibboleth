@@ -423,10 +423,16 @@ void ResourceManager::checkAndRemoveResources(void)
 			}
 
 			const Refl::IReflectionDefinition& ref_def = resource->getReflectionDefinition();
+			const HashString64<> file_path = resource->_file_path;
+			const int32_t ref_count = resource->_ref_count;
 
 			// "unload" the resource be calling the destructor and then calling placement new.
 			Gaff::Deconstruct(resource);
 			ref_def.template construct<>(resource->getBasePointer());
+
+			resource->_file_path = file_path;
+			resource->_ref_count = ref_count;
+			resource->_res_mgr = this;
 		}
 
 		_pending_unloads.clear();
