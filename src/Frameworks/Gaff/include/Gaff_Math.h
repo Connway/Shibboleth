@@ -105,6 +105,12 @@ constexpr bool ValidIndex(const T& val, const T& size)
 	return val >= 0 && val < size;
 }
 
+template <class T, class Container>
+constexpr bool ValidIndex(const T& val, const Container& container)
+{
+	return ValidIndex(val, static_cast<T>(container.size()));
+}
+
 template <class T>
 constexpr T Sign(T value)
 {
