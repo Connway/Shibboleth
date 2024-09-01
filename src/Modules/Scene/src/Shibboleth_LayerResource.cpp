@@ -31,7 +31,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerEntityData)
 
 	.var("entity_definition", &Shibboleth::LayerEntityData::entity_definition)
 	.var("entity_base", &Shibboleth::LayerEntityData::entity_base)
-	.var("name", &Shibboleth::LayerEntityData::name)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::LayerEntityData)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerResource)
@@ -110,6 +109,13 @@ bool LayerEntityData::postLoad(const ISerializeReader& reader)
 	return true;
 }
 
+
+
+const VectorMap<HashString64<>, LayerEntityData>& LayerResource::getEntityData(void) const
+{
+	return _entities;
+}
+
 void LayerResource::dependenciesLoaded(const ISerializeReader& reader, uintptr_t thread_id_int)
 {
 	if (haveDependenciesSucceeded()) {
@@ -117,10 +123,10 @@ void LayerResource::dependenciesLoaded(const ISerializeReader& reader, uintptr_t
 		bool success = true;
 		int32_t index = 0;
 
-		for (LayerEntityData& entity_data : _entities) {
+		for (auto& entry : _entities) {
 			const auto element_guard = reader.enterElementGuard(index);
 
-			if (!entity_data.postLoad(reader)) {
+			if (!entry.second.postLoad(reader)) {
 				success = false;
 			}
 

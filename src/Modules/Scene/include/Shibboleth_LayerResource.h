@@ -30,24 +30,24 @@ NS_SHIBBOLETH
 
 struct LayerEntityData final
 {
-	// static bool Load(const ISerializeReader& reader, LayerEntityData& instance);
 	static void Save(ISerializeWriter& writer, const LayerEntityData& instance);
 
 	bool postLoad(const ISerializeReader& reader);
 
 	InstancedPtr<Entity> entity_definition{ ENTITY_ALLOCATOR };
 	ResourcePtr<EntityResource> entity_base;
-	HashString64<> name;
 };
 
 class LayerResource final : public IResource
 {
+public:
+	const VectorMap<HashString64<>, LayerEntityData>& getEntityData(void) const;
+
 protected:
 	void dependenciesLoaded(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
 private:
-	Vector<LayerEntityData> _entities{ ENTITY_ALLOCATOR };
-
+	VectorMap<HashString64<>, LayerEntityData> _entities{ ENTITY_ALLOCATOR };
 
 	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
 };
