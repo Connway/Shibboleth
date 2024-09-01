@@ -187,6 +187,19 @@ public:
 		return create(ctor_hash, allocator, std::forward<Args>(args)...);
 	}
 
+	template <class... Args>
+	bool construct(void* object, Args&&... args) const
+	{
+		const ConstructFunc<Args...> construct_func = getConstructor<Args...>();
+
+		if (construct_func) {
+			construct_func(object, std::forward<Args>(args)...);
+			return true;
+		}
+
+		return false;
+	}
+
 	template <class T>
 	const T* getClassAttr(Gaff::Hash64 attr_name) const
 	{
