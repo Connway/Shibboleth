@@ -39,6 +39,10 @@ int32_t EnumReflectionDefinition<Enum>::size(void) const
 template <class Enum>
 bool EnumReflectionDefinition<Enum>::load(const Shibboleth::ISerializeReader& reader, Enum& value, Gaff::Flags<LoadFlags> /*flags*/) const
 {
+	if (reader.isNull()) {
+		return true;
+	}
+
 	const char8_t* const name = reader.readString();
 	const int32_t intValue = getEntryValue(name);
 

@@ -664,6 +664,9 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		bool load(const Shibboleth::ISerializeReader& reader, class_type& out, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const \
 		{ \
 			GAFF_REF(flags); \
+			if (reader.isNull()) { \
+				return true; \
+			} \
 			if (!reader.is##serialize_type()) { \
 				return false; \
 			} \

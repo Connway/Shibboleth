@@ -256,6 +256,10 @@ void VectorVar<T, ContainerType>::remove(void* object, int32_t index)
 template <class T, class ContainerType>
 bool VectorVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, void* object)
 {
+	if (reader.isNull()) {
+		return true;
+	}
+
 	ContainerType& vec = *reinterpret_cast<ContainerType*>(object);
 	const int32_t size = reader.size();
 

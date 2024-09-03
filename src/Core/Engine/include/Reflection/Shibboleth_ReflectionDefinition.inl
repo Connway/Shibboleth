@@ -420,7 +420,6 @@ void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const T
 
 		// Count how many vars we're actually writing to the object.
 		for (auto& entry : _vars) {
-			// If not read-only and does not have the NoSerialize attribute.
 			if (entry.second->canSerialize()) {
 				++writable_vars;
 			}
@@ -434,7 +433,12 @@ void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const T
 		for (auto& entry : _vars) {
 			if (entry.second->canSerialize()) {
 				writer.writeKey(entry.first.getBuffer());
-				entry.second->save(writer, object);
+
+				if (entry.second->isSerializingDefaultValue()) {
+					writer.writeNull();
+				} else {
+					entry.second->save(writer, object);
+				}
 			}
 		}
 

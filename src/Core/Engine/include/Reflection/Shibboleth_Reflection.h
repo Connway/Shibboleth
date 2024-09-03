@@ -55,6 +55,10 @@ static Gaff::Hash64 HashStringViewInstanceHash(const Gaff::HashStringView<T, Has
 template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
 static bool LoadHashString(const Shibboleth::ISerializeReader& reader, Gaff::HashString<T, HashType, HashingFunc, Allocator, true>& out)
 {
+	if (reader.isNull()) {
+		return true;
+	}
+
 	if (!reader.isString()) {
 		return false;
 	}
@@ -69,6 +73,10 @@ static bool LoadHashString(const Shibboleth::ISerializeReader& reader, Gaff::Has
 template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc, class Allocator>
 static bool LoadHashString(const Shibboleth::ISerializeReader& reader, Gaff::HashString<T, HashType, HashingFunc, Allocator, false>& out)
 {
+	if (reader.isNull()) {
+		return true;
+	}
+
 	if (!reader.isString() && !reader.isUInt32() && !reader.isUInt64()) {
 		return false;
 	}
@@ -94,6 +102,10 @@ static bool LoadHashString(const Shibboleth::ISerializeReader& reader, Gaff::Has
 template <class T, class HashType, Gaff::HashFunc<HashType> HashingFunc>
 static bool LoadHashStringView(const Shibboleth::ISerializeReader& reader, Gaff::HashStringView<T, HashType, HashingFunc>& out)
 {
+	if (reader.isNull()) {
+		return true;
+	}
+
 	if (!reader.isString()) {
 		return false;
 	}
@@ -136,6 +148,10 @@ static Gaff::Hash64 HashStringInstance(const Gaff::U8String<Allocator>& string, 
 template <class Allocator>
 static bool LoadString(const Shibboleth::ISerializeReader& reader, Gaff::U8String<Allocator>& out)
 {
+	if (reader.isNull()) {
+		return true;
+	}
+
 	if (!reader.isString()) {
 		return false;
 	}

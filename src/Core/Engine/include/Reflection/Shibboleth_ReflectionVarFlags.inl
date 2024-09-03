@@ -159,6 +159,10 @@ int32_t VarFlags<T, Enum>::size(const void* /*object*/) const
 template <class T, class Enum>
 bool VarFlags<T, Enum>::load(const Shibboleth::ISerializeReader& reader, void* object)
 {
+	if (reader.isNull()) {
+		return true;
+	}
+
 	Gaff::Flags<Enum>& flags = *reinterpret_cast<Gaff::Flags<Enum>*>(object);
 
 	// Iterate over all the flags and read values.

@@ -398,6 +398,8 @@ public:
 
 	virtual void setSubVarBaseName(eastl::u8string_view /*base_name*/) {}
 
+	void setSerializeDefaultValue(bool use_default_value) { _flags.set(use_default_value, Flag::SerializeDefaultValue); }
+	bool isSerializingDefaultValue(void) const { return _flags.testAll(Flag::SerializeDefaultValue); }
 
 	void setReadOnly(bool read_only) { _flags.set(read_only, Flag::ReadOnly); }
 	bool isReadOnly(void) const { return _flags.testAll(Flag::ReadOnly); }
@@ -417,6 +419,7 @@ public:
 private:
 	enum class Flag
 	{
+		SerializeDefaultValue,
 		NoSerialize,
 		ReadOnly,
 		Optional,

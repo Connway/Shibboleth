@@ -342,6 +342,10 @@ void MapVar<T, ContainerType>::swap(void* object, int32_t index_a, int32_t index
 template <class T, class ContainerType>
 bool MapVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, void* object)
 {
+	if (reader.isNull()) {
+		return true;
+	}
+
 	ContainerType& map = *reinterpret_cast<ContainerType*>(object);
 	const int32_t size = reader.size();
 
