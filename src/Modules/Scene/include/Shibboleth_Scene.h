@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Reflection/Shibboleth_Reflection.h>
+#include "Shibboleth_Layer.h"
 
 NS_SHIBBOLETH
 
@@ -31,15 +31,13 @@ class SceneResource;
 class Scene final
 {
 public:
-	Scene(SceneResource& scene_resource);
+	void init(const SceneResource& scene_resource);
 
 	void start(void);
 	void end(void);
 
 private:
-	SceneResource& _scene_resource;
-
-	void init(void);
+	Vector<Layer> _layers{ SCENE_ALLOCATOR };
 };
 
 NS_END

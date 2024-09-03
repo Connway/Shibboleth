@@ -79,9 +79,10 @@ void SceneManager::primarySceneLoaded(const Vector<const IResource*>&)
 {
 	// $TODO: Tell loading screen we are done loading.
 
-	Scene* const scene = SHIB_ALLOCT(Scene, s_allocator, *_primary_scene_resource);
+	Scene* const scene = SHIB_ALLOCT(Scene, s_allocator);
 	_primary_scene.reset(scene);
 
+	scene->init(*_primary_scene_resource);
 	scene->start();
 
 	// $TODO: Call start() on all entities.

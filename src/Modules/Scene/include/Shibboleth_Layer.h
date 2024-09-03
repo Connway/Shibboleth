@@ -22,56 +22,44 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_EntityUpdater.h"
-#include <Reflection/Shibboleth_Reflection.h>
-#include <Gaff_Flags.h>
+#include "Shibboleth_LayerResource.h"
+#include <Containers/Shibboleth_InstancedArray.h>
+#include <Shibboleth_DeferredResourcePtr.h>
 
 NS_SHIBBOLETH
 
-class Entity;
-
-enum class EntityComponentFlag
-{
-	Count
-};
-
-
-class EntityComponent : public Refl::IReflectionObject
+class Layer final
 {
 public:
-	EntityComponent(void) = default;
+	void init(const DeferredResourcePtr<LayerResource>& layer_resource);
+	void init(const LayerResource& layer_resource);
 
-	virtual bool init(void);
-	virtual void destroy(void);
+	bool hasRequestedLoad(void) const;
+	bool isDeferred(void) const;
 
-	virtual bool clone(EntityComponent& new_component, const ISerializeReader* overrides = nullptr) const;
-	bool clone(EntityComponent*& new_component, const ISerializeReader* overrides = nullptr) const;
+	void unload(void);
+	void load(void);
 
-	Entity* getOwner(void) const;
-
-	const HashString64<>& getName(void) const;
-	void setName(const HashString64<>& name);
-	void setName(HashString64<>&& name);
-	void setName(const HashStringView64<>& name);
-	void setName(const U8String& name);
+	void start(void);
+	void end(void);
 
 private:
-	EntityUpdater _updater;
+	enum class Flag
+	{
+		RequestedLoad,
 
-	Entity* _owner = nullptr;
+		Count
+	};
 
-	HashString64<> _name;
+	InstancedArray<Entity> _entities{ SCENE_ALLOCATOR };
 
-	Gaff::Flags<EntityComponentFlag> _flags;
+	DeferredResourcePtr<LayerResource> _layer_resource;
 
-	friend class EntityManager;
-	friend class Entity;
+	Gaff::Flags<Flag> _flags;
 
-	SHIB_REFLECTION_CLASS_DECLARE(EntityComponent);
-	GAFF_NO_COPY(EntityComponent);
+	SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(Layer);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Shibboleth::EntityComponentFlag)
-SHIB_REFLECTION_DECLARE(Shibboleth::EntityComponent)
+SHIB_REFLECTION_DECLARE(Shibboleth::Layer)

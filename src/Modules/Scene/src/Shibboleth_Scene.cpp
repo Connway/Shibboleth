@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_SceneResource.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Scene)
-	.template ctor<Shibboleth::SceneResource&>()
+	.template ctor<>()
 
 	.func(u8"start", &Shibboleth::Scene::start)
 	.func(u8"end", &Shibboleth::Scene::end)
@@ -33,28 +33,34 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::Scene)
 
 NS_SHIBBOLETH
 
-Scene::Scene(SceneResource& scene_resource):
-	_scene_resource(scene_resource)
+void Scene::init(const SceneResource& scene_resource)
 {
-	init();
+	_layers.reserve(scene_resource.getNumLayers());
+
+	for (int32_t i = 0; i < scene_resource.getNumLayers(); ++i) {
+		const LayerResource* const layer_resource = scene_resource.getLayer(i);
+
+		if (!layer_resource) {
+			// $TODO: Log error.
+			continue;
+		}
+
+		Layer& layer = _layers.emplace_back();
+		layer.init(*layer_resource);
+	}
 }
 
 void Scene::start(void)
 {
+	for (Layer& layer : _layers) {
+		layer.start();
+	}
 }
 
 void Scene::end(void)
 {
-}
-
-void Scene::init(void)
-{
-	for (int32_t i = 0; i < _scene_resource.getNumLayers(); ++i) {
-		const LayerResource* const layer = _scene_resource.getLayer(i);
-
-		if (!layer) {
-			continue;
-		}
+	for (Layer& layer : _layers) {
+		layer.end();
 	}
 }
 

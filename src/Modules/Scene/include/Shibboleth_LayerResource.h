@@ -34,7 +34,7 @@ struct LayerEntityData final
 
 	bool postLoad(const ISerializeReader& reader);
 
-	InstancedPtr<Entity> entity_definition{ ENTITY_ALLOCATOR };
+	InstancedPtr<Entity> entity_definition{ SCENE_ALLOCATOR };
 	ResourcePtr<EntityResource> entity_base;
 };
 
@@ -47,7 +47,9 @@ protected:
 	void dependenciesLoaded(const ISerializeReader& reader, uintptr_t thread_id_int) override;
 
 private:
-	VectorMap<HashString64<>, LayerEntityData> _entities{ ENTITY_ALLOCATOR };
+	VectorMap<HashString64<>, LayerEntityData> _entities{ SCENE_ALLOCATOR };
+
+	//InstancedArray<Entity> _entity_definitions{ SCENE_ALLOCATOR };
 
 	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
 };

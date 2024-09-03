@@ -42,7 +42,7 @@ public:
 	// $TODO: Request additional scene resources to be loaded.
 
 private:
-	Vector< UniquePtr<Scene> > _scenes{ ENTITY_ALLOCATOR };
+	Vector< UniquePtr<Scene> > _scenes{ SCENE_ALLOCATOR };
 
 	DeferredResourcePtr<SceneResource> _primary_scene_resource;
 	UniquePtr<Scene> _primary_scene; // $TODO: Add this to _scenes instead? _scenes[0] is always primary scene?

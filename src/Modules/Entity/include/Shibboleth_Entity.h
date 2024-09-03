@@ -105,8 +105,8 @@ public:
 	Entity(void) = default;
 
 	virtual bool init(void);
-	virtual bool clone(Entity& new_entity, const ISerializeReader* overrides) const;
-	bool clone(Entity*& new_entity, const ISerializeReader* overrides) const;
+	virtual bool clone(Entity& new_entity, const ISerializeReader* overrides = nullptr) const;
+	bool clone(Entity*& new_entity, const ISerializeReader* overrides = nullptr) const;
 
 	virtual void start(void);
 	virtual void end(void);
@@ -143,9 +143,9 @@ public:
 	void setEnableUpdate(bool enabled);
 	bool canUpdate(void) const;
 
-	const U8String& getName(void) const;
-	void setName(const U8String& name);
-	void setName(U8String&& name);
+	const HashString64<>& getName(void) const;
+	void setName(const HashStringView64<>& name);
+	void setName(HashString64<>&& name);
 
 	const EntityUpdater& getUpdater(void) const;
 	EntityUpdater& getUpdater(void);
@@ -164,7 +164,7 @@ private:
 	InstancedArray<EntityComponent> _components{ ENTITY_ALLOCATOR };
 	EntitySceneComponent* _root_scene_comp = nullptr;
 
-	U8String _name;
+	HashString64<> _name;
 
 	// Gaff::Flags<Flag> _flags;
 

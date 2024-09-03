@@ -48,7 +48,7 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::LayerResource)
 
 namespace
 {
-	static Shibboleth::ProxyAllocator s_allocator{ ENTITY_ALLOCATOR };
+	static Shibboleth::ProxyAllocator s_allocator{ SCENE_ALLOCATOR };
 }
 
 NS_SHIBBOLETH

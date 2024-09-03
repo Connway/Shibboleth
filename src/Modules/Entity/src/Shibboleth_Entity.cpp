@@ -437,17 +437,17 @@ EntitySceneComponent* Entity::getRootComponent(void)
 	return _root_scene_comp;
 }
 
-const U8String& Entity::getName(void) const
+const HashString64<>& Entity::getName(void) const
 {
 	return _name;
 }
 
-void Entity::setName(const U8String& name)
+void Entity::setName(const HashStringView64<>& name)
 {
 	_name = name;
 }
 
-void Entity::setName(U8String&& name)
+void Entity::setName(HashString64<>&& name)
 {
 	_name = std::move(name);
 }
