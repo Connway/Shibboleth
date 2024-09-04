@@ -41,19 +41,11 @@ void Layer::init(const DeferredResourcePtr<LayerResource>& layer_resource)
 	_layer_resource = layer_resource;
 }
 
-void Layer::init(const LayerResource& layer_resource)
+void Layer::init(LayerResource& layer_resource)
 {
-	for (const auto& entry : layer_resource.getEntityData()) {
-		GAFF_ASSERT(entry.second.entity_definition || entry.second.entity_base);
+	_entities = std::move(layer_resource.releaseEntityDefinitions());
 
-		const Entity* const entity_definition = (entry.second.entity_definition) ?
-			entry.second.entity_definition.get() :
-			entry.second.entity_base->getDefinition();
-
-		Entity& entity = _entities.push(entry.second.entity_definition->getReflectionDefinition());
-		entity_definition->clone(entity);
-		entity.setName(entry.first);
-
+	for (Entity& entity : _entities) {
 		entity.init();
 	}
 }

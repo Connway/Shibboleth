@@ -293,6 +293,12 @@ void VectorVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, con
 	GAFF_ASSERT(static_cast<size_t>(size(&object)) == _elements.size());
 
 	const ContainerType& vec = *reinterpret_cast<const ContainerType*>(object);
+
+	if (vec.empty()) {
+		writer.writeNull();
+		return;
+	}
+
 	const int32_t size = static_cast<int32_t>(_elements.size());
 	writer.startArray(static_cast<uint32_t>(size));
 

@@ -388,6 +388,12 @@ template <class T, class ContainerType>
 void MapVar<T, ContainerType>::save(Shibboleth::ISerializeWriter& writer, const void* object)
 {
 	const ContainerType& map = *reinterpret_cast<const ContainerType*>(object);
+
+	if (map.empty()) {
+		writer.writeNull();
+		return;
+	}
+
 	const int32_t size = static_cast<int32_t>(map.size());
 	writer.startArray(static_cast<uint32_t>(size));
 

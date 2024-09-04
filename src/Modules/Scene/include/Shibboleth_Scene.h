@@ -31,7 +31,7 @@ class SceneResource;
 class Scene final
 {
 public:
-	void init(const SceneResource& scene_resource);
+	void init(SceneResource& scene_resource);
 
 	void start(void);
 	void end(void);

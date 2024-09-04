@@ -32,7 +32,7 @@ class Layer final
 {
 public:
 	void init(const DeferredResourcePtr<LayerResource>& layer_resource);
-	void init(const LayerResource& layer_resource);
+	void init(LayerResource& layer_resource);
 
 	bool hasRequestedLoad(void) const;
 	bool isDeferred(void) const;

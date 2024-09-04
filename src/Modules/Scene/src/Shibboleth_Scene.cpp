@@ -33,12 +33,12 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::Scene)
 
 NS_SHIBBOLETH
 
-void Scene::init(const SceneResource& scene_resource)
+void Scene::init(SceneResource& scene_resource)
 {
 	_layers.reserve(scene_resource.getNumLayers());
 
 	for (int32_t i = 0; i < scene_resource.getNumLayers(); ++i) {
-		const LayerResource* const layer_resource = scene_resource.getLayer(i);
+		LayerResource* const layer_resource = scene_resource.getLayer(i);
 
 		if (!layer_resource) {
 			// $TODO: Log error.

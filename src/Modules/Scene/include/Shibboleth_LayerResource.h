@@ -32,9 +32,8 @@ struct LayerEntityData final
 {
 	static void Save(ISerializeWriter& writer, const LayerEntityData& instance);
 
-	bool postLoad(const ISerializeReader& reader);
+	bool postLoad(const ISerializeReader& reader, InstancedArray<Entity>& instances);
 
-	InstancedPtr<Entity> entity_definition{ SCENE_ALLOCATOR };
 	ResourcePtr<EntityResource> entity_base;
 };
 
@@ -42,6 +41,9 @@ class LayerResource final : public IResource
 {
 public:
 	const VectorMap<HashString64<>, LayerEntityData>& getEntityData(void) const;
+	const InstancedArray<Entity>& getEntityDefinitions(void) const;
+
+	InstancedArray<Entity>&& releaseEntityDefinitions(void);
 
 protected:
 	void dependenciesLoaded(const ISerializeReader& reader, uintptr_t thread_id_int) override;
@@ -49,7 +51,7 @@ protected:
 private:
 	VectorMap<HashString64<>, LayerEntityData> _entities{ SCENE_ALLOCATOR };
 
-	//InstancedArray<Entity> _entity_definitions{ SCENE_ALLOCATOR };
+	InstancedArray<Entity> _entity_definitions{ SCENE_ALLOCATOR };
 
 	SHIB_REFLECTION_CLASS_DECLARE(LayerResource);
 };

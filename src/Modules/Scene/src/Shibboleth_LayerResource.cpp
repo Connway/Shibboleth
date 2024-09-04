@@ -29,8 +29,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerEntityData)
 	.serialize(nullptr, &Shibboleth::LayerEntityData::Save)
 
-	.var("entity_definition", &Shibboleth::LayerEntityData::entity_definition)
-	.var("entity_base", &Shibboleth::LayerEntityData::entity_base)
+	// .var("entity_definition", &Shibboleth::LayerEntityData::entity_definition)
+	// .var("entity_base", &Shibboleth::LayerEntityData::entity_base)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::LayerEntityData)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerResource)
@@ -59,53 +59,37 @@ void LayerEntityData::Save(ISerializeWriter& writer, const LayerEntityData& inst
 {
 	const auto& ref_def = Refl::Reflection<LayerEntityData>::GetReflectionDefinition();
 
-	if (instance.entity_base) {
-		// Save entity_base and name.
-		Entity* const entity_definition = const_cast<LayerEntityData&>(instance).entity_definition.release();
-
-		ref_def.save(writer, instance, Refl::IReflectionDefinition::SaveFlags::ReflectionSave);
-
-		const_cast<LayerEntityData&>(instance).entity_definition.reset(entity_definition);
-
-		// $TODO: Write delta of entity_base and entity_definition in "overrides" field.
-
-	} else {
-		ref_def.save(writer, instance, Refl::IReflectionDefinition::SaveFlags::ReflectionSave);
-	}
+	ref_def.save(writer, instance, Refl::IReflectionDefinition::SaveFlags::ReflectionSave);
+	// $TODO: Write delta of entity_base and entity_definition in "overrides" field.
 }
 
-bool LayerEntityData::postLoad(const ISerializeReader& reader)
+bool LayerEntityData::postLoad(const ISerializeReader& reader, InstancedArray<Entity>& instances)
 {
-	if (entity_base) {
-		const auto overrides_guard = reader.enterElementGuard(u8"overrides");
+	const auto overrides_guard = reader.enterElementGuard(u8"overrides");
 
-		if (reader.isNull()) {
-			return true;
-		}
-
-		if (!reader.isObject()) {
-			// $TODO: Log error.
-			return false;
-		}
-
-		const Entity* const base_entity_definition = entity_base->getDefinition();
-
-		if (!base_entity_definition) {
-			// $TODO: Log error.
-			return false;
-		}
-
-		Entity* new_entity_definition = nullptr;
-
-		if (!base_entity_definition->clone(new_entity_definition, &reader)) {
-			SHIB_FREET(new_entity_definition, s_allocator);
-			return false;
-		}
-
-		entity_definition.reset(entity_definition);
+	if (reader.isNull()) {
+		return true;
 	}
 
-	// If entity_base is null, assuming we are serializing entity_definition directly.
+	if (!reader.isObject()) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	const Entity* const base_entity_definition = entity_base->getDefinition();
+
+	if (!base_entity_definition) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	Entity& new_entity_definition = instances.push(base_entity_definition->getReflectionDefinition());
+
+	if (!base_entity_definition->clone(new_entity_definition, &reader)) {
+		instances.pop();
+		return false;
+	}
+
 	return true;
 }
 
@@ -114,6 +98,16 @@ bool LayerEntityData::postLoad(const ISerializeReader& reader)
 const VectorMap<HashString64<>, LayerEntityData>& LayerResource::getEntityData(void) const
 {
 	return _entities;
+}
+
+const InstancedArray<Entity>& LayerResource::getEntityDefinitions(void) const
+{
+	return _entity_definitions;
+}
+
+InstancedArray<Entity>&& LayerResource::releaseEntityDefinitions(void)
+{
+	return std::move(_entity_definitions);
 }
 
 void LayerResource::dependenciesLoaded(const ISerializeReader& reader, uintptr_t thread_id_int)
@@ -126,7 +120,7 @@ void LayerResource::dependenciesLoaded(const ISerializeReader& reader, uintptr_t
 		for (auto& entry : _entities) {
 			const auto element_guard = reader.enterElementGuard(index);
 
-			if (!entry.second.postLoad(reader)) {
+			if (!entry.second.postLoad(reader, _entity_definitions)) {
 				success = false;
 			}
 
