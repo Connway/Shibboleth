@@ -85,7 +85,7 @@ bool RenderManager::init(void)
 
 	const GraphicsConfig& config = GetConfigRef<GraphicsConfig>();
 
-	const_cast<GraphicsConfig&>(config).texture_filtering_sampler.requestLoad();
+	const_cast<GraphicsConfig&>(config).texture_filtering_sampler->requestLoad();
 
 	if (!config.texture_filtering_sampler->waitUntilLoaded()) {
 		// $TODO: Log error.
@@ -94,7 +94,7 @@ bool RenderManager::init(void)
 
 	_default_sampler = config.texture_filtering_sampler;
 
-	const_cast<GraphicsConfig&>(config).icon.requestLoad();
+	const_cast<GraphicsConfig&>(config).icon->requestLoad();
 	GLFWimage icon;
 
 	if (config.icon->waitUntilLoaded()) {

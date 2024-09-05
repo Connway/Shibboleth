@@ -63,7 +63,7 @@ public:
 	}
 
 	ResourcePtr(const ResourcePtr<T>& res_ptr):
-		ResourcePtr(res_ptr.get())
+		ResourcePtr(const_cast<T*>(res_ptr.get()))
 	{
 	}
 

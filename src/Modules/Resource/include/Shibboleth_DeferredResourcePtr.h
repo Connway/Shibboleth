@@ -89,7 +89,7 @@ public:
 	}
 
 	DeferredResourcePtr(const DeferredResourcePtr<T>& res_ptr):
-		DeferredResourcePtr(res_ptr.get())
+		DeferredResourcePtr(const_cast<T*>(res_ptr.get()))
 	{
 	}
 

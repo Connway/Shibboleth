@@ -12,7 +12,13 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_Layer.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_LayerResource.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_Scene.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Scene\include\Shibboleth_SceneConfig.h">
@@ -32,7 +38,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\src\Shibboleth_Layer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Scene\src\Shibboleth_LayerResource.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Scene\src\Shibboleth_Scene.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Scene\src\Shibboleth_SceneConfig.cpp">
