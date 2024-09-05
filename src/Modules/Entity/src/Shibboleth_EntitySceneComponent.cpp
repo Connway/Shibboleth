@@ -26,16 +26,24 @@ THE SOFTWARE.
 #include <Shibboleth_Math.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntitySceneComponent)
+	// $TODO: Custom serialization for saving scene component hierarchy.
+
 	.template base<Shibboleth::EntityComponent>()
 
-	.var("transformRelative", &Shibboleth::EntitySceneComponent::getTransformRelative, &Shibboleth::EntitySceneComponent::setTransformRelative)
+	.var(
+		"transformRelative",
+		&Shibboleth::EntitySceneComponent::getTransformRelative,
+		&Shibboleth::EntitySceneComponent::setTransformRelative,
+		Shibboleth::OptionalAttribute{}
+	)
 
 	.var(
 		"transformWorld",
 		&Shibboleth::EntitySceneComponent::getTransformWorld,
 		&Shibboleth::EntitySceneComponent::setTransformWorld,
-		Shibboleth::NoSerializeAttribute(),
-		Shibboleth::NoCopyAttribute()
+		Shibboleth::NoSerializeAttribute{},
+		Shibboleth::ReadOnlyAttribute{},
+		Shibboleth::NoCopyAttribute{}
 	)
 
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntitySceneComponent)

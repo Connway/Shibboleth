@@ -40,8 +40,8 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfigWindow)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)
 	.classAttrs(
-		Shibboleth::ConfigFileAttribute(u8"graphics/graphics"),
-		Shibboleth::GlobalConfigAttribute()
+		Shibboleth::ConfigFileAttribute{ u8"graphics/graphics" },
+		Shibboleth::GlobalConfigAttribute{}
 	)
 
 	.var("texture_filtering_sampler", &Shibboleth::GraphicsConfig::texture_filtering_sampler)

@@ -30,7 +30,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerEntityData)
 	.serialize(nullptr, &Shibboleth::LayerEntityData::Save)
 
 	// .var("entity_definition", &Shibboleth::LayerEntityData::entity_definition)
-	// .var("entity_base", &Shibboleth::LayerEntityData::entity_base)
+	.var("entity_base", &Shibboleth::LayerEntityData::entity_base)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::LayerEntityData)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerResource)

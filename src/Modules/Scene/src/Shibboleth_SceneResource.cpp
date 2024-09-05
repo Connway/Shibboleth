@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_SceneResource.h"
 #include "Shibboleth_SceneLogging.h"
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneResource)
@@ -33,7 +34,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneResource)
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
 
-	.var("deferred_layers", &Shibboleth::SceneResource::_deferred_layers)
+	.var("deferred_layers", &Shibboleth::SceneResource::_deferred_layers, Shibboleth::OptionalAttribute{})
 	.var("layers", &Shibboleth::SceneResource::_layers)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneResource)
 

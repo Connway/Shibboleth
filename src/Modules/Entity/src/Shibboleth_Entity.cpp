@@ -27,6 +27,8 @@ THE SOFTWARE.
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
+	// $TODO: Custom serialization for setting up scene component hierarchy.
+
 	.template ctor<>()
 
 	.var("components", &Shibboleth::Entity::_components, Shibboleth::OptionalAttribute{})
@@ -162,43 +164,6 @@ bool Entity::clone(Entity& new_entity, const ISerializeReader* overrides) const
 	if (overrides) {
 		overrides->exitElement();
 	}
-
-
-	// // Add components to entity.
-	// {
-	// 	const auto guard = reader.enterElementGuard(u8"add_components");
-
-	// 	if (reader.isObject()) {
-
-	// 	} else {
-	// 		// $TODO: Log error.
-	// 		success = false;
-	// 	}
-	// }
-
-	// // Remove components from entity.
-	// {
-	// 	const auto guard = reader.enterElementGuard(u8"remove_components");
-
-	// 	if (reader.isArray()) {
-
-	// 	} else {
-	// 		// $TODO: Log error.
-	// 		success = false;
-	// 	}
-	// }
-
-	// // Modify component properties.
-	// {
-	// 	const auto guard = reader.enterElementGuard(u8"modify_components");
-
-	// 	if (reader.isObject()) {
-
-	// 	} else {
-	// 		// $TODO: Log error.
-	// 		success = false;
-	// 	}
-	// }
 
 
 	// Set up scene components.

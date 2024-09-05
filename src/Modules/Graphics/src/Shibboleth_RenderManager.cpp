@@ -103,6 +103,8 @@ bool RenderManager::init(void)
 		// $TODO: Log warning.
 	}
 
+	// $TODO: Do not create windows in editor mode.
+
 	if (config.windows.empty()) {
 		// $TODO: Add support to this section to use adapter names or monitor IDs.
 		/*const Gaff::JSON adapters = config.getObject(u8"adapters");
