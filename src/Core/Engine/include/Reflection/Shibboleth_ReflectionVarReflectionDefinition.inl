@@ -101,14 +101,14 @@ void VarReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, cons
 template <class T>
 bool VarReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, T& object)
 {
-	const IReflectionDefinition** var = IVar<T>::template get<const IReflectionDefinition*>(&object);
+	const IReflectionDefinition** var = const_cast<const IReflectionDefinition**>(IVar<T>::template get<const IReflectionDefinition*>(&object));
 	return load(reader, var);
 }
 
 template <class T>
 void VarReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const T& object)
 {
-	const IReflectionDefinition** var = IVar<T>::template get<const IReflectionDefinition*>(&object);
+	const IReflectionDefinition* const * var = IVar<T>::template get<const IReflectionDefinition*>(&object);
 	save(writer, var);
 }
 

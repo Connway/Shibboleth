@@ -112,6 +112,9 @@ void* MapVar<T, ContainerType>::addMapEntry(void* object, const void* key, const
 		auto& entry = (*IVar<T>::template get<ContainerType>(object))[*reinterpret_cast<const KeyVarType*>(key)];
 		entry = *reinterpret_cast<const ValueVarType*>(value);
 
+		_elements.emplace_back();
+		regenerateSubVars(0, static_cast<int32_t>(_elements.size()));
+
 		return &entry;
 
 	} else {
@@ -141,6 +144,9 @@ void* MapVar<T, ContainerType>::addMapEntryMove(void* object, void* key, void* v
 		auto& entry = (*IVar<T>::template get<ContainerType>(object))[std::move(*reinterpret_cast<KeyVarType*>(key))];
 		entry = std::move(*reinterpret_cast<ValueVarType*>(value));
 
+		_elements.emplace_back();
+		regenerateSubVars(0, static_cast<int32_t>(_elements.size()));
+
 		return &entry;
 
 	} else {
@@ -167,7 +173,12 @@ void* MapVar<T, ContainerType>::addMapEntry(void* object, const void* key)
 			return nullptr;
 		}
 
-		return &(*IVar<T>::template get<ContainerType>(object))[*reinterpret_cast<const KeyVarType*>(key)];
+		auto& entry = (*IVar<T>::template get<ContainerType>(object))[*reinterpret_cast<const KeyVarType*>(key)];
+
+		_elements.emplace_back();
+		regenerateSubVars(0, static_cast<int32_t>(_elements.size()));
+
+		return &entry;
 
 	} else {
 		GAFF_REF(object, key);
@@ -193,7 +204,12 @@ void* MapVar<T, ContainerType>::addMapEntryMove(void* object, void* key)
 			return nullptr;
 		}
 
-		return &(*IVar<T>::template get<ContainerType>(object))[std::move(*reinterpret_cast<KeyVarType*>(key))];
+		auto& entry = (*IVar<T>::template get<ContainerType>(object))[std::move(*reinterpret_cast<KeyVarType*>(key))];
+
+		_elements.emplace_back();
+		regenerateSubVars(0, static_cast<int32_t>(_elements.size()));
+
+		return &entry;
 
 	} else {
 		GAFF_REF(object, key);
@@ -366,6 +382,10 @@ bool MapVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, 
 		bool key_loaded = true;
 		KeyVarType key;
 
+		if constexpr (k_key_has_set_allocator) {
+			key.set_allocator(map.get_allocator());
+		}
+
 		{
 			Shibboleth::ScopeGuard guard_key = reader.enterElementGuard(u8"key");
 			key_loaded = _elements[i].first.load(reader, &key);
@@ -374,7 +394,14 @@ bool MapVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reader, 
 
 		if (key_loaded) {
 			Shibboleth::ScopeGuard guard_value = reader.enterElementGuard(u8"value");
-			success = _elements[i].second.load(reader, &map[std::move(key)]) && success;
+			ValueVarType value;
+
+			if constexpr (k_value_has_set_allocator) {
+				value.set_allocator(map.get_allocator());
+			}
+
+			success = _elements[i].second.load(reader, &value);
+			map[std::move(key)] = std::move(value);
 
 		} else {
 			// $TODO: log error.

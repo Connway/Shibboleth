@@ -107,6 +107,9 @@ public:
 	void regenerateSubVars(int32_t range_begin, int32_t range_end);
 
 private:
+	static constexpr bool k_key_has_set_allocator = requires(KeyVarType& var, const Shibboleth::ProxyAllocator& allocator) { var.set_allocator(allocator); };
+	static constexpr bool k_value_has_set_allocator = requires(ValueVarType& var, const Shibboleth::ProxyAllocator& allocator) { var.set_allocator(allocator); };
+
 	using RefKeyVarType = VarTypeHelper<T, KeyVarType>::Type;
 	using RefValueVarType = VarTypeHelper<T, ValueVarType>::Type;
 	using RefVarType = eastl::pair<RefKeyVarType, RefValueVarType>;

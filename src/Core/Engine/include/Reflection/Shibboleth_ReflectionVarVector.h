@@ -132,6 +132,8 @@ public:
 	void regenerateSubVars(int32_t range_begin, int32_t range_end);
 
 private:
+	static constexpr bool k_has_set_allocator = requires(VarType& var, const Shibboleth::ProxyAllocator& allocator) { var.set_allocator(allocator); };
+
 	using RefVarType = VarTypeHelper<T, VarType>::Type;
 
 	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };

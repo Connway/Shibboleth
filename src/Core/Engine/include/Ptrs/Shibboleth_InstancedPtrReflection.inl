@@ -114,7 +114,8 @@ bool VarInstancedPtr<T, VarType>::load(const ISerializeReader& reader, void* obj
 		GAFF_ASSERT(reader.isNull() || reader.isString());
 
 		if (reader.isNull()) {
-			return true;
+			// $TODO: Log error.
+			return false;
 		}
 
 		class_name = reader.readString();

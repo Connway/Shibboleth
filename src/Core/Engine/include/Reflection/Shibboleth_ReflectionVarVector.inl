@@ -211,7 +211,8 @@ void VectorVar<T, ContainerType>::resize(void* object, size_t new_size)
 			return;
 		}
 
-		IVar<T>::template get<ContainerType>(object)->resize(new_size);
+		ContainerType& vec = *IVar<T>::template get<ContainerType>(object);
+		vec.resize(new_size);
 
 		const size_t old_size = _elements.size();
 
@@ -220,6 +221,12 @@ void VectorVar<T, ContainerType>::resize(void* object, size_t new_size)
 
 		if (new_size > old_size) {
 			regenerateSubVars(static_cast<int32_t>(old_size + 1), static_cast<int32_t>(new_size));
+
+			if constexpr (k_has_set_allocator) {
+				for (int32_t i = static_cast<int32_t>(old_size + 1); i < static_cast<int32_t>(new_size); ++i) {
+					vec[i].set_allocator(vec.get_allocator());
+				}
+			}
 		}
 	}
 }
@@ -272,6 +279,12 @@ bool VectorVar<T, ContainerType>::load(const Shibboleth::ISerializeReader& reade
 	_cached_element_vars.resize(static_cast<size_t>(size));
 	_elements.resize(static_cast<size_t>(size));
 	regenerateSubVars(0, size);
+
+	if constexpr (k_has_set_allocator) {
+		for (auto& element : vec) {
+			element.set_allocator(vec.get_allocator());
+		}
+	}
 
 	bool success = true;
 
