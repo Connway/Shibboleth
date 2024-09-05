@@ -46,6 +46,7 @@ void Scene::init(SceneResource& scene_resource)
 		}
 
 		Layer& layer = _layers.emplace_back();
+		layer.setName(scene_resource.getLayerName(i));
 		layer.init(*layer_resource);
 	}
 }

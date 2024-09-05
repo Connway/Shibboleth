@@ -30,6 +30,9 @@ NS_SHIBBOLETH
 class SceneResource final : public IResource
 {
 public:
+	const HashString64<>& getDeferredLayerName(int32_t index) const;
+	const HashString64<>& getLayerName(int32_t index) const;
+
 	int32_t getNumDeferredLayers(void) const;
 	int32_t getNumLayers(void) const;
 

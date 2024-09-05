@@ -50,7 +50,7 @@ public:
 
 	template <class U>
 	explicit ResourcePtr(const ResourcePtr<U>& res_ptr):
-		_resource(res_ptr._resource)
+		ResourcePtr(res_ptr.get())
 	{
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
 	}
@@ -62,7 +62,11 @@ public:
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
 	}
 
-	ResourcePtr(const ResourcePtr<T>& res_ptr) = default;
+	ResourcePtr(const ResourcePtr<T>& res_ptr):
+		ResourcePtr(res_ptr.get())
+	{
+	}
+
 	ResourcePtr(ResourcePtr<T>&& res_ptr) = default;
 	ResourcePtr(void) = default;
 
@@ -103,7 +107,8 @@ public:
 
 	ResourcePtr<T>& operator=(const ResourcePtr<T>& rhs)
 	{
-		*this = rhs.get();
+		*this = const_cast<T*>(rhs.get());
+		return *this;
 	}
 
 	ResourcePtr<T>& operator=(ResourcePtr<T>&& rhs) = default;

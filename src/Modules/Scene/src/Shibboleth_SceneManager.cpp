@@ -58,7 +58,7 @@ bool SceneManager::init(void)
 	return true;
 }
 
-void SceneManager::changePrimaryScene(const DeferredResourcePtr<SceneResource>& scene)
+void SceneManager::changePrimaryScene(const ResourcePtr<SceneResource>& scene)
 {
 	GAFF_ASSERT(scene && !scene->hasFailed());
 
@@ -67,11 +67,6 @@ void SceneManager::changePrimaryScene(const DeferredResourcePtr<SceneResource>& 
 
 	_primary_scene_resource = scene;
 
-	if (_primary_scene_resource->isDeferred()) {
-		// $TODO: Display loading screen scene.
-		_primary_scene_resource->requestLoad();
-	}
-
 	_res_mgr->registerCallback(*_primary_scene_resource, Gaff::MemberFunc(this, &SceneManager::primarySceneLoaded));
 }
 
@@ -79,21 +74,15 @@ void SceneManager::primarySceneLoaded(const Vector<const IResource*>&)
 {
 	// $TODO: Tell loading screen we are done loading.
 
-	Scene* const scene = SHIB_ALLOCT(Scene, s_allocator);
-	_primary_scene.reset(scene);
+	_primary_scene = Scene{};
 
-	scene->init(*_primary_scene_resource);
-	scene->start();
-
-	// $TODO: Call start() on all entities.
+	_primary_scene.init(*_primary_scene_resource);
+	_primary_scene.start();
 }
 
 void SceneManager::loadingScreenFadedIn(void)
 {
-	if (_primary_scene) {
-		_primary_scene->end();
-		_primary_scene.reset(nullptr);
-	}
+	_primary_scene.end();
 }
 
 NS_END

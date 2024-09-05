@@ -36,16 +36,16 @@ public:
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 
-	void changePrimaryScene(const DeferredResourcePtr<SceneResource>& scene);
+	void changePrimaryScene(const ResourcePtr<SceneResource>& scene);
 
 	// $TODO: Create scene API
 	// $TODO: Request additional scene resources to be loaded.
 
 private:
-	Vector< UniquePtr<Scene> > _scenes{ SCENE_ALLOCATOR };
+	Vector<Scene> _scenes{ SCENE_ALLOCATOR };
 
-	DeferredResourcePtr<SceneResource> _primary_scene_resource;
-	UniquePtr<Scene> _primary_scene; // $TODO: Add this to _scenes instead? _scenes[0] is always primary scene?
+	ResourcePtr<SceneResource> _primary_scene_resource;
+	Scene _primary_scene; // $TODO: Add this to _scenes instead? _scenes[0] is always primary scene?
 
 	ResourceManager* _res_mgr = nullptr;
 

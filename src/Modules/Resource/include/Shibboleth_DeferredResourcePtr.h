@@ -59,6 +59,10 @@ public:
 		_ref_def(res_ptr._ref_def), _file_path(res_ptr._file_path), _resource(res_ptr._resource)
 	{
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
+
+		if (_resource && _resource->isLoaded()) {
+			_resource->requestLoad();
+		}
 	}
 
 	template <class U>

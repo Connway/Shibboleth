@@ -50,6 +50,16 @@ void Layer::init(LayerResource& layer_resource)
 	}
 }
 
+void Layer::setName(const HashStringView64<>& name)
+{
+	_name = name;
+}
+
+const HashString64<>& Layer::getName(void) const
+{
+	return _name;
+}
+
 bool Layer::hasRequestedLoad(void) const
 {
 	return _flags.testAll(Flag::RequestedLoad);

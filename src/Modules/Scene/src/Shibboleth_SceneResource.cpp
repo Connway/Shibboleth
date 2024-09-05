@@ -46,6 +46,16 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(SceneResource)
 
+const HashString64<>& SceneResource::getDeferredLayerName(int32_t index) const
+{
+	return _deferred_layers.at(index).first;
+}
+
+const HashString64<>& SceneResource::getLayerName(int32_t index) const
+{
+	return _layers.at(index).first;
+}
+
 int32_t SceneResource::getNumDeferredLayers(void) const
 {
 	return static_cast<int32_t>(_deferred_layers.size());

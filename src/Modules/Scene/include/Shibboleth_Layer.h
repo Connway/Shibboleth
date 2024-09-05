@@ -34,6 +34,9 @@ public:
 	void init(const DeferredResourcePtr<LayerResource>& layer_resource);
 	void init(LayerResource& layer_resource);
 
+	void setName(const HashStringView64<>& name);
+	const HashString64<>& getName(void) const;
+
 	bool hasRequestedLoad(void) const;
 	bool isDeferred(void) const;
 
@@ -54,6 +57,8 @@ private:
 	InstancedArray<Entity> _entities{ SCENE_ALLOCATOR };
 
 	DeferredResourcePtr<LayerResource> _layer_resource;
+
+	HashString64<> _name;
 
 	Gaff::Flags<Flag> _flags;
 
