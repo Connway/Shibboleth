@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_SerializeReaderWrapper.h"
-#include <Shibboleth_IFileSystem.h>
+#include <FileSystem/Shibboleth_IFileSystem.h>
 #include <Shibboleth_Memory.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_Utils.h>

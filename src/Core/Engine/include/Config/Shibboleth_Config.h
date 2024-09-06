@@ -96,7 +96,7 @@ const T* GetConfig(void)
 {
 	static_assert(std::is_base_of_v<Refl::IReflectionObject, T>, "Passed in class is not an IReflectionObject.");
 
-	const Refl::IReflectionDefinition& ref_def = Refl::Reflection<T>::GetReflectionDefinition();
+	const auto& ref_def = Refl::Reflection<T>::GetReflectionDefinition();
 	const auto* const attr = ref_def.template getClassAttr<GlobalConfigAttribute>();
 
 	return (attr) ? static_cast<const T*>(attr->getConfig()) : nullptr;
@@ -109,6 +109,19 @@ const T& GetConfigRef(void)
 	GAFF_ASSERT(config);
 
 	return *config;
+}
+
+template <class T>
+Error InitConfig(void)
+{
+	static_assert(std::is_base_of_v<Refl::IReflectionObject, T>, "Passed in class is not an IReflectionObject.");
+
+	const auto& ref_def = Refl::Reflection<T>::GetReflectionDefinition();
+	const auto* const attr = ref_def.template getClassAttr<InitFromConfigAttribute>();
+
+	const T& config = GetConfigRef<T>();
+
+	return attr->loadConfig(const_cast<T*>(&config), ref_def);
 }
 
 NS_END

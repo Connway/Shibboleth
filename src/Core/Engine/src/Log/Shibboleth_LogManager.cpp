@@ -268,6 +268,17 @@ void LogManager::notifyLogCallbacks(const char8_t* message, LogType type)
 
 intptr_t LogManager::LogThread(void* args)
 {
+	static constexpr auto k_write_log = [](LogManager& log_mgr, const LogTask& task) -> void
+	{
+		Gaff::File file(task.file);
+		file.writeString(task.message.data());
+		file.writeChar(u8'\n');
+		file.flush();
+		file.release(); // We don't want to close the file.
+
+		log_mgr.notifyLogCallbacks(task.message.data(), task.type);
+	};
+
 	LogManager& lm = *reinterpret_cast<LogManager*>(args);
 
 	while (!lm._shutdown) {
@@ -275,24 +286,30 @@ intptr_t LogManager::LogThread(void* args)
 
 		lm._log_queue_lock.Lock();
 
-		if (!lm._logs.empty()) {
+		if (lm._logs.empty()) {
+			lm._log_queue_lock.Unlock();
+
+		} else {
 			LogTask task = std::move(lm._logs.front());
 			lm._logs.pop();
 
 			lm._log_queue_lock.Unlock();
 
-			Gaff::File file(task.file);
-			file.writeString(task.message.data());
-			file.writeChar(u8'\n');
-			file.flush();
-			file.release(); // We don't want to close the file.
-
-			lm.notifyLogCallbacks(task.message.data(), task.type);
-
-		} else {
-			lm._log_queue_lock.Unlock();
+			k_write_log(lm, task);
 		}
 	}
+
+	// Write rest of logs on shutdown.
+	lm._log_queue_lock.Lock();
+
+	while (!lm._logs.empty()) {
+		LogTask task = std::move(lm._logs.front());
+		lm._logs.pop();
+
+		k_write_log(lm, task);
+	}
+
+	lm._log_queue_lock.Unlock();
 
 	return 0;
 }

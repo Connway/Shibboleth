@@ -26,3 +26,6 @@ THE SOFTWARE.
 
 #define ENGINE_ALLOCATOR_POOL_NAME "Engine"
 #define ENGINE_ALLOCATOR Shibboleth::ProxyAllocator{ ENGINE_ALLOCATOR_POOL_NAME }
+
+#define LOG_ALLOCATOR_POOL_NAME "Log"
+#define LOG_ALLOCATOR Shibboleth::ProxyAllocator{ LOG_ALLOCATOR_POOL_NAME }

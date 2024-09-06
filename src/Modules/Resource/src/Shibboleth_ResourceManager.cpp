@@ -23,9 +23,9 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_ResourceAttributesCommon.h"
 #include "Shibboleth_ResourceLogging.h"
-#include <Shibboleth_IFileSystem.h>
+#include <FileSystem/Shibboleth_IFileSystem.h>
+#include <Config/Shibboleth_EngineConfig.h>
 #include <Log/Shibboleth_LogManager.h>
-#include <Shibboleth_AppConfigs.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_IApp.h>
@@ -58,8 +58,6 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::ResourceManager)
 
 namespace
 {
-	static constexpr Gaff::Hash32 k_read_file_pool = Gaff::FNV1aHash32StringConst(Shibboleth::k_config_app_read_file_pool_name);
-
 	struct RawJobData final
 	{
 		const char8_t* file_path;
@@ -236,7 +234,7 @@ const IFile* ResourceManager::loadFileAndWait(const char8_t* file_path, uintptr_
 
 	const EA::Thread::ThreadId thread_id = *((EA::Thread::ThreadId*)thread_id_int);
 
-	job_pool.addJobs(&job_data, 1, counter, k_read_file_pool);
+	job_pool.addJobs(&job_data, 1, counter, EngineConfig::k_read_file_pool);
 	job_pool.helpWhileWaiting(thread_id, counter);
 
 	return data.out_file;
@@ -496,7 +494,7 @@ void ResourceManager::requestLoad(IResource& resource)
 
 	resource._state = ResourceState::Pending;
 	Gaff::JobData job_data = { ResourceFileLoadJob, &resource };
-	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, k_read_file_pool);
+	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, EngineConfig::k_read_file_pool);
 }
 
 #ifdef _DEBUG

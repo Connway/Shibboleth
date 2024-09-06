@@ -24,10 +24,10 @@ THE SOFTWARE.
 #include "Shibboleth_GraphicsReflection.h"
 #include "Shibboleth_GraphicsLogging.h"
 #include "Shibboleth_GraphicsConfig.h"
+#include <FileSystem/Shibboleth_IFileSystem.h>
+#include <Log/Shibboleth_LogManager.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_SerializeReader.h>
-#include <Log/Shibboleth_LogManager.h>
-#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_Image.h>

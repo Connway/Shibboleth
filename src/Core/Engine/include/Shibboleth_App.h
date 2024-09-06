@@ -127,7 +127,6 @@ private:
 
 	ThreadAllocator _thread_allocator;
 
-	bool initInternal(void);
 	bool loadFileSystem(void);
 	bool loadMainLoop(void);
 	bool loadModules(void);

@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_InputManagerOld.h"
 #include "Shibboleth_InputReflection.h"
 //#include <Shibboleth_RenderManager.h>
-#include <Shibboleth_IFileSystem.h>
+#include <FileSystem/Shibboleth_IFileSystem.h>
 #include <Log/Shibboleth_LogManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_AppUtils.h>

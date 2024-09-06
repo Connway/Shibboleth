@@ -24,8 +24,8 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceAttributesCommon.h"
 #include "Shibboleth_ResourceLogging.h"
 #include "Shibboleth_ResourceManager.h"
+#include <FileSystem/Shibboleth_IFileSystem.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
-#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_JobPool.h>

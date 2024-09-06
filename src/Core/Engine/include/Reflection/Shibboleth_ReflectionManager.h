@@ -76,6 +76,12 @@ public:
 	}
 
 	template <class T>
+	const TypeBucket* getTypeBucket(const HashStringView64<>& module_name) const
+	{
+		return getTypeBucket(Hash::template ClassHashable<T>::GetHash(), module_name.getHash());
+	}
+
+	template <class T>
 	const TypeBucket* getTypeBucket(Gaff::Hash64 module_name) const
 	{
 		return getTypeBucket(Hash::template ClassHashable<T>::GetHash(), module_name);
@@ -85,6 +91,13 @@ public:
 	const TypeBucket* getTypeBucket(void) const
 	{
 		return getTypeBucket(Hash::template ClassHashable<T>::GetHash());
+	}
+
+	template <class T>
+	TypeBucket getReflectionWithAttribute(const HashStringView64<>& module_name) const
+	{
+		static_assert(std::is_base_of<Refl::IAttribute, T>::value, "T is not an attribute.");
+		return getReflectionWithAttribute(Hash::template ClassHashable<T>::GetHash(), module_name.getHash());
 	}
 
 	template <class T>

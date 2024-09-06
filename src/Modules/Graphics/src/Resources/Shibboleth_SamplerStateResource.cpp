@@ -23,11 +23,11 @@ THE SOFTWARE.
 #include "Resources/Shibboleth_SamplerStateResource.h"
 #include "Shibboleth_GraphicsReflection.h"
 #include "Shibboleth_RenderManager.h"
+#include <FileSystem/Shibboleth_IFileSystem.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
-#include <Shibboleth_IFileSystem.h>
 #include <Gleam_RenderDevice.h>
 #include <Gleam_SamplerState.h>
 

@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #include "Resources/Shibboleth_TextureResource.h"
 #include "Shibboleth_RenderManager.h"
+#include <FileSystem/Shibboleth_IFileSystem.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ResourceLogging.h>
-#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Image.h>
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_RenderDevice.h>

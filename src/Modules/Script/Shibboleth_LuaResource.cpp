@@ -21,8 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LuaResource.h"
+#include <FileSystem/Shibboleth_IFileSystem.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
-#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LuaManager.h>
 #include <Log/Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>

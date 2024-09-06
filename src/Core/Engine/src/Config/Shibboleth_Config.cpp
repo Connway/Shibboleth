@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Attributes/Shibboleth_EngineAttributesCommon.h"
 #include "Log/Shibboleth_LogManager.h"
 #include "Shibboleth_SerializeReader.h"
+#include "Shibboleth_EngineDefines.h"
 #include <cctype>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GlobalConfigAttribute)
@@ -59,7 +60,7 @@ const Refl::IReflectionObject* GlobalConfigAttribute::getConfig(void) const
 
 Error GlobalConfigAttribute::createAndLoadConfig(const Refl::IReflectionDefinition& ref_def)
 {
-	ProxyAllocator allocator; // $TODO: Set a real allocator.
+	ProxyAllocator allocator{ ENGINE_ALLOCATOR }; // $TODO: Allocator attribute.
 	Refl::IReflectionObject* const config_instance = ref_def.CREATET(Refl::IReflectionObject, allocator);
 
 	if (!config_instance) {

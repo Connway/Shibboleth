@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "FileSystem/Shibboleth_IFileSystem.h"
 #include "Containers/Shibboleth_Vector.h"
-#include "Shibboleth_IFileSystem.h"
 #include "Shibboleth_String.h"
 #include <Gaff_IncludeEASTLAtomic.h>
 #include <eathread/eathread_mutex.h>

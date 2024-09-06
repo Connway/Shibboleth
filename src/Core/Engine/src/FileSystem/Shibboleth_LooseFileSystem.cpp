@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LooseFileSystem.h"
+#include "FileSystem/Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_String.h"
 #include <Gaff_ContainerAlgorithm.h>
 #include <Gaff_Utils.h>

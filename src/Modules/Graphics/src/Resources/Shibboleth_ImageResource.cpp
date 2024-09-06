@@ -21,9 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Resources/Shibboleth_ImageResource.h"
+#include <FileSystem/Shibboleth_IFileSystem.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_ResourceLogging.h>
-#include <Shibboleth_IFileSystem.h>
 #include <GLFW/glfw3.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ImageResource)
