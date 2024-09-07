@@ -591,6 +591,13 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 
 template <class T>
 template <bool is_const, class Ret, class... Args, class... CurrentArgs>
+Ret ReflectionDefinition<T>::CallCallableStackHelper(const ReflectionExtensionFunction<is_const, Ret, Args...>& func, void* object, CurrentArgs&&... current_args)
+{
+	return func.call(object, std::forward<CurrentArgs>(current_args)...);
+}
+
+template <class T>
+template <bool is_const, class Ret, class... Args, class... CurrentArgs>
 Ret ReflectionDefinition<T>::CallCallableStackHelper(const ReflectionFunction<is_const, Ret, Args...>& func, void* object, CurrentArgs&&... current_args)
 {
 	return func.call(object, std::forward<CurrentArgs>(current_args)...);

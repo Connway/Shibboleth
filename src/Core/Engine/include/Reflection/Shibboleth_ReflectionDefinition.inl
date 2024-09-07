@@ -1441,6 +1441,144 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_s
 
 template <class T>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes)
+{
+	static_assert(name_size > 0, "Name cannot be an empty string.");
+
+	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+	auto it = _funcs.find(Gaff::FNV1aHash32Const(name));
+
+	ReflectionExtensionFunction<true, Ret, Args...>* ref_func = nullptr;
+
+	if (it == _funcs.end()) {
+		ref_func = SHIB_ALLOCT(
+			GAFF_SINGLE_ARG(ReflectionExtensionFunction<true, Ret, Args...>),
+			_allocator,
+			ptr
+		);
+
+		it = _funcs.emplace(
+			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+			FuncData()
+		).first;
+
+		it->second.func[0].reset(ref_func);
+		it->second.hash[0] = arg_hash;
+
+	} else {
+		FuncData& func_data = it->second;
+
+		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
+			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
+
+			if (!func_data.func[i] || func_data.func[i]->isBase()) {
+				ref_func = SHIB_ALLOCT(
+					GAFF_SINGLE_ARG(ReflectionExtensionFunction<true, Ret, Args...>),
+					_allocator,
+					ptr
+				);
+
+				func_data.func[i].reset(ref_func);
+				func_data.hash[i] = arg_hash;
+				break;
+			}
+		}
+
+		GAFF_ASSERT_MSG(ref_func, "Function overloading only supports 8 overloads per function name!");
+	}
+
+	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
+	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
+
+	auto& attrs = _func_attrs[attr_hash];
+	attrs.set_allocator(_allocator);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		addAttributes(*ref_func, ptr, attrs, attributes...);
+	}
+
+	return *this;
+}
+
+template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return func(temp_name, ptr, attributes...);
+}
+
+template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes)
+{
+	static_assert(name_size > 0, "Name cannot be an empty string.");
+
+	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+	auto it = _funcs.find(Gaff::FNV1aHash32Const(name));
+
+	ReflectionExtensionFunction<false, Ret, Args...>* ref_func = nullptr;
+
+	if (it == _funcs.end()) {
+		ref_func = SHIB_ALLOCT(
+			GAFF_SINGLE_ARG(ReflectionExtensionFunction<false, Ret, Args...>),
+			_allocator,
+			ptr
+		);
+
+		it = _funcs.emplace(
+			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+			FuncData()
+		).first;
+
+		it->second.func[0].reset(ref_func);
+		it->second.hash[0] = arg_hash;
+
+	} else {
+		FuncData& func_data = it->second;
+
+		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
+			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
+
+			if (!func_data.func[i] || func_data.func[i]->isBase()) {
+				ref_func = SHIB_ALLOCT(
+					GAFF_SINGLE_ARG(ReflectionExtensionFunction<false, Ret, Args...>),
+					_allocator,
+					ptr
+				);
+
+				func_data.func[i].reset(ref_func);
+				func_data.hash[i] = arg_hash;
+				break;
+			}
+		}
+
+		GAFF_ASSERT_MSG(ref_func, "Function overloading only supports 8 overloads per function name!");
+	}
+
+	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
+	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
+
+	auto& attrs = _func_attrs[attr_hash];
+	attrs.set_allocator(_allocator);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		addAttributes(*ref_func, ptr, attrs, attributes...);
+	}
+
+	return *this;
+}
+
+template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return func(temp_name, ptr, attributes...);
+}
+
+template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char8_t (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes)
 {
 	static_assert(name_size > 0, "Name cannot be an empty string.");

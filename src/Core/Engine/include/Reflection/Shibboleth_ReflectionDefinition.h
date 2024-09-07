@@ -36,6 +36,21 @@ THE SOFTWARE.
 NS_REFLECTION
 
 template <bool is_const, class T, class Ret, class... Args>
+struct ExtensionFuncTypeHelper;
+
+template <class T, class Ret, class... Args>
+struct ExtensionFuncTypeHelper<true, T, Ret, Args...> final
+{
+	using Type = Ret (*)(const T&, Args...);
+};
+
+template <class T, class Ret, class... Args>
+struct ExtensionFuncTypeHelper<false, T, Ret, Args...> final
+{
+	using Type = Ret (*)(T&, Args...);
+};
+
+template <bool is_const, class T, class Ret, class... Args>
 struct MemFuncTypeHelper;
 
 template <class T, class Ret, class... Args>
@@ -49,6 +64,9 @@ struct MemFuncTypeHelper<false, T, Ret, Args...> final
 {
 	using Type = Ret (T::*)(Args...);
 };
+
+template <bool is_const, class T, class Ret, class... Args>
+using ExtensionFuncType = typename ExtensionFuncTypeHelper<is_const, T, Ret, Args...>::Type;
 
 template <bool is_const, class T, class Ret, class... Args>
 using MemFuncType = typename MemFuncTypeHelper<is_const, T, Ret, Args...>::Type;
@@ -194,6 +212,18 @@ public:
 	ReflectionDefinition& func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
 
 	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& func(const char8_t (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& func(const char (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& func(const char8_t (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& func(const char (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
 	ReflectionDefinition& staticFunc(const char8_t (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes);
 
 	template <size_t name_size, class Ret, class... Args, class... Attrs>
@@ -334,6 +364,54 @@ private:
 
 	using IRefStaticFuncPtr = Shibboleth::UniquePtr<IReflectionStaticFunctionBase>;
 	using IRefFuncPtr = Shibboleth::UniquePtr<IReflectionFunctionBase>;
+
+	template <bool is_const, class Ret, class... Args>
+	class ReflectionExtensionFunction final : public IReflectionFunction<Ret, Args...>
+	{
+	public:
+		ReflectionExtensionFunction(ExtensionFuncType<is_const, T, Ret, Args...> func)
+		{
+			_func = func;
+		}
+
+		bool callStack(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
+		{
+			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
+			return callStack(const_cast<void*>(object), args, num_args, ret, allocator);
+		}
+
+		bool callStack(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
+		{
+			if (num_args != static_cast<int32_t>(sizeof...(Args))) {
+				// $TODO: Log error.
+				return false;
+			}
+
+			if constexpr (sizeof...(Args) > 0) {
+				return CallFuncStackHelper<ReflectionFunction<is_const, Ret, Args...>, Ret, Args...>(*this, object, args, ret, 0, allocator);
+			} else {
+				GAFF_REF(args);
+				return CallFuncStackHelper<ReflectionFunction<is_const, Ret, Args...>, Ret>(*this, object, ret, allocator);
+			}
+		}
+
+		Ret call(const void* object, Args&&... args) const override
+		{
+			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
+			return call(const_cast<void*>(object), std::forward<Args>(args)...);
+		}
+
+		Ret call(void* object, Args&&... args) const override
+		{
+			return _func(*reinterpret_cast<T*>(object), std::forward<Args>(args)...);
+		}
+
+		bool isConst(void) const override { return is_const; }
+		const IReflectionDefinition& getBaseRefDef(void) const override { return Reflection<T>::GetReflectionDefinition(); }
+
+	private:
+		ExtensionFuncType<is_const, T, Ret, Args...> _func;
+	};
 
 	template <bool is_const, class Ret, class... Args>
 	class ReflectionFunction final : public IReflectionFunction<Ret, Args...>
@@ -623,6 +701,9 @@ private:
 		IFunctionStackAllocator& allocator,
 		CurrentArgs&&... current_args
 	);
+
+	template <bool is_const, class Ret, class... Args, class... CurrentArgs>
+	static Ret CallCallableStackHelper(const ReflectionExtensionFunction<is_const, Ret, Args...>& func, void* object, CurrentArgs&&... current_args);
 
 	template <bool is_const, class Ret, class... Args, class... CurrentArgs>
 	static Ret CallCallableStackHelper(const ReflectionFunction<is_const, Ret, Args...>& func, void* object, CurrentArgs&&... current_args);
