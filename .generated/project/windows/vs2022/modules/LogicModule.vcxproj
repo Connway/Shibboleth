@@ -243,7 +243,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\LogicModu
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_LogicModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_LogicModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\Memory.vcxproj">

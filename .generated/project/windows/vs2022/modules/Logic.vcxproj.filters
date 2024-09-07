@@ -4,6 +4,9 @@
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Gen_ReflectionInit.h">
@@ -21,13 +24,29 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineResource.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_VariableSet.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_LogicModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_LuaProcess.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineComponent.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineReflection.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\Shibboleth_StateMachineResource.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_LogicModule.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_LuaProcess.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_StateMachineComponent.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_StateMachineReflection.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_StateMachineResource.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_VariableSet.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\Logic\project_generator.lua" />

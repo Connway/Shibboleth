@@ -7,12 +7,16 @@ local GenerateProject = function()
 
 		files { source_dir .. "**.h", source_dir .. "**.cpp", source_dir .. "**.inl" }
 
+		AngelScriptDefines()
+
 		IncludeDirs
 		{
 			source_dir,
 			source_dir .. "include",
 			source_dir .. "../../Core/Memory/include",
 			source_dir .. "../../Core/Engine/include",
+			base_dir .. "../../Dependencies/angelscript/angelscript/include",
+			base_dir .. "../../Dependencies/angelscript/add_on",
 			base_dir .. "../../Dependencies/EASTL/include",
 			base_dir .. "../../Dependencies/lua",
 			base_dir .. "../../Dependencies/glm",
@@ -36,10 +40,13 @@ local GenerateProject = function()
 			"MainLoop",
 			"Resource",
 
+			"AngelScript",
 			"Lua",
 
 			"Gleam",
 		}
+
+		AngelScriptDefines()
 
 		dependson(deps)
 		links(deps)
