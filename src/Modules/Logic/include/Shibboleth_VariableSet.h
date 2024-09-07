@@ -23,18 +23,18 @@ THE SOFTWARE.
 #pragma once
 
 #include <Reflection/Shibboleth_Reflection.h>
-#include <Esprit_StateMachineCommonConditions.h>
-#include <Esprit_StateMachine.h>
+#include <Esprit_VariableSet.h>
 
-SHIB_REFLECTION_DECLARE(Esprit::U8String)
-SHIB_REFLECTION_DECLARE(Esprit::HashString32<>)
-SHIB_REFLECTION_DECLARE(Esprit::HashString64<>)
-SHIB_REFLECTION_DECLARE(Esprit::HashStringNoString32<>)
-SHIB_REFLECTION_DECLARE(Esprit::HashStringNoString64<>)
+SHIB_REFLECTION_DECLARE(Esprit::VariableSet::Instance)
+SHIB_REFLECTION_DECLARE(Esprit::VariableSet)
 
-SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition::Operation)
-SHIB_REFLECTION_DECLARE(Esprit::VariableSet::VariableType)
+NS_SHIBBOLETH
 
-SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition)
+void* GetReference(
+	const Esprit::VariableSet& variables,
+	const Esprit::VariableSet::Instance& instance,
+	int32_t index,
+	const Refl::IReflectionDefinition& ref_def
+);
 
-SHIB_REFLECTION_DECLARE(Esprit::StateMachine)
+NS_END

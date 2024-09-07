@@ -36,20 +36,11 @@ public:
 	{
 		VariableSet::Instance variables;
 		int32_t current_state = 0;
-
-		Instance* clone(void) const
-		{
-			Instance* const instance_data = GAFF_ALLOCT(Instance, *GetAllocator());
-			instance_data->variables = variables;
-			instance_data->current_state = current_state;
-
-			return instance_data;
-		}
 	};
 
 	StateMachine(void);
 
-	Instance* createInstanceData(void) const;
+	Instance getDefaultInstanceData(void) const;
 
 	bool isActive(const Instance& instance) const;
 

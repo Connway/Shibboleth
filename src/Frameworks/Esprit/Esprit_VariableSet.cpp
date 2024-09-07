@@ -245,6 +245,13 @@ bool VariableSet::setVariable(Instance& variables, int32_t index, bool value) co
 	return true;
 }
 
+void* VariableSet::getReference(const Instance& variables, int32_t index) const
+{
+	void* result = nullptr;
+	getVariable(variables, index, result);
+	return result;
+}
+
 const U8String& VariableSet::getString(const Instance& variables, int32_t index) const
 {
 	const U8String* result = nullptr;

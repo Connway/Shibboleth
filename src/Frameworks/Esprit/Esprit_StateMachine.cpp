@@ -55,13 +55,13 @@ StateMachine::StateMachine(void)
 	}
 }
 
-StateMachine::Instance* StateMachine::createInstanceData(void) const
+StateMachine::Instance StateMachine::getDefaultInstanceData(void) const
 {
-	Instance* const instance_data = GAFF_ALLOCT(Instance, *GetAllocator());
-	instance_data->variables = _variables.getDefaults();
-	instance_data->current_state = static_cast<int32_t>(SpecialStates::StartState);
-
-	return instance_data;
+	return StateMachine::Instance
+	{
+		_variables.getDefaults(),
+		static_cast<int32_t>(SpecialStates::StartState)
+	};
 }
 
 bool StateMachine::isActive(const Instance& instance) const

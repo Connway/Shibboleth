@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_StateMachineReflection.h"
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_ScriptLogging.h>
-#include <Shibboleth_ScriptConfigs.h>
+#include <Shibboleth_ScriptConfig.h>
 #include <Shibboleth_LuaManager.h>
 #include <Shibboleth_LuaHelpers.h>
 #include <Shibboleth_Utilities.h>
@@ -45,15 +45,18 @@ SHIB_REFLECTION_CLASS_DEFINE(LuaProcess)
 bool LuaProcess::init(const Esprit::StateMachine& owner)
 {
 	_lua_mgr = &GetManagerTFast<LuaManager>();
-	GetManagerTFast<ResourceManager>().waitForResource(*_script);
 
-	if (!_script->isLoaded()) {
+	if (!_script) {
+		return true;
+	}
+
+	if (_script->hasFailed()) {
 		return false;
 	}
 
 	lua_State* const state = _lua_mgr->requestState();
 
-	lua_getglobal(state, k_config_script_loaded_chunks_name);
+	lua_getglobal(state, ScriptConfig::k_script_loaded_chunks_name);
 
 	// Should never happen, but check anyways.
 	if (!lua_istable(state, -1)) {
@@ -141,13 +144,13 @@ bool LuaProcess::init(const Esprit::StateMachine& owner)
 
 void LuaProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet::Instance& variables)
 {
-	if (!_script->isLoaded()) {
+	if (!_script || !_script->isLoaded()) {
 		return;
 	}
 
 	lua_State* const state = _lua_mgr->requestState();
 
-	lua_getglobal(state, k_config_script_loaded_chunks_name);
+	lua_getglobal(state, ScriptConfig::k_script_loaded_chunks_name);
 	lua_getfield(state, -1, reinterpret_cast<const char*>(_script->getFilePath().getBuffer()));
 
 	// Should never happen, but check anyways.

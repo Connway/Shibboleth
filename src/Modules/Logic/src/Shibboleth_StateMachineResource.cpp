@@ -341,6 +341,10 @@ Esprit::StateMachine* StateMachineResource::getStateMachine(void)
 
 void StateMachineResource::readValues(const ISerializeReader& reader, Esprit::VariableSet::Instance& var_inst) const
 {
+	if (reader.isNull()) {
+		return;
+	}
+
 	const Esprit::VariableSet& variables = _state_machine->getVariables();
 
 	// Start at 1. Skip references.

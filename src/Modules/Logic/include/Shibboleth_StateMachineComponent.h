@@ -38,31 +38,11 @@ public:
 	//void update(float dt) override;
 
 private:
-	UniquePtr<Esprit::StateMachine::Instance> _instance;
 	ResourcePtr<StateMachineResource> _resource;
+	Esprit::StateMachine::Instance _instance;
 
 	SHIB_REFLECTION_CLASS_DECLARE(StateMachineComponent);
 };
-
-// class StateMachine final : public ECSComponentBaseBoth<StateMachine, StateMachine&>
-// {
-// public:
-// 	static void CopyInternal(const void* old_begin, int32_t old_index, void* new_begin, int32_t new_index);
-// 	static void SetInternal(void* component, int32_t entity_index, const StateMachine& value);
-// 	static StateMachine& GetInternal(const void* component, int32_t entity_index);
-//
-// 	static void Constructor(ECSEntityID, void* component, int32_t entity_index);
-// 	static void Destructor(ECSEntityID, void* component, int32_t entity_index);
-//
-// 	static bool Load(ECSManager& ecs_mgr, ECSEntityID id, const ISerializeReader& reader);
-// 	static bool Load(const ISerializeReader& reader, StateMachine& out);
-//
-// 	StateMachine& operator=(const StateMachine& rhs);
-// 	StateMachine& operator=(StateMachine&& rhs) = default;
-//
-// 	StateMachineResourcePtr resource;
-// 	UniquePtr<Esprit::StateMachine::Instance> instance;
-// };
 
 NS_END
 

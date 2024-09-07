@@ -20,21 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_VariableSet.h"
+#include "Shibboleth_StateMachineReflection.h"
 
-#include <Reflection/Shibboleth_Reflection.h>
-#include <Esprit_StateMachineCommonConditions.h>
-#include <Esprit_StateMachine.h>
+SHIB_REFLECTION_DEFINE_BEGIN(Esprit::VariableSet::Instance)
+SHIB_REFLECTION_DEFINE_END(Esprit::VariableSet::Instance)
 
-SHIB_REFLECTION_DECLARE(Esprit::U8String)
-SHIB_REFLECTION_DECLARE(Esprit::HashString32<>)
-SHIB_REFLECTION_DECLARE(Esprit::HashString64<>)
-SHIB_REFLECTION_DECLARE(Esprit::HashStringNoString32<>)
-SHIB_REFLECTION_DECLARE(Esprit::HashStringNoString64<>)
+SHIB_REFLECTION_DEFINE_BEGIN(Esprit::VariableSet)
+	.func(u8"getVariableIndex", &Esprit::VariableSet::getVariableIndex)
+	.func(u8"getReference", Shibboleth::GetReference)
+	.func(u8"getString", &Esprit::VariableSet::getString)
+	.func(u8"getFloat", &Esprit::VariableSet::getFloat)
+	.func(u8"getInteger", &Esprit::VariableSet::getInteger)
+	.func(u8"getBool", &Esprit::VariableSet::getBool)
+SHIB_REFLECTION_DEFINE_END(Esprit::VariableSet)
 
-SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition::Operation)
-SHIB_REFLECTION_DECLARE(Esprit::VariableSet::VariableType)
+NS_SHIBBOLETH
 
-SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition)
+void* GetReference(
+	const Esprit::VariableSet& variables,
+	const Esprit::VariableSet::Instance& instance,
+	int32_t index,
+	const Refl::IReflectionDefinition& ref_def)
+{
+	void* const object = variables.getReference(instance, index * 2);
+	const Refl::IReflectionDefinition* const object_ref_def = reinterpret_cast<Refl::IReflectionDefinition*>(variables.getReference(instance, index * 2 + 1));
 
-SHIB_REFLECTION_DECLARE(Esprit::StateMachine)
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(object_ref_def);
+
+	if (!object_ref_def->hasInterface(ref_def)) {
+		return nullptr;
+	}
+
+	return object_ref_def->getInterface(ref_def, object);
+}
+
+NS_END

@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_StateMachineReflection.h"
+#include "Shibboleth_VariableSet.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
 #ifdef LoadString
@@ -107,17 +108,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Esprit::CheckVariableCondition)
 	.var("integer", &Esprit::CheckVariableCondition::getInteger, &Esprit::CheckVariableCondition::setInteger)
 	.var("bool", &Esprit::CheckVariableCondition::getBool, &Esprit::CheckVariableCondition::setBool)
 SHIB_REFLECTION_DEFINE_END(Esprit::CheckVariableCondition)
-
-SHIB_REFLECTION_DEFINE_BEGIN(Esprit::VariableSet::Instance)
-SHIB_REFLECTION_DEFINE_END(Esprit::VariableSet::Instance)
-
-SHIB_REFLECTION_DEFINE_BEGIN(Esprit::VariableSet)
-	.func("getVariableIndex", &Esprit::VariableSet::getVariableIndex)
-	.func("getString", &Esprit::VariableSet::getString)
-	.func("getFloat", &Esprit::VariableSet::getFloat)
-	.func("getInteger", &Esprit::VariableSet::getInteger)
-	.func("getBool", &Esprit::VariableSet::getBool)
-SHIB_REFLECTION_DEFINE_END(Esprit::VariableSet)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::StateMachine)
 	.func("getVariables", static_cast<const Esprit::VariableSet& (Esprit::StateMachine::*)(void) const>(&Esprit::StateMachine::getVariables))

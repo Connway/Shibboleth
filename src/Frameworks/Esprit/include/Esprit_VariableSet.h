@@ -79,6 +79,7 @@ public:
 	bool getVariable(const Instance& variables, int32_t index, bool& result) const;
 	bool setVariable(Instance& variables, int32_t index, bool value) const;
 
+	void* getReference(const Instance& variables, int32_t index) const;
 	const U8String& getString(const Instance& variables, int32_t index) const;
 	float getFloat(const Instance& variables, int32_t index) const;
 	int64_t getInteger(const Instance& variables, int32_t index) const;

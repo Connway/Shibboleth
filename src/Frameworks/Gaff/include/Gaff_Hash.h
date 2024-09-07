@@ -93,8 +93,8 @@ private:
 using Hash64 = Hash<Hash64Storage>;
 using Hash32 = Hash<Hash32Storage>;
 
-constexpr Hash64 k_init_hash64(k_init_hash64_storage);
-constexpr Hash32 k_init_hash32(k_init_hash32_storage);
+constexpr Hash64 k_init_hash64{ k_init_hash64_storage };
+constexpr Hash32 k_init_hash32{ k_init_hash32_storage };
 
 using HashFunc64 = Hash64 (*)(const char*, size_t);
 using HashFunc32 = Hash32 (*)(const char*, size_t);
