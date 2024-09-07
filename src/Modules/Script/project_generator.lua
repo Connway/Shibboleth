@@ -28,7 +28,7 @@ local GenerateProject = function()
 	ModuleProject "ScriptModule"
 		language "C++"
 
-		files { source_dir .. "Shibboleth_ScriptModule.cpp" }
+		files { source_dir .. "src/Shibboleth_ScriptModule.cpp" }
 
 		local deps =
 		{

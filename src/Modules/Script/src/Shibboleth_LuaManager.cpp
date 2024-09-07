@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LuaManager.h"
-#include "Shibboleth_ScriptConfigs.h"
+#include "Shibboleth_ScriptConfig.h"
 #include "Shibboleth_LuaHelpers.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <FileSystem/Shibboleth_IFileSystem.h>
@@ -34,7 +34,9 @@ THE SOFTWARE.
 #include <lua.hpp>
 
 MSVC_DISABLE_WARNING_PUSH(4100 4244)
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wunused-parameter")
 #include <public/tracy/TracyLua.hpp>
+GCC_CLANG_DISABLE_WARNING_POP()
 MSVC_DISABLE_WARNING_POP()
 
 
@@ -62,15 +64,16 @@ bool LuaManager::initAllModulesLoaded(void)
 	IApp& app = GetApp();
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_script));
 
-	const Gaff::JSON script_threads = app.getConfigs().getObject(k_config_script_threads);
-	const int32_t num_threads = script_threads.getInt32(k_config_script_default_num_threads);
+	const ScriptConfig& config = GetConfigRef<ScriptConfig>();
 
-	_states.resize(static_cast<size_t>(num_threads));
+	app.getJobPool().addPool(Shibboleth::HashStringView32<>(ScriptConfig::k_script_pool_name), config.num_threads);
+
+	_states.resize(static_cast<size_t>(config.num_threads));
 
 	const auto* const ref_defs = app.getReflectionManager().getTypeBucket(CLASS_HASH(*));
 	const auto enum_ref_defs = app.getReflectionManager().getEnumReflection();
 
-	for (int32_t i = 0; i < num_threads; ++i) {
+	for (int32_t i = 0; i < config.num_threads; ++i) {
 		lua_State* const state = lua_newstate(alloc, nullptr);
 
 		if (!state) {
@@ -106,7 +109,7 @@ bool LuaManager::initAllModulesLoaded(void)
 		lua_pop(state, 1);
 
 		lua_createtable(state, 0, 0);
-		lua_setglobal(state, k_config_script_loaded_chunks_name);
+		lua_setglobal(state, ScriptConfig::k_script_loaded_chunks_name);
 
 		RegisterBuiltIns(state);
 
@@ -158,7 +161,7 @@ bool LuaManager::loadBuffer(const char* buffer, size_t size, const char8_t* name
 			continue;
 		}
 
-		lua_getglobal(data.state, k_config_script_loaded_chunks_name);
+		lua_getglobal(data.state, ScriptConfig::k_script_loaded_chunks_name);
 		// Make sure no one deleted the loaded chunks table.
 		GAFF_ASSERT(lua_type(data.state, -1) == LUA_TTABLE);
 
@@ -205,7 +208,7 @@ void LuaManager::unloadBuffer(const char8_t* name)
 	for (LuaStateData& data : _states) {
 		EA::Thread::AutoFutex lock(*data.lock);
 
-		lua_getglobal(data.state, k_config_script_loaded_chunks_name);
+		lua_getglobal(data.state, ScriptConfig::k_script_loaded_chunks_name);
 		// Make sure no one deleted with the loaded chunks table.
 		GAFF_ASSERT(lua_type(data.state, -1) == LUA_TTABLE);
 

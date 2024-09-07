@@ -21,35 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include "Shibboleth_ScriptConfigs.h"
-#include <Shibboleth_JobPool.h>
 #include <Shibboleth_ModuleMacros.h>
 
-SHIB_DEFINE_MODULE_BEGIN(Script)
-
-#ifdef SHIB_STATIC
-	namespace Script
-	{
-		class Module final : public Shibboleth::Module
-		{
-		public:
-			bool preInit(Shibboleth::IApp& app) override;
-		};
-
-		bool Module::preInit(Shibboleth::IApp& app)
-		{
-			if (!Shibboleth::Module::preInit(app)) {
-				return false;
-			}
-
-			const Gaff::JSON script_threads = app.getConfigs().getObject(Shibboleth::k_config_script_threads);
-			const int32_t num_threads = script_threads.getInt32(Shibboleth::k_config_script_default_num_threads);
-
-			app.getJobPool().addPool(Shibboleth::HashStringView32<>(Shibboleth::k_config_script_thread_pool_name), num_threads);
-
-			return true;
-		}
-	}
-#endif
-
-SHIB_DEFINE_MODULE_END(Script)
+SHIB_DEFINE_BASIC_MODULE(Script)

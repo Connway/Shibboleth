@@ -20,19 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ScriptConfig.h"
+#include "Attributes/Shibboleth_EngineAttributesCommon.h"
 
-#include <Shibboleth_Defines.h>
-#include <Gaff_Defines.h>
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ScriptConfig)
+	.classAttrs(
+		Shibboleth::GlobalConfigAttribute{}
+	)
+
+	.var(u8"num_threads", &Shibboleth::ScriptConfig::num_threads, Shibboleth::OptionalAttribute{})
+SHIB_REFLECTION_DEFINE_END(Shibboleth::ScriptConfig)
+
 
 NS_SHIBBOLETH
 
-// Script
-constexpr const char8_t* const k_config_script_threads = u8"script_threads";
-
-constexpr const char* const k_config_script_loaded_chunks_name = "__loaded_chunks";
-constexpr const char8_t* const k_config_script_thread_pool_name = u8"Lua";
-static constexpr int32_t k_config_script_default_num_threads = 4;
-
+SHIB_REFLECTION_CLASS_DEFINE(ScriptConfig)
 
 NS_END
