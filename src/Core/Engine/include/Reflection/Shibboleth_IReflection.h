@@ -282,6 +282,7 @@ public:
 	virtual bool isFlags(void) const { return false; }
 	virtual bool isMap(void) const { return false; }
 	virtual bool isContainer(void) const { return isFixedArray() || isVector() || isMap(); }
+	virtual bool isPointer(void) const { return false; }
 
 	virtual const IReflection& getReflectionKey(void) const
 	{

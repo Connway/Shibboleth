@@ -88,14 +88,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Esprit::CheckVariableCondition::Operation)
 	.entry("GreaterThanOrEqualTo", Esprit::CheckVariableCondition::Operation::GreaterThanOrEqualTo)
 SHIB_REFLECTION_DEFINE_END(Esprit::CheckVariableCondition::Operation)
 
-SHIB_REFLECTION_DEFINE_BEGIN(Esprit::VariableSet::VariableType)
-	.entry("Reference", Esprit::VariableSet::VariableType::Reference)
-	.entry("String", Esprit::VariableSet::VariableType::String)
-	.entry("Float", Esprit::VariableSet::VariableType::Float)
-	.entry("Integer", Esprit::VariableSet::VariableType::Integer)
-	.entry("Bool", Esprit::VariableSet::VariableType::Bool)
-SHIB_REFLECTION_DEFINE_END(Esprit::VariableSet::VariableType)
-
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::CheckVariableCondition)
 	.template ctor<>()
 

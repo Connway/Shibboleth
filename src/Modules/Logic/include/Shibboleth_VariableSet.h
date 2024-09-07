@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Reflection/Shibboleth_Reflection.h>
 #include <Esprit_VariableSet.h>
 
+SHIB_REFLECTION_DECLARE(Esprit::VariableSet::VariableType)
 SHIB_REFLECTION_DECLARE(Esprit::VariableSet::Instance)
 SHIB_REFLECTION_DECLARE(Esprit::VariableSet)
 

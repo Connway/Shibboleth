@@ -23,6 +23,14 @@ THE SOFTWARE.
 #include "Shibboleth_VariableSet.h"
 #include "Shibboleth_StateMachineReflection.h"
 
+SHIB_REFLECTION_DEFINE_BEGIN(Esprit::VariableSet::VariableType)
+	.entry("Reference", Esprit::VariableSet::VariableType::Reference)
+	.entry("String", Esprit::VariableSet::VariableType::String)
+	.entry("Float", Esprit::VariableSet::VariableType::Float)
+	.entry("Integer", Esprit::VariableSet::VariableType::Integer)
+	.entry("Bool", Esprit::VariableSet::VariableType::Bool)
+SHIB_REFLECTION_DEFINE_END(Esprit::VariableSet::VariableType)
+
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::VariableSet::Instance)
 SHIB_REFLECTION_DEFINE_END(Esprit::VariableSet::Instance)
 
@@ -43,8 +51,8 @@ void* GetReference(
 	int32_t index,
 	const Refl::IReflectionDefinition& ref_def)
 {
-	void* const object = variables.getReference(instance, index * 2);
-	const Refl::IReflectionDefinition* const object_ref_def = reinterpret_cast<Refl::IReflectionDefinition*>(variables.getReference(instance, index * 2 + 1));
+	void* const object = variables.getReference(instance, index);
+	const Refl::IReflectionDefinition* const object_ref_def = reinterpret_cast<Refl::IReflectionDefinition*>(variables.getReference(instance, index + 1));
 
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(object_ref_def);

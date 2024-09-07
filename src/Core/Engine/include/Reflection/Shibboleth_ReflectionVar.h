@@ -113,7 +113,7 @@ template <class T, class VarType>
 class Var : public IVar<T>
 {
 public:
-	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
+	using ReflectionType = VarTypeHelper< T, std::remove_pointer_t< std::decay_t<VarType> > >::ReflectionType;
 
 	static_assert(Reflection<ReflectionType>::HasReflection);
 	static_assert(Reflection<T>::HasReflection);
@@ -128,6 +128,9 @@ public:
 	void* getData(void* object) override;
 	void setData(void* object, const void* data) override;
 	void setDataMove(void* object, void* data) override;
+
+	bool isPointer(void) const override { return std::is_pointer_v<VarType>; }
+
 
 	bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const void* object) override;

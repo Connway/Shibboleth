@@ -30,6 +30,11 @@ template <class VarType>
 IVar<T>::IVar(VarType T::*ptr):
 	IVar(Gaff::OffsetOfMember(ptr))
 {
+	// Pointers are always read only variables.
+	if constexpr (std::is_pointer_v<VarType>) {
+		setReadOnly(true);
+	}
+
 	GAFF_ASSERT(ptr);
 }
 
@@ -50,7 +55,7 @@ template <class T>
 template <class VarType>
 const VarType& IVar<T>::IVar::getDataT(const T& object) const
 {
-	const auto& other_refl = Reflection<VarType>::GetInstance();
+	const auto& other_refl = Reflection< std::remove_pointer_t< std::decay_t<VarType> > >::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
@@ -73,7 +78,7 @@ void IVar<T>::IVar::setDataT(T& object, const VarType& data)
 		return;
 	}
 
-	const auto& other_refl = Reflection<VarType>::GetInstance();
+	const auto& other_refl = Reflection< std::remove_pointer_t< std::decay_t<VarType> > >::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
@@ -96,7 +101,7 @@ void IVar<T>::IVar::setDataMoveT(T& object, VarType&& data)
 		return;
 	}
 
-	const auto& other_refl = Reflection<VarType>::GetInstance();
+	const auto& other_refl = Reflection< std::remove_pointer_t< std::decay_t<VarType> > >::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
@@ -114,7 +119,7 @@ template <class T>
 template <class VarType>
 const VarType& IVar<T>::IVar::getElementT(const T& object, int32_t index) const
 {
-	const auto& other_refl = Reflection<VarType>::GetInstance();
+	const auto& other_refl = Reflection< std::remove_pointer_t< std::decay_t<VarType> > >::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
@@ -138,7 +143,7 @@ void IVar<T>::IVar::setElementT(T& object, int32_t index, const VarType& data)
 		return;
 	}
 
-	const auto& other_refl = Reflection<VarType>::GetInstance();
+	const auto& other_refl = Reflection< std::remove_pointer_t< std::decay_t<VarType> > >::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
@@ -162,7 +167,7 @@ void IVar<T>::IVar::setElementMoveT(T& object, int32_t index, VarType&& data)
 		return;
 	}
 
-	const auto& other_refl = Reflection<VarType>::GetInstance();
+	const auto& other_refl = Reflection< std::remove_pointer_t< std::decay_t<VarType> > >::GetInstance();
 	const auto& refl = getReflection();
 
 	GAFF_ASSERT(refl.isEnum() == other_refl.isEnum());
@@ -314,15 +319,35 @@ void Var<T, VarType>::setDataMove(void* object, void* data)
 template <class T, class VarType>
 bool Var<T, VarType>::load(const Shibboleth::ISerializeReader& reader, void* object)
 {
-	VarType* const var = reinterpret_cast<VarType*>(object);
-	return Reflection<ReflectionType>::GetInstance().load(reader, *var);
+	if constexpr (std::is_pointer_v<VarType>) {
+		GAFF_REF(reader, object);
+		GAFF_ASSERT_MSG(
+			false,
+			"Var<T, VarType>::load: Called on a pointer of type '%s'.",
+			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName())
+		);
+
+	} else {
+		VarType* const var = reinterpret_cast<VarType*>(object);
+		return Reflection<ReflectionType>::GetInstance().load(reader, *var);
+	}
 }
 
 template <class T, class VarType>
 void Var<T, VarType>::save(Shibboleth::ISerializeWriter& writer, const void* object)
 {
-	const VarType* const var = reinterpret_cast<const VarType*>(object);
-	Reflection<ReflectionType>::GetInstance().save(writer, *var);
+	if constexpr (std::is_pointer_v<VarType>) {
+		GAFF_REF(writer, object);
+		GAFF_ASSERT_MSG(
+			false,
+			"Var<T, VarType>::save: Called on a pointer of type '%s'.",
+			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName())
+		);
+
+	} else {
+		const VarType* const var = reinterpret_cast<const VarType*>(object);
+		Reflection<ReflectionType>::GetInstance().save(writer, *var);
+	}
 }
 
 template <class T, class VarType>

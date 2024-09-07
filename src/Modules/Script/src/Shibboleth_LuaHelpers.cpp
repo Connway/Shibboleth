@@ -1177,7 +1177,18 @@ int UserTypeIndex(lua_State* state)
 
 				// Push user defined type reference.
 				} else {
-					PushUserTypeReference(state, input, var_ref_def);
+					if (var->isPointer()) {
+						input = *reinterpret_cast<const void* const *>(input);
+
+						if (!input) {
+							lua_pushnil(state);
+						}
+
+						PushUserTypeReference(state, input, var_ref_def);
+
+					} else {
+						PushUserTypeReference(state, input, var_ref_def);
+					}
 
 					//if (auto* const root = user_data->meta.getRoot()) {
 					//	value->meta.root = root;

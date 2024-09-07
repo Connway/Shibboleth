@@ -33,7 +33,6 @@ SHIB_REFLECTION_DECLARE(Esprit::HashStringNoString32<>)
 SHIB_REFLECTION_DECLARE(Esprit::HashStringNoString64<>)
 
 SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition::Operation)
-SHIB_REFLECTION_DECLARE(Esprit::VariableSet::VariableType)
 
 SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition)
 

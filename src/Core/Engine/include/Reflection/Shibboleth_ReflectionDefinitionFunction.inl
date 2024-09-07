@@ -238,7 +238,7 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 	IFunctionStackAllocator& allocator,
 	CurrentArgs&&... current_args)
 {
-	using ArgType = std::decay_t<First>;
+	using ArgType = std::remove_pointer_t< std::decay_t<First> >;
 	using FinalType = IsVectorType<ArgType>;
 	constexpr bool is_vector = IsVector<ArgType>;
 
@@ -504,7 +504,7 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 		}
 
 	} else {
-		using RetType = std::decay_t<Ret>;
+		using RetType = std::remove_pointer_t< std::decay_t<Ret> >;
 		using FinalType = IsVectorType<RetType>;
 		constexpr bool is_vector = IsVector<RetType>;
 
@@ -539,7 +539,7 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 				ret.ref_def = &Reflection<FinalType>::GetReflectionDefinition();
 			}
 
-			if constexpr (std::is_pointer<Ret>::value || std::is_reference<Ret>::value) {
+			if constexpr (std::is_pointer_v<Ret> || std::is_reference_v<Ret>) {
 				ret.flags.set(true, FunctionStackEntry::Flag::IsReference);
 
 				if constexpr (std::is_pointer<Ret>::value) {
