@@ -327,6 +327,8 @@ bool Var<T, VarType>::load(const Shibboleth::ISerializeReader& reader, void* obj
 			reinterpret_cast<const char*>(Reflection<ReflectionType>::GetName())
 		);
 
+		return false;
+
 	} else {
 		VarType* const var = reinterpret_cast<VarType*>(object);
 		return Reflection<ReflectionType>::GetInstance().load(reader, *var);
