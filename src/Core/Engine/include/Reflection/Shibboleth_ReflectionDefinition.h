@@ -388,10 +388,10 @@ private:
 			}
 
 			if constexpr (sizeof...(Args) > 0) {
-				return CallFuncStackHelper<ReflectionFunction<is_const, Ret, Args...>, Ret, Args...>(*this, object, args, ret, 0, allocator);
+				return CallFuncStackHelper<ReflectionExtensionFunction<is_const, Ret, Args...>, Ret, Args...>(*this, object, args, ret, 0, allocator);
 			} else {
 				GAFF_REF(args);
-				return CallFuncStackHelper<ReflectionFunction<is_const, Ret, Args...>, Ret>(*this, object, ret, allocator);
+				return CallFuncStackHelper<ReflectionExtensionFunction<is_const, Ret, Args...>, Ret>(*this, object, ret, allocator);
 			}
 		}
 
