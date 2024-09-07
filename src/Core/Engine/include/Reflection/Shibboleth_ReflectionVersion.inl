@@ -267,6 +267,56 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char (&name)[na
 
 template <class T>
 template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char8_t (&name)[name_size], Ret (*/*ptr*/)(const T&, Args...), const Attrs&... attributes)
+{
+	const char8_t* const temp_name = name;
+	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), name_size - 1, _hash);
+	_hash = Gaff::CalcTemplateHash<Ret, Args...>(_hash);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		_hash = Gaff::CalcTemplateHash<Attrs...>(_hash);
+		_hash = getAttributeHashes(_hash, attributes...);
+	}
+
+	return *this;
+
+}
+
+template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return func(temp_name, ptr, attributes...);
+}
+
+template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char8_t (&name)[name_size], Ret (*/*ptr*/)(T&, Args...), const Attrs&... attributes)
+{
+	const char8_t* const temp_name = name;
+	_hash = Gaff::FNV1aHash64(reinterpret_cast<const char*>(temp_name), name_size - 1, _hash);
+	_hash = Gaff::CalcTemplateHash<Ret, Args...>(_hash);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		_hash = Gaff::CalcTemplateHash<Attrs...>(_hash);
+		_hash = getAttributeHashes(_hash, attributes...);
+	}
+
+	return *this;
+
+}
+
+template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::func(const char (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes)
+{
+	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
+	return func(temp_name, ptr, attributes...);
+}
+
+template <class T>
+template <size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionVersionClass<T>& ReflectionVersionClass<T>::staticFunc(const char8_t (&name)[name_size], Ret (*/*func*/)(Args...), const Attrs&... attributes)
 {
 	const char8_t* const temp_name = name;

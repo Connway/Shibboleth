@@ -238,7 +238,7 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 	IFunctionStackAllocator& allocator,
 	CurrentArgs&&... current_args)
 {
-	using ArgType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<First>::type >::type >::type;
+	using ArgType = std::decay_t<First>;
 	using FinalType = IsVectorType<ArgType>;
 	constexpr bool is_vector = IsVector<ArgType>;
 
@@ -504,7 +504,7 @@ bool ReflectionDefinition<T>::CallFuncStackHelper(
 		}
 
 	} else {
-		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
+		using RetType = std::decay_t<Ret>;
 		using FinalType = IsVectorType<RetType>;
 		constexpr bool is_vector = IsVector<RetType>;
 

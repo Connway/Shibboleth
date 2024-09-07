@@ -118,6 +118,18 @@ public:
 	ReflectionVersionClass& func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
 
 	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionVersionClass& func(const char8_t (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionVersionClass& func(const char (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionVersionClass& func(const char8_t (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
+	ReflectionVersionClass& func(const char (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes);
+
+	template <size_t name_size, class Ret, class... Args, class... Attrs>
 	ReflectionVersionClass& staticFunc(const char8_t (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes);
 
 	template <size_t name_size, class Ret, class... Args, class... Attrs>
