@@ -107,6 +107,9 @@ public:
 	virtual bool isConst(void) const = 0;
 	virtual bool isBase(void) const { return false; }
 	virtual const IReflectionDefinition& getBaseRefDef(void) const = 0;
+
+	virtual const void* getFunctionPointer(void) const = 0;
+	virtual size_t getFunctionPointerSize(void) const = 0;
 };
 
 template <class Ret, class... Args>
