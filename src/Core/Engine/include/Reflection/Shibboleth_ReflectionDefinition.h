@@ -409,7 +409,7 @@ private:
 		bool isConst(void) const override { return is_const; }
 		const IReflectionDefinition& getBaseRefDef(void) const override { return Reflection<T>::GetReflectionDefinition(); }
 
-		const void* getFunctionPointer(void) const override { return _func; }
+		const void* getFunctionPointer(void) const override { return &_func; }
 		size_t getFunctionPointerSize(void) const override { return sizeof(ExtensionFuncType<is_const, T, Ret, Args...>); }
 
 	private:
@@ -460,7 +460,7 @@ private:
 		bool isConst(void) const override { return is_const; }
 		const IReflectionDefinition& getBaseRefDef(void) const override { return Reflection<T>::GetReflectionDefinition(); }
 
-		const void* getFunctionPointer(void) const override { return _func; }
+		const void* getFunctionPointer(void) const override { return &_func; }
 		size_t getFunctionPointerSize(void) const override { return sizeof(MemFuncType<is_const, T, Ret, Args...>); }
 
 	private:
