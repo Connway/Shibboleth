@@ -21,8 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_AngelScriptManager.h"
+#include "Shibboleth_AngelScriptString.h"
 #include "Shibboleth_AngelScriptMath.h"
-#include <angelscript.h>
+#include "Shibboleth_IncludeAngelScript.h"
 
 #define CHECK_RESULT(r) if (r < 0) { return false; }
 
@@ -30,6 +31,19 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptManager)
 	.template base<Shibboleth::IManager>()
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::AngelScriptManager)
+
+namespace
+{
+	static bool CheckMemberFunctionPointerSize(size_t mem_func_size)
+	{
+		return mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE) ||
+			mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE+1*sizeof(int)) ||
+			mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE+2*sizeof(int)) ||
+			mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE+3*sizeof(int)0 ||
+			mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE+4*sizeof(int));
+	}
+}
+
 
 NS_SHIBBOLETH
 
@@ -56,10 +70,36 @@ bool AngelScriptManager::init(void)
 	int result = _engine->SetMessageCallback(asMETHOD(AngelScriptManager, messageCallback), this, asCALL_THISCALL);
 	CHECK_RESULT(result)
 
+	result = _engine->SetEngineProperty(asEP_ALLOW_MULTILINE_STRINGS, true);
+	CHECK_RESULT(result)
+
+	result = _engine->SetEngineProperty(asEP_USE_CHARACTER_LITERALS, true);
+	CHECK_RESULT(result)
+
+	// Treat warnings as errors.
+	result = _engine->SetEngineProperty(asEP_COMPILER_WARNINGS, 2);
+	CHECK_RESULT(result)
+
 	if (!RegisterScriptMath_Native(_engine)) {
 		// $TODO: Log error.
 		return false;
 	}
+
+	if (!RegisterScriptString_Native(_engine)) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	// $TODO: Register array type.
+	// $TODO: Register reflected classes.
+
+
+	// asFunctionPtr((void (*)())func);
+	// asSMethodPtr<sizeof(void (c::*)())>::Convert(AS_METHOD_AMBIGUITY_CAST(r (c::*)p)(&c::m))
+
+	// Mark this as a class method
+	// asSFuncPtr p(3);
+	// p.CopyMethodPtr(&Mthd, method_ptr_size);
 
 	return true;
 }

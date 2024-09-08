@@ -21,12 +21,12 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_AngelScriptMath.h"
-#include <angelscript.h>
+#include "Shibboleth_IncludeAngelScript.h"
 #include <string.h>
 #include <float.h>
 #include <math.h>
 
-#define CHECK_RESULT(expr) if (expr) { return false; }
+#define CHECK_RESULT(expr) if (!(expr)) { return false; }
 
 // This was mainly copied from scriptmath.cpp, but removing the AS_USE_FLOAT stuff.
 

@@ -9,7 +9,8 @@ local unsupported_project_actions =
 	"vs2017",
 	"vs2019",
 	"codelite",
-	"gmake"
+	"gmake",
+	"vscode"
 }
 
 local supported_project_actions =

@@ -42,6 +42,7 @@ local GenerateProject = function()
 			"Script",
 			"Entity",
 
+			"AngelScript",
 			"Lua"
 		}
 
