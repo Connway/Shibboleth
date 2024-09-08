@@ -410,7 +410,7 @@ int asCContext::PushFunction(asIScriptFunction *func, void *object)
 	{
 		m_status = asEXECUTION_UNINITIALIZED;
 		Prepare(realFunc);
-		if(object) 
+		if(object)
 			*(asPWORD*)&m_regs.stackFramePointer[0] = (asPWORD)object;
 		m_status = asEXECUTION_DESERIALIZATION;
 	}
@@ -421,7 +421,7 @@ int asCContext::PushFunction(asIScriptFunction *func, void *object)
 		else
 			CallScriptFunction(realFunc);
 
-		if(object) 
+		if(object)
 			*(asPWORD*)&m_regs.stackFramePointer[0] = (asPWORD)object;
 	}
 
@@ -441,7 +441,7 @@ int asCContext::GetStateRegisters(asUINT stackLevel, asIScriptFunction **_callin
 	void *              objectRegister;
 	asITypeInfo *       objectType;
 
-	if (stackLevel >= GetCallstackSize()) 
+	if (stackLevel >= GetCallstackSize())
 		return asINVALID_ARG;
 
 	if( stackLevel == 0 )
@@ -1790,7 +1790,7 @@ int asCContext::PushCallState()
 	// PushCallState is called whenever we already have m_callStack n*CALLSTACK_FRAME_SIZE memory
 	// We only need to increment it if it is full (old_length >= m_callStack.maxLength)
 	// Here we assume that AllocateNoConstruct will always execute and allocate us extra memory,
-	// so we can use the faster m_callStack.SetLengthNoAllocate since it is already known the capacity 
+	// so we can use the faster m_callStack.SetLengthNoAllocate since it is already known the capacity
 	// is enough.
 
 	asUINT oldLength = m_callStack.GetLength();
@@ -1851,7 +1851,7 @@ void asCContext::PopCallState()
 	m_stackIndex             = (int)s[4];
 
 	// Here we reduce the length, so we can use the faster SetLengtNoAllocate.
-	m_callStack.SetLengthNoAllocate(newLength); 
+	m_callStack.SetLengthNoAllocate(newLength);
 }
 
 // interface
@@ -1911,8 +1911,8 @@ int asCContext::GetLineNumber(asUINT stackLevel, int *column, const char **secti
 
 	if (bytePos == 0)
 	{
-		// If the context has been Prepared but Execute hasn't been called yet the 
-		// programPointer will be zero. In this case simply use the address of the 
+		// If the context has been Prepared but Execute hasn't been called yet the
+		// programPointer will be zero. In this case simply use the address of the
 		// bytecode as starting point
 		bytePos = func->scriptData->byteCode.AddressOf();
 	}
@@ -4915,7 +4915,8 @@ static const void *const dispatch_table[256] = {
 	INSTRUCTION(255): l_bc = (asDWORD*)255; goto case_FAULT;
 #endif
 
-#ifdef AS_DEBUG
+// $MODIFICATION: Fixing compilation error when using computed gotos.
+#if defined(AS_DEBUG) && (!defined(AS_USE_COMPUTED_GOTOS) || AS_USE_COMPUTED_GOTOS == 0)
 	default:
 		asASSERT(false);
 		SetInternalException(TXT_UNRECOGNIZED_BYTE_CODE);
@@ -5131,10 +5132,10 @@ bool asCContext::IsVarInScope(asUINT varIndex, asUINT stackLevel)
 		// Find the varDecl
 		if( func->scriptData->objVariableInfo[n].programPos >= declaredAt )
 		{
-			// skip instructions at the same program position, but before the varDecl. 
+			// skip instructions at the same program position, but before the varDecl.
 			// Note, varDecl will only be in the objVariableInfo for object types
-			if (func->scriptData->objVariableInfo[n].programPos == declaredAt && 
-				!foundVarDecl && 
+			if (func->scriptData->objVariableInfo[n].programPos == declaredAt &&
+				!foundVarDecl &&
 				func->scriptData->objVariableInfo[n].option != asOBJ_VARDECL)
 				continue;
 
@@ -5222,7 +5223,7 @@ void asCContext::DetermineLiveObjects(asCArray<int> &liveObjects, asUINT stackLe
 						// Which variable is this? Use IsVarInScope to get the correct variable in case there are multiple variables sharing the same offset
 						asUINT var = asUINT(-1);
 						for (asUINT v = 0; v < func->scriptData->variables.GetLength(); v++)
-							if (func->scriptData->variables[v]->stackOffset == func->scriptData->objVariableInfo[n].variableOffset && 
+							if (func->scriptData->variables[v]->stackOffset == func->scriptData->objVariableInfo[n].variableOffset &&
 								IsVarInScope(v, stackLevel) )
 							{
 								var = v;
@@ -5895,7 +5896,7 @@ int asCContext::GetVar(asUINT varIndex, asUINT stackLevel, const char** name, in
 	if (func == 0) return asINVALID_ARG;
 
 	int r = func->GetVar(varIndex, name, typeId);
-	if (r < 0) 
+	if (r < 0)
 		return r;
 
 	if (isVarOnHeap)
@@ -6187,7 +6188,7 @@ int asCContext::FinishDeserialization()
 
 		return asCONTEXT_NOT_PREPARED;
 	}
-	
+
 	m_status = asEXECUTION_SUSPENDED;
 
 	return asSUCCESS;
