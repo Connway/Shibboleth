@@ -116,7 +116,6 @@ public:
 
 	int32_t size(void) const override;
 
-	bool isPolymorphic(void) const override;
 	bool isBuiltIn(void) const override;
 
 	int32_t getNumVars(void) const override;
@@ -170,7 +169,10 @@ public:
 
 	void destroyInstance(void* data) const override;
 
+	bool isCopyConstructible(void) const override;
 	bool isCopyAssignable(void) const override;
+	bool isConstructible(void) const override;
+	bool isDestructible(void) const override;
 
 	IVar<T>* getVarT(int32_t index) const;
 	IVar<T>* getVarT(Gaff::Hash32 name) const;
@@ -755,7 +757,6 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		constexpr static bool IsBuiltIn(void) { return true; } \
 		const IReflection& getReflectionInstance(void) const override { return Reflection<class_type>::GetInstance();; } \
 		int32_t size(void) const override { return static_cast<int32_t>(sizeof(class_type)); } \
-		bool isPolymorphic(void) const override { return std::is_polymorphic<class_type>::value; } \
 		bool isBuiltIn(void) const override { return true; } \
 		const char8_t* getFriendlyName(void) const override { return GAFF_STR_U8(class_type); } \
 		bool load(const Shibboleth::ISerializeReader& reader, void* object, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const override { return load(reader, *reinterpret_cast<class_type*>(object), flags); } \
@@ -840,7 +841,10 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		IReflectionFunctionBase* getFunc(Gaff::Hash32, Gaff::Hash64) const override { return nullptr; } \
 		void* duplicate(const void*, Gaff::IAllocator&) const override { return nullptr; } \
 		void destroyInstance(void* data) const override { class_type* const instance = reinterpret_cast<class_type*>(data); Gaff::Deconstruct(instance); } \
-		bool isCopyAssignable(void) const override { return std::assignable_from<class_type, class_type>; } \
+		bool isCopyConstructible(void) const override { return std::is_copy_constructible_v<class_type> && !std::is_trivially_copy_constructible_v<class_type>; } \
+		bool isCopyAssignable(void) const override { return std::is_copy_assignable_v<class_type> && !std::is_trivially_copy_assignable_v<class_type>; } \
+		bool isConstructible(void) const override { return std::is_default_constructible_v<class_type> && !std::is_trivially_default_constructible_v<class_type>; } \
+		bool isDestructible(void) const override { return std::is_destructible_v<class_type> && !std::is_trivially_destructible_v<class_type>; } \
 		void setAllocator(const Shibboleth::ProxyAllocator&) {} \
 		void finish(void) {} \
 	private: \

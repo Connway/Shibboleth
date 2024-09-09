@@ -645,7 +645,6 @@ public:
 	virtual const IReflection& getReflectionInstance(void) const = 0;
 	virtual int32_t size(void) const = 0;
 
-	virtual bool isPolymorphic(void) const = 0;
 	virtual bool isBuiltIn(void) const = 0;
 
 	virtual const char8_t* getFriendlyName(void) const = 0;
@@ -715,7 +714,10 @@ public:
 
 	virtual void destroyInstance(void* data) const = 0;
 
+	virtual bool isCopyConstructible(void) const = 0;
 	virtual bool isCopyAssignable(void) const = 0;
+	virtual bool isConstructible(void) const = 0;
+	virtual bool isDestructible(void) const = 0;
 
 private:
 	virtual ptrdiff_t getBasePointerOffset(Gaff::Hash64 interface_name) const = 0;

@@ -555,12 +555,6 @@ int32_t ReflectionDefinition<T>::size(void) const
 }
 
 template <class T>
-bool ReflectionDefinition<T>::isPolymorphic(void) const
-{
-	return std::is_polymorphic<T>::value;
-}
-
-template <class T>
 bool ReflectionDefinition<T>::isBuiltIn(void) const
 {
 	return false;
@@ -973,9 +967,27 @@ void ReflectionDefinition<T>::destroyInstance(void* data) const
 }
 
 template <class T>
+bool ReflectionDefinition<T>::isCopyConstructible(void) const
+{
+	return std::is_copy_constructible_v<T> && !std::is_trivially_copy_constructible_v<T>;
+}
+
+template <class T>
 bool ReflectionDefinition<T>::isCopyAssignable(void) const
 {
-	return std::assignable_from<T, T>;
+	return std::is_copy_assignable_v<T> && !std::is_trivially_copy_assignable_v<T>;
+}
+
+template <class T>
+bool ReflectionDefinition<T>::isConstructible(void) const
+{
+	return std::is_default_constructible_v<T> && !std::is_trivially_default_constructible_v<T>;
+}
+
+template <class T>
+bool ReflectionDefinition<T>::isDestructible(void) const
+{
+	return std::is_destructible_v<T> && !std::is_trivially_destructible_v<T>;
 }
 
 template <class T>

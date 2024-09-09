@@ -165,20 +165,21 @@ namespace
 			return true;
 		}
 
-		Shibboleth::U8String name = ref_def.getReflectionInstance().getName();
+		Shibboleth::U8String class_name = ref_def.getReflectionInstance().getName();
 
-		if (Gaff::EndsWith(name.data(), u8"<>")) {
-			name.erase(name.size() - 2);
+		// Treat default templated types as just a normal type.
+		if (Gaff::EndsWith(class_name.data(), u8"<>")) {
+			class_name.erase(class_name.size() - 2);
 		}
 
-		const size_t last_scope_delimeter = name.rfind(u8"::");
+		const size_t last_scope_delimeter = class_name.rfind(u8"::");
 		int result = 0;
 
 		GAFF_ASSERT(last_scope_delimeter != Shibboleth::U8String::npos);
 
-		const Gaff::U8StringView name_view(name.data() + last_scope_delimeter);
+		const Gaff::U8StringView class_name_view(class_name.data() + last_scope_delimeter + 2);
 
-		result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_view.data()));
+		result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(class_name.substr(0, last_scope_delimeter).data()));
 
 		if (result < 0) {
 			// $TODO: Log error.
@@ -191,50 +192,58 @@ namespace
 			flags |= asOBJ_VALUE | asOBJ_APP_CLASS_DESTRUCTOR;
 
 			Gaff::Hash64 copy_ctor_hash = Gaff::FNV1aHash64Const(u8"const ");
-			copy_ctor_hash = Gaff::FNV1aHash64String(name_view.data(), copy_ctor_hash);
+			copy_ctor_hash = Gaff::FNV1aHash64String(class_name_view.data(), copy_ctor_hash);
 			copy_ctor_hash = Gaff::FNV1aHash64String(u8"&", copy_ctor_hash);
 
 			int32_t ctor_count = 0;
 
-			if (ref_def.template getConstructor<>()) {
+			if (ref_def.isConstructible()) {
 				flags |= asOBJ_APP_CLASS_CONSTRUCTOR;
 				++ctor_count;
 			}
 
-			if (ref_def.getConstructor(copy_ctor_hash)) {
-				flags |= asOBJ_APP_CLASS_COPY_CONSTRUCTOR;
-				++ctor_count;
+			if (ref_def.isDestructible()) {
+				flags |= asOBJ_APP_CLASS_DESTRUCTOR;
 			}
 
-			if (ref_def.getNumConstructors() > ctor_count) {
-				flags |= asOBJ_APP_CLASS_MORE_CONSTRUCTORS;
+			if (ref_def.isCopyConstructible()) {
+				flags |= asOBJ_APP_CLASS_COPY_CONSTRUCTOR;
+				++ctor_count;
 			}
 
 			if (ref_def.isCopyAssignable()) {
 				flags |= asOBJ_APP_CLASS_ASSIGNMENT;
 			}
 
+			if (ref_def.getNumConstructors() > ctor_count) {
+				flags |= asOBJ_APP_CLASS_MORE_CONSTRUCTORS;
+			}
+
 		} else {
+			// $TODO: Support for ref-counted classes.
 			flags |= asOBJ_REF | asOBJ_NOCOUNT;
 		}
 
-		result = engine.RegisterObjectType(reinterpret_cast<const char*>(name_view.data()), ref_def.size(), flags);
+		result = engine.RegisterObjectType(reinterpret_cast<const char*>(class_name_view.data()), ref_def.size(), flags);
 
 		if (result < 0) {
 			// $TODO: Log error.
 			return false;
 		}
 
+
+
+		// Register static functions and operators.
 		const int32_t num_static_funcs = ref_def.getNumStaticFuncs();
-		Shibboleth::U8String func_name{ SCRIPT_ALLOCATOR };
 
 		for (int32_t i = 0; i < num_static_funcs; ++i) {
-			const Shibboleth::HashStringView32<> name = ref_def.getStaticFuncName(i);
+			const Shibboleth::HashStringView32<> func_name = ref_def.getStaticFuncName(i);
+			const char8_t* raw_name = func_name.getBuffer();
 
 			// Is an operator function
-			if (Gaff::Find(name.getBuffer(), u8"__") == 0) {
+			if (Gaff::Find(func_name.getBuffer(), u8"__") == 0) {
 				// $TODO: Register operator function.
-				const Gaff::Hash32 op_hash = Gaff::FNV1aHash32String(name.getBuffer());
+				const Gaff::Hash32 op_hash = Gaff::FNV1aHash32String(func_name.getBuffer());
 				const int32_t index = Gaff::IndexOfArray(Gaff::k_op_hashes, op_hash);
 
 				if (index == -1) {
@@ -245,45 +254,47 @@ namespace
 					continue;
 				}
 
-				const int32_t num_overrides = ref_def.getNumStaticFuncOverrides(i);
+				raw_name = k_op_names[index];
+			}
 
-				for (int32_t j = 0; j < num_overrides; ++j) {
-					const Refl::IReflectionStaticFunctionBase* const func = ref_def.getStaticFunc(i, j);
-					const Refl::FunctionSignature sig = func->getSignature();
-					const Shibboleth::U8String decl = GetFunctionDeclaration(sig, k_op_names[index]);
+			const int32_t num_overrides = ref_def.getNumStaticFuncOverrides(i);
 
-					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(name_view.data()),
-						reinterpret_cast<const char*>(decl.data()),
-						asFunctionPtr(func->getFunc()),
-						asCALL_CDECL
-					);
-				}
+			for (int32_t j = 0; j < num_overrides; ++j) {
+				const Refl::IReflectionStaticFunctionBase* const func = ref_def.getStaticFunc(i, j);
+				const Refl::FunctionSignature sig = func->getSignature();
+				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
 
-			// Normal function.
-			} else {
+				result = engine.RegisterObjectMethod(
+					reinterpret_cast<const char*>(class_name_view.data()),
+					reinterpret_cast<const char*>(decl.data()),
+					asFunctionPtr(func->getFunc()),
+					asCALL_CDECL
+				);
 			}
 		}
 
+
+
+		// Register regular functions.
 		const int32_t num_funcs = ref_def.getNumFuncs();
 
 		for (int32_t i = 0; i < num_funcs; ++i) {
-			const Shibboleth::HashStringView32<> name = ref_def.getFuncName(i);
+			const Shibboleth::HashStringView32<> func_name = ref_def.getFuncName(i);
 			const int32_t num_overrides = ref_def.getNumFuncOverrides(i);
-			GAFF_REF(name);
 
 			for (int32_t j = 0; j < num_overrides; ++j) {
 				const Refl::IReflectionFunctionBase* const func = ref_def.getFunc(i, j);
 				const Refl::FunctionSignature sig = func->getSignature();
-				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, name.getBuffer());
+				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, func_name.getBuffer());
 
 				if (func->isExtensionFunction()) {
 					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(name_view.data()),
+						reinterpret_cast<const char*>(class_name_view.data()),
 						reinterpret_cast<const char*>(decl.data()),
 						asFunctionPtr(*reinterpret_cast<const Refl::IReflectionStaticFunctionBase::VoidFunc*>(func->getFunctionPointer())),
 						asCALL_CDECL_OBJFIRST
 					);
+
 				} else {
 					if (!CheckMemberFunctionPointerSize(func->getFunctionPointerSize())) {
 						// $TODO: Log error.
@@ -295,7 +306,7 @@ namespace
 					func_ptr.CopyMethodPtr(func->getFunctionPointer(), func->getFunctionPointerSize());
 
 					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(name_view.data()),
+						reinterpret_cast<const char*>(class_name_view.data()),
 						reinterpret_cast<const char*>(decl.data()),
 						func_ptr,
 						asCALL_THISCALL
@@ -308,6 +319,10 @@ namespace
 				}
 			}
 		}
+
+
+
+		// Register properties.
 
 		return true;
 	}
