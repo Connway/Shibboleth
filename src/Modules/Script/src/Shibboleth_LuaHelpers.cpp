@@ -863,7 +863,7 @@ void RegisterType(lua_State* state, const Refl::IReflectionDefinition& ref_def)
 	Vector<luaL_Reg> reg(g_allocator);
 
 	// Add constructor.
-	if ((!flags || !flags->getFlags().testAll(ScriptFlagsAttribute::Flag::ReferenceOnly))) {
+	if (flags && flags->isValueType()) {
 		reg.emplace_back(luaL_Reg{ "New", UserTypeNew });
 	}
 

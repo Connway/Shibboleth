@@ -122,7 +122,7 @@ class ScriptFlagsAttribute final : public Refl::IAttribute
 public:
 	enum class Flag
 	{
-		ReferenceOnly,
+		ValueType,
 		NoRegister,
 		NoInherit,
 
@@ -145,10 +145,10 @@ public:
 	ScriptFlagsAttribute(const ScriptFlagsAttribute& attr) = default;
 
 	bool canInherit(void) const override { return !_flags.testAll(Flag::NoInherit); }
-	bool isReferenceOnly(void) const { return _flags.testAll(Flag::ReferenceOnly); }
+	bool isValueType(void) const { return _flags.testAll(Flag::ValueType); }
 	bool canRegister(void) const { return !_flags.testAll(Flag::NoRegister); }
 
-	Gaff::Flags<Flag> getFlags(void) const { return _flags; }
+	const Gaff::Flags<Flag>& getFlags(void) const { return _flags; }
 
 private:
 	Gaff::Flags<Flag> _flags;

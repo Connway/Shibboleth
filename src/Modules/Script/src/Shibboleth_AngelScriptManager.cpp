@@ -23,6 +23,9 @@ THE SOFTWARE.
 #include "Shibboleth_AngelScriptManager.h"
 #include "Shibboleth_AngelScriptString.h"
 #include "Shibboleth_AngelScriptMath.h"
+#include "Shibboleth_ScriptDefines.h"
+#include <Attributes/Shibboleth_EngineAttributesCommon.h>
+#include <Gaff_ContainerAlgorithm.h>
 #include "Shibboleth_IncludeAngelScript.h"
 
 #define CHECK_RESULT(r) if (r < 0) { return false; }
@@ -34,13 +37,279 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::AngelScriptManager)
 
 namespace
 {
+	static constexpr const char8_t* k_op_names[] = {
+		u8"opAdd",
+		u8"opSub",
+		u8"opMul",
+		u8"opDiv",
+		u8"opMod",
+		u8"opAnd",
+		u8"opOr",
+		u8"opXor",
+		u8"opCom",
+		u8"opShl",
+		u8"opShr",
+		nullptr, // OP_LOGIC_AND_NAME
+		nullptr, // OP_LOGIC_OR_NAME
+		u8"opEquals",
+		nullptr, // OP_LESS_THAN_NAME
+		nullptr, // OP_GREATER_THAN_NAME
+		nullptr, // OP_LESS_THAN_OR_EQUAL_NAME
+		nullptr, //OP_GREATER_THAN_OR_EQUAL_NAME
+		u8"opNeg",
+		nullptr, // OP_PLUS_NAME
+		u8"opCall",
+		u8"opIndex",
+		nullptr, // OP_TO_STRING_NAME
+		u8"opCmp"
+	};
+	static_assert(std::size(k_op_names) == static_cast<size_t>(Gaff::Operator::Count));
+
 	static bool CheckMemberFunctionPointerSize(size_t mem_func_size)
 	{
 		return mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE) ||
 			mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE+1*sizeof(int)) ||
 			mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE+2*sizeof(int)) ||
-			mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE+3*sizeof(int)0 ||
+			mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE+3*sizeof(int)) ||
 			mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE+4*sizeof(int));
+	}
+
+	static Shibboleth::U8String GetFunctionDeclaration(const Refl::FunctionSignature& sig, const char8_t* name)
+	{
+		Shibboleth::U8String decl{ SCRIPT_ALLOCATOR };
+
+		decl = sig.return_value.getArgString(true) + u8' ' + name + u8'(';
+
+		for (const Refl::FunctionArg& arg : sig.args) {
+			decl += arg.getArgString(false);
+
+			if (arg.isReference()) {
+				if (arg.isConst()) {
+					const size_t index = decl.find_last_of(u8'&');
+					GAFF_ASSERT(index != Shibboleth::U8String::npos);
+
+					decl.insert(index + 1, u8"in");
+				}
+				// $TODO: Mark up non-const references to be out or inout.
+			}
+
+			if (&arg != &sig.args.back()) {
+				decl += u8", ";
+			}
+		}
+
+		decl += u8')';
+
+		if (sig.isConst()) {
+			decl += u8" const";
+		}
+
+		return decl;
+	}
+
+	static bool RegisterEnum(asIScriptEngine& engine, const Refl::IEnumReflectionDefinition& enum_ref_def)
+	{
+		const Shibboleth::U8String name = enum_ref_def.getReflectionInstance().getName();
+		const size_t last_scope_delimeter = name.rfind(u8"::");
+		int result = 0;
+
+		GAFF_ASSERT(last_scope_delimeter != Shibboleth::U8String::npos);
+
+		result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name.data() + last_scope_delimeter));
+
+		if (result < 0) {
+			// $TODO: Log error.
+			return false;
+		}
+
+		const Gaff::U8StringView enum_name(name.data() + last_scope_delimeter + 2);
+
+		result = engine.RegisterEnum(reinterpret_cast<const char*>(enum_name.data()));
+
+		if (result < 0) {
+			// $TODO: Log error.
+			return false;
+		}
+
+		const int32_t num_entries = enum_ref_def.getNumEntries();
+
+		for (int32_t i = 0; i < num_entries; ++i) {
+			const Shibboleth::HashStringView32<> entry_name = enum_ref_def.getEntryNameFromIndex(i);
+			const int32_t entry_value = enum_ref_def.getEntryValue(i);
+
+			result = engine.RegisterEnumValue(
+				reinterpret_cast<const char*>(enum_name.data()),
+				reinterpret_cast<const char*>(entry_name.getBuffer()),
+				entry_value
+			);
+
+			if (result < 0) {
+				// $TODO: Log error.
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	static bool RegisterType(asIScriptEngine& engine, const Refl::IReflectionDefinition& ref_def)
+	{
+		// We do not need to register attributes or built-in types.
+		if (ref_def.hasInterface<Refl::IAttribute>() || ref_def.isBuiltIn()) {
+			return true;
+		}
+
+		const Shibboleth::ScriptFlagsAttribute* const script_flags = ref_def.getClassAttr<Shibboleth::ScriptFlagsAttribute>();
+
+		if (script_flags && !script_flags->canRegister()) {
+			return true;
+		}
+
+		Shibboleth::U8String name = ref_def.getReflectionInstance().getName();
+
+		if (Gaff::EndsWith(name.data(), u8"<>")) {
+			name.erase(name.size() - 2);
+		}
+
+		const size_t last_scope_delimeter = name.rfind(u8"::");
+		int result = 0;
+
+		GAFF_ASSERT(last_scope_delimeter != Shibboleth::U8String::npos);
+
+		const Gaff::U8StringView name_view(name.data() + last_scope_delimeter);
+
+		result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_view.data()));
+
+		if (result < 0) {
+			// $TODO: Log error.
+			return false;
+		}
+
+		asQWORD flags = asOBJ_APP_CLASS;
+
+		if (script_flags && script_flags->isValueType()) {
+			flags |= asOBJ_VALUE | asOBJ_APP_CLASS_DESTRUCTOR;
+
+			Gaff::Hash64 copy_ctor_hash = Gaff::FNV1aHash64Const(u8"const ");
+			copy_ctor_hash = Gaff::FNV1aHash64String(name_view.data(), copy_ctor_hash);
+			copy_ctor_hash = Gaff::FNV1aHash64String(u8"&", copy_ctor_hash);
+
+			int32_t ctor_count = 0;
+
+			if (ref_def.template getConstructor<>()) {
+				flags |= asOBJ_APP_CLASS_CONSTRUCTOR;
+				++ctor_count;
+			}
+
+			if (ref_def.getConstructor(copy_ctor_hash)) {
+				flags |= asOBJ_APP_CLASS_COPY_CONSTRUCTOR;
+				++ctor_count;
+			}
+
+			if (ref_def.getNumConstructors() > ctor_count) {
+				flags |= asOBJ_APP_CLASS_MORE_CONSTRUCTORS;
+			}
+
+			if (ref_def.isCopyAssignable()) {
+				flags |= asOBJ_APP_CLASS_ASSIGNMENT;
+			}
+
+		} else {
+			flags |= asOBJ_REF | asOBJ_NOCOUNT;
+		}
+
+		result = engine.RegisterObjectType(reinterpret_cast<const char*>(name_view.data()), ref_def.size(), flags);
+
+		if (result < 0) {
+			// $TODO: Log error.
+			return false;
+		}
+
+		const int32_t num_static_funcs = ref_def.getNumStaticFuncs();
+		Shibboleth::U8String func_name{ SCRIPT_ALLOCATOR };
+
+		for (int32_t i = 0; i < num_static_funcs; ++i) {
+			const Shibboleth::HashStringView32<> name = ref_def.getStaticFuncName(i);
+
+			// Is an operator function
+			if (Gaff::Find(name.getBuffer(), u8"__") == 0) {
+				// $TODO: Register operator function.
+				const Gaff::Hash32 op_hash = Gaff::FNV1aHash32String(name.getBuffer());
+				const int32_t index = Gaff::IndexOfArray(Gaff::k_op_hashes, op_hash);
+
+				if (index == -1) {
+					continue;
+				}
+
+				if (!k_op_names[index]) {
+					continue;
+				}
+
+				const int32_t num_overrides = ref_def.getNumStaticFuncOverrides(i);
+
+				for (int32_t j = 0; j < num_overrides; ++j) {
+					const Refl::IReflectionStaticFunctionBase* const func = ref_def.getStaticFunc(i, j);
+					const Refl::FunctionSignature sig = func->getSignature();
+					const Shibboleth::U8String decl = GetFunctionDeclaration(sig, k_op_names[index]);
+
+					result = engine.RegisterObjectMethod(
+						reinterpret_cast<const char*>(name_view.data()),
+						reinterpret_cast<const char*>(decl.data()),
+						asFunctionPtr(func->getFunc()),
+						asCALL_CDECL
+					);
+				}
+
+			// Normal function.
+			} else {
+			}
+		}
+
+		const int32_t num_funcs = ref_def.getNumFuncs();
+
+		for (int32_t i = 0; i < num_funcs; ++i) {
+			const Shibboleth::HashStringView32<> name = ref_def.getFuncName(i);
+			const int32_t num_overrides = ref_def.getNumFuncOverrides(i);
+			GAFF_REF(name);
+
+			for (int32_t j = 0; j < num_overrides; ++j) {
+				const Refl::IReflectionFunctionBase* const func = ref_def.getFunc(i, j);
+				const Refl::FunctionSignature sig = func->getSignature();
+				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, name.getBuffer());
+
+				if (func->isExtensionFunction()) {
+					result = engine.RegisterObjectMethod(
+						reinterpret_cast<const char*>(name_view.data()),
+						reinterpret_cast<const char*>(decl.data()),
+						asFunctionPtr(*reinterpret_cast<const Refl::IReflectionStaticFunctionBase::VoidFunc*>(func->getFunctionPointer())),
+						asCALL_CDECL_OBJFIRST
+					);
+				} else {
+					if (!CheckMemberFunctionPointerSize(func->getFunctionPointerSize())) {
+						// $TODO: Log error.
+						return false;
+					}
+
+					// Mark this as a class method
+					asSFuncPtr func_ptr(3);
+					func_ptr.CopyMethodPtr(func->getFunctionPointer(), func->getFunctionPointerSize());
+
+					result = engine.RegisterObjectMethod(
+						reinterpret_cast<const char*>(name_view.data()),
+						reinterpret_cast<const char*>(decl.data()),
+						func_ptr,
+						asCALL_THISCALL
+					);
+				}
+
+				if (result < 0) {
+					// $TODO: Log error.
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }
 
@@ -91,17 +360,27 @@ bool AngelScriptManager::init(void)
 	}
 
 	// $TODO: Register array type.
-	// $TODO: Register reflected classes.
 
 
-	// asFunctionPtr((void (*)())func);
-	// asSMethodPtr<sizeof(void (c::*)())>::Convert(AS_METHOD_AMBIGUITY_CAST(r (c::*)p)(&c::m))
+	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
+	const auto* const ref_defs = refl_mgr.getTypeBucket(CLASS_HASH(*));
+	const auto enum_ref_defs = refl_mgr.getEnumReflection();
 
-	// Mark this as a class method
-	// asSFuncPtr p(3);
-	// p.CopyMethodPtr(&Mthd, method_ptr_size);
+	bool success = true;
 
-	return true;
+	for (const Refl::IEnumReflectionDefinition* enum_ref_def : enum_ref_defs) {
+		if (!RegisterEnum(*_engine, *enum_ref_def)) {
+			success = false;
+		}
+	}
+
+	if (ref_defs) {
+		for (const Refl::IReflectionDefinition* ref_def : *ref_defs) {
+			RegisterType(*_engine, *ref_def);
+		}
+	}
+
+	return success;
 }
 
 void AngelScriptManager::messageCallback(const asSMessageInfo* msg, void* param)

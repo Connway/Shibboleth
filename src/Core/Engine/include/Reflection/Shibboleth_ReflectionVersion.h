@@ -207,6 +207,9 @@ public:
 	template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
 	ReflectionVersionClass& opToString(void);
 
+	template <class Other>
+	ReflectionVersionClass& opComparison(void);
+
 	template <class... Attrs>
 	ReflectionVersionClass& classAttrs(const Attrs&... attributes);
 

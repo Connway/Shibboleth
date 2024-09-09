@@ -25,12 +25,7 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IManager)
 	.classAttrs(
-		Shibboleth::ClassBucketAttribute(),
-
-		// Do not allow scripts to create managers.
-		Shibboleth::ScriptFlagsAttribute(
-			Shibboleth::ScriptFlagsAttribute::Flag::ReferenceOnly
-		)
+		Shibboleth::ClassBucketAttribute()
 	)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::IManager)
 

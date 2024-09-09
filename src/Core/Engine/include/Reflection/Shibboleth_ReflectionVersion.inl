@@ -618,6 +618,13 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::opToString(void)
 }
 
 template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opComparison(void)
+{
+	return staticFunc(OP_COMP_NAME, Gaff::Comparison<T, Other>);
+}
+
+template <class T>
 template <class... Attrs>
 ReflectionVersionClass<T>& ReflectionVersionClass<T>::classAttrs(const Attrs&... attributes)
 {

@@ -170,6 +170,8 @@ public:
 
 	void destroyInstance(void* data) const override;
 
+	bool isCopyAssignable(void) const override;
+
 	IVar<T>* getVarT(int32_t index) const;
 	IVar<T>* getVarT(Gaff::Hash32 name) const;
 
@@ -301,6 +303,9 @@ public:
 	template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
 	ReflectionDefinition& opToString(void);
 
+	template <class Other>
+	ReflectionDefinition& opComparison(void);
+
 	// apply() is not called on these functions.
 	template <class... Attrs>
 	ReflectionDefinition& classAttrs(const Attrs&... attributes);
@@ -411,6 +416,8 @@ private:
 
 		const void* getFunctionPointer(void) const override { return &_func; }
 		size_t getFunctionPointerSize(void) const override { return sizeof(ExtensionFuncType<is_const, T, Ret, Args...>); }
+
+		bool isExtensionFunction(void) const override { return true; }
 
 	private:
 		ExtensionFuncType<is_const, T, Ret, Args...> _func;
@@ -524,6 +531,8 @@ private:
 
 		const void* getFunctionPointer(void) const override { return _func->getFunctionPointer(); }
 		size_t getFunctionPointerSize(void) const override { return _func->getFunctionPointerSize(); }
+
+		FunctionSignature getSignature(void) const override { return _func->getSignature(); }
 
 	private:
 		const IReflectionDefinition& _base_ref_def;
@@ -745,7 +754,7 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 	public: \
 		constexpr static bool IsBuiltIn(void) { return true; } \
 		const IReflection& getReflectionInstance(void) const override { return Reflection<class_type>::GetInstance();; } \
-		int32_t size(void) const override { return sizeof(class_type); } \
+		int32_t size(void) const override { return static_cast<int32_t>(sizeof(class_type)); } \
 		bool isPolymorphic(void) const override { return std::is_polymorphic<class_type>::value; } \
 		bool isBuiltIn(void) const override { return true; } \
 		const char8_t* getFriendlyName(void) const override { return GAFF_STR_U8(class_type); } \
@@ -831,6 +840,7 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		IReflectionFunctionBase* getFunc(Gaff::Hash32, Gaff::Hash64) const override { return nullptr; } \
 		void* duplicate(const void*, Gaff::IAllocator&) const override { return nullptr; } \
 		void destroyInstance(void* data) const override { class_type* const instance = reinterpret_cast<class_type*>(data); Gaff::Deconstruct(instance); } \
+		bool isCopyAssignable(void) const override { return std::assignable_from<class_type, class_type>; } \
 		void setAllocator(const Shibboleth::ProxyAllocator&) {} \
 		void finish(void) {} \
 	private: \

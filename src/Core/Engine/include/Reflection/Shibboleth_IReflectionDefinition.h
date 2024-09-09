@@ -715,6 +715,8 @@ public:
 
 	virtual void destroyInstance(void* data) const = 0;
 
+	virtual bool isCopyAssignable(void) const = 0;
+
 private:
 	virtual ptrdiff_t getBasePointerOffset(Gaff::Hash64 interface_name) const = 0;
 	virtual void instantiated(void* object) const = 0;

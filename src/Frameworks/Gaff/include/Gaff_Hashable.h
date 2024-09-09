@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_ArrayString.h"
+#include "Gaff_Assert.h"
 #include "Gaff_Hash.h"
 
 #ifndef NS_HASHABLE
@@ -212,7 +213,19 @@ struct ClassHashable final
 
 
 GAFF_CLASS_HASHABLE_NO_REF(void);
+GAFF_CLASS_HASHABLE(char8_t);
 GAFF_CLASS_HASHABLE(char);
+GAFF_CLASS_HASHABLE(uint64_t);
+GAFF_CLASS_HASHABLE(uint32_t);
+GAFF_CLASS_HASHABLE(uint16_t);
+GAFF_CLASS_HASHABLE(uint8_t);
+GAFF_CLASS_HASHABLE(int64_t);
+GAFF_CLASS_HASHABLE(int32_t);
+GAFF_CLASS_HASHABLE(int16_t);
+GAFF_CLASS_HASHABLE(int8_t);
+GAFF_CLASS_HASHABLE(double);
+GAFF_CLASS_HASHABLE(float);
+GAFF_CLASS_HASHABLE(bool);
 
 NS_END
 

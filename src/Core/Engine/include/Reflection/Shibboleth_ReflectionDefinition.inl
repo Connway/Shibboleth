@@ -973,6 +973,12 @@ void ReflectionDefinition<T>::destroyInstance(void* data) const
 }
 
 template <class T>
+bool ReflectionDefinition<T>::isCopyAssignable(void) const
+{
+	return std::assignable_from<T, T>;
+}
+
+template <class T>
 IVar<T>* ReflectionDefinition<T>::getVarT(int32_t index) const
 {
 	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_vars.size()));
@@ -1914,6 +1920,13 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::opToString()
 {
 	staticFunc(OP_TO_STRING_NAME, Gaff::ToStringHelper<T, to_string_func>);
 	return staticFunc(OP_TO_STRING_NAME, to_string_func);
+}
+
+template <class T>
+template <class Other>
+ReflectionDefinition<T>& ReflectionDefinition<T>::opComparison(void)
+{
+	return staticFunc(OP_COMP_NAME, Gaff::Comparison<T, Other>);
 }
 
 template <class T>

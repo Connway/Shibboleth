@@ -47,6 +47,7 @@ THE SOFTWARE.
 #define OP_CALL_NAME u8"__call"
 #define OP_INDEX_NAME u8"__idx"
 #define OP_TO_STRING_NAME u8"__tostring"
+#define OP_COMP_NAME u8"__comp"
 
 NS_GAFF
 
@@ -82,6 +83,8 @@ enum class Operator
 
 	ToString,
 
+	Comparison,
+
 	Count
 };
 
@@ -108,12 +111,40 @@ static constexpr const char8_t* k_op_names[] = {
 	OP_PLUS_NAME,
 	OP_CALL_NAME,
 	OP_INDEX_NAME,
-	OP_TO_STRING_NAME
+	OP_TO_STRING_NAME,
+	OP_COMP_NAME
 };
 static_assert(std::size(k_op_names) == static_cast<size_t>(Operator::Count));
 
+static constexpr const Hash32 k_op_hashes[] = {
+	FNV1aHash32Const(OP_ADD_NAME, eastl::CharStrlen(OP_ADD_NAME)),
+	FNV1aHash32Const(OP_SUB_NAME, eastl::CharStrlen(OP_SUB_NAME)),
+	FNV1aHash32Const(OP_MUL_NAME, eastl::CharStrlen(OP_MUL_NAME)),
+	FNV1aHash32Const(OP_DIV_NAME, eastl::CharStrlen(OP_DIV_NAME)),
+	FNV1aHash32Const(OP_MOD_NAME, eastl::CharStrlen(OP_MOD_NAME)),
+	FNV1aHash32Const(OP_BIT_AND_NAME, eastl::CharStrlen(OP_BIT_AND_NAME)),
+	FNV1aHash32Const(OP_BIT_OR_NAME, eastl::CharStrlen(OP_BIT_OR_NAME)),
+	FNV1aHash32Const(OP_BIT_XOR_NAME, eastl::CharStrlen(OP_BIT_XOR_NAME)),
+	FNV1aHash32Const(OP_BIT_NOT_NAME, eastl::CharStrlen(OP_BIT_NOT_NAME)),
+	FNV1aHash32Const(OP_BIT_SHIFT_LEFT_NAME, eastl::CharStrlen(OP_BIT_SHIFT_LEFT_NAME)),
+	FNV1aHash32Const(OP_BIT_SHIFT_RIGHT_NAME, eastl::CharStrlen(OP_BIT_SHIFT_RIGHT_NAME)),
+	FNV1aHash32Const(OP_LOGIC_AND_NAME, eastl::CharStrlen(OP_LOGIC_AND_NAME)),
+	FNV1aHash32Const(OP_LOGIC_OR_NAME, eastl::CharStrlen(OP_LOGIC_OR_NAME)),
+	FNV1aHash32Const(OP_EQUAL_NAME, eastl::CharStrlen(OP_EQUAL_NAME)),
+	FNV1aHash32Const(OP_LESS_THAN_NAME, eastl::CharStrlen(OP_LESS_THAN_NAME)),
+	FNV1aHash32Const(OP_GREATER_THAN_NAME, eastl::CharStrlen(OP_GREATER_THAN_NAME)),
+	FNV1aHash32Const(OP_LESS_THAN_OR_EQUAL_NAME, eastl::CharStrlen(OP_LESS_THAN_OR_EQUAL_NAME)),
+	FNV1aHash32Const(OP_GREATER_THAN_OR_EQUAL_NAME, eastl::CharStrlen(OP_GREATER_THAN_OR_EQUAL_NAME)),
+	FNV1aHash32Const(OP_MINUS_NAME, eastl::CharStrlen(OP_MINUS_NAME)),
+	FNV1aHash32Const(OP_PLUS_NAME, eastl::CharStrlen(OP_PLUS_NAME)),
+	FNV1aHash32Const(OP_CALL_NAME, eastl::CharStrlen(OP_CALL_NAME)),
+	FNV1aHash32Const(OP_INDEX_NAME, eastl::CharStrlen(OP_INDEX_NAME)),
+	FNV1aHash32Const(OP_TO_STRING_NAME, eastl::CharStrlen(OP_TO_STRING_NAME)),
+	FNV1aHash32Const(OP_COMP_NAME, eastl::CharStrlen(OP_COMP_NAME)),
+};
+
 static constexpr const char8_t* GetOpName(Operator op) { return k_op_names[static_cast<size_t>(op)]; }
-static constexpr Hash32 GetOpNameHash(Operator op) { return FNV1aHash32Const(GetOpName(op), eastl::CharStrlen(GetOpName(op))); }
+static constexpr Hash32 GetOpNameHash(Operator op) { return k_op_hashes[static_cast<size_t>(op)]; }
 
 
 template <class LHS, class RHS>
@@ -252,6 +283,18 @@ template <class T, int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
 static int32_t ToStringHelper(const void* value, char8_t* buffer, int32_t size)
 {
 	return to_string_func(*reinterpret_cast<const T*>(value), buffer, size);
+}
+
+template <class LHS, class RHS>
+static int32_t Comparison(const LHS& lhs, const RHS& rhs)
+{
+	if (lhs < rhs) {
+		return -1;
+	} else if (lhs > rhs) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 NS_END

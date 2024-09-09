@@ -125,4 +125,28 @@ IndexType IndexOf(const Container& container, const Value& value)
 	return (it == container.end()) ? static_cast<IndexType>(-1) : static_cast<IndexType>(eastl::distance(container.begin(), it));
 }
 
+template <class IndexType = int32_t, class T, size_t array_size>
+constexpr IndexType IndexOfArray(const T (&array)[array_size], const T& value)
+{
+	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
+		if (array[i] == value) {
+			return static_cast<IndexType>(i);
+		}
+	}
+
+	return static_cast<IndexType>(-1);
+}
+
+template <class IndexType = int32_t, class T, size_t array_size>
+constexpr IndexType IndexOfArray(T (&array)[array_size], const T& value)
+{
+	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
+		if (array[i] == value) {
+			return static_cast<IndexType>(i);
+		}
+	}
+
+	return static_cast<IndexType>(-1);
+}
+
 NS_END

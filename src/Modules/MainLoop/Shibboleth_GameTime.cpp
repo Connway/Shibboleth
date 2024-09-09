@@ -36,10 +36,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GameTimeManager)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GameTimeManager)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Time)
-	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ReferenceOnly)
-	)
-
 	.var("total", &Shibboleth::Time::total)
 	.var("delta", &Shibboleth::Time::delta)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Time)
