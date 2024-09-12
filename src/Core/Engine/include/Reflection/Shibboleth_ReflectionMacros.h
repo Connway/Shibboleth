@@ -71,7 +71,7 @@ THE SOFTWARE.
 	public: \
 		static constexpr bool HasReflection = true; \
 		static void Init(void); \
-		template <class ReflectionBuilder> \
+		template <class ReflectionBuilder, class Type = type> \
 		static void BuildReflection(ReflectionBuilder& builder); \
 		static Reflection<type>& GetInstance(void) \
 		{ \
@@ -158,7 +158,7 @@ NS_END
 			} \
 			g_instance._on_defined_callbacks.clear(); \
 		} \
-		template <class ReflectionBuilder> \
+		template <class ReflectionBuilder, class Type> \
 		void Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
 		{ \
 			GCC_DISABLE_WARNING_PUSH("-Wunused-value") \
