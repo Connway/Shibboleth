@@ -194,7 +194,7 @@ FunctionArg GetFunctionArg(void)
 {
 	using NoPtr = typename std::remove_pointer<T>::type;
 	using NoRef = typename std::remove_reference<NoPtr>::type;
-	//using V = typename std::remove_const<NoRef>::type;
+	using V = typename std::remove_const<NoRef>::type;
 
 	FunctionArg arg;
 
@@ -202,16 +202,16 @@ FunctionArg GetFunctionArg(void)
 		arg.flags.set(FunctionArg::Flag::Const);
 	}
 
-	if constexpr (std::is_pointer_v<T>) {
+	if constexpr (std::is_pointer_v<NoPtr>) {
 		arg.flags.set(FunctionArg::Flag::Pointer);
 	}
 
-	if constexpr (std::is_reference_v<T>) {
+	if constexpr (std::is_reference_v<NoPtr>) {
 		arg.flags.set(FunctionArg::Flag::Reference);
 	}
 
 	if constexpr (!std::is_void_v<T>) {
-		arg.name = Hash::ClassHashable<T>::GetName().data.data();
+		arg.name = Hash::ClassHashable<V>::GetName().data.data();
 	}
 
 	return arg;

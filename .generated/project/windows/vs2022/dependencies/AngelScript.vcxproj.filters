@@ -252,4 +252,9 @@
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Dependencies\angelscript\project_generator.lua" />
   </ItemGroup>
+  <ItemGroup>
+    <Masm Include="..\..\..\..\..\src\Dependencies\angelscript\angelscript\source\as_callfunc_x64_msvc_asm.asm">
+      <Filter>angelscript\source</Filter>
+    </Masm>
+  </ItemGroup>
 </Project>

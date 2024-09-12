@@ -44,7 +44,7 @@ local GenerateProject = function()
 
 		language "C++"
 
-		files { source_dir .. "Shibboleth_DevEditorModule.cpp" }
+		files { source_dir .. "src/Shibboleth_DevEditorModule.cpp" }
 
 		local deps =
 		{

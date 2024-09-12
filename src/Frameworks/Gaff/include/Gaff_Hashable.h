@@ -289,17 +289,17 @@ constexpr Hash64 CalcTypeHash(Hash64 init, const char8_t* type_string, size_t si
 	using NoRef = typename std::remove_reference<NoPtr>::type;
 	//using V = typename std::remove_const<NoRef>::type;
 
-	if constexpr (std::is_const<NoRef>::value) {
+	if constexpr (std::is_const_v<NoRef>) {
 		init = FNV1aHash64Const(u8"const ", init);
 	}
 
 	init = FNV1aHash64Const(type_string, size, init);
 
-	if constexpr (std::is_reference<NoPtr>::value) {
+	if constexpr (std::is_reference_v<NoPtr>) {
 		init = FNV1aHash64Const(u8"&", init);
 	}
 
-	if constexpr (std::is_pointer<T>::value) {
+	if constexpr (std::is_pointer_v<T>) {
 		init = FNV1aHash64Const(u8"*", init);
 	}
 

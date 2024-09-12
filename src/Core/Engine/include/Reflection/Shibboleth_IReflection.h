@@ -283,11 +283,11 @@ public:
 	virtual int32_t getOffset(void) const { return -1; }
 
 	virtual const void* getGetterFunctionPointer(void) const { return nullptr; }
-	virtual int32_t getGetterFunctionPointerSize(void) const { return -1; }
+	virtual size_t getGetterFunctionPointerSize(void) const { return 0; }
 	virtual FunctionSignature getGetterSignature(void) const { return FunctionSignature{}; }
 
 	virtual const void* getSetterFunctionPointer(void) const { return nullptr; }
-	virtual int32_t getSetterFunctionPointerSize(void) const { return -1; }
+	virtual size_t getSetterFunctionPointerSize(void) const { return 0; }
 	virtual FunctionSignature getSetterSignature(void) const { return FunctionSignature{}; }
 
 	virtual const IReflection& getReflectionKey(void) const

@@ -260,7 +260,7 @@ copy /B /Y $(QT_DIR)\plugins\platforms\qwindows.dll $(SolutionDir)\..\..\..\..\w
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_DevEditorModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\src\Shibboleth_DevEditorModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\Memory.vcxproj">

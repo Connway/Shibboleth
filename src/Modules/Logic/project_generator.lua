@@ -31,6 +31,12 @@ local GenerateProject = function()
 
 		files { source_dir .. "src/Shibboleth_LogicModule.cpp" }
 
+		IncludeDirs
+		{
+			base_dir .. "../../Dependencies/rapidjson",
+			source_dir .. "../../Modules/Script/include"
+		}
+
 		local deps =
 		{
 			"Esprit",

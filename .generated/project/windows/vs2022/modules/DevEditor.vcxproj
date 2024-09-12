@@ -243,6 +243,7 @@ CodeGenerator64od module_header --module DevEditor</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\DevEditor\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\DevEditor\include\Shibboleth_EditorAttributesCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\DevEditor\include\Shibboleth_EditorMainLoop.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\DevEditor\include\Shibboleth_QtReflection.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\..\..\build\windows\vs2022\intermediate\x64\Debug\$(ProjectName)\qt\moc_Shibboleth_EditorMainWindow.cpp">
@@ -301,11 +302,11 @@ CodeGenerator64od module_header --module DevEditor</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_DevEditorModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_EditorAttributesCommon.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_EditorMainLoop.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_EditorMainWindow.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\Shibboleth_ToDoWindow.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\src\Shibboleth_DevEditorModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\src\Shibboleth_EditorAttributesCommon.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\src\Shibboleth_EditorMainLoop.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\src\Shibboleth_EditorMainWindow.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\DevEditor\src\Shibboleth_ToDoWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\src\Modules\DevEditor\project_generator.lua" />

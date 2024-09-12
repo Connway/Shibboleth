@@ -30,10 +30,11 @@ DependencyProject "AngelScript"
 	filter { "system:macosx", "platforms:arm64" }
 		files { "angelscript/source/as_callfunc_arm64_xcode.asm"}
 
-	filter { "toolset:msc", "platforms:arm64" }
+	filter { "system:windows", "action:vs*", "platforms:arm64" }
 		files { "angelscript/source/as_callfunc_arm64_msvc.asm"}
 
-	filter { "toolset:msc", "platforms:x64" }
+
+	filter { "system:windows", "action:vs*", "platforms:x64" }
 		files { "angelscript/source/as_callfunc_x64_msvc_asm.asm"}
 
 	--filter { "system:windows" }

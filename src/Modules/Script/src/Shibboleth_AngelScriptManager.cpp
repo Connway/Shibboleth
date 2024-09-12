@@ -310,7 +310,7 @@ namespace
 					);
 
 				} else {
-					const int32_t func_ptr_size = func->getFunctionPointerSize();
+					const size_t func_ptr_size = func->getFunctionPointerSize();
 
 					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
 						// $TODO: Log error.
@@ -364,7 +364,7 @@ namespace
 			} else {
 				// Getter
 				if (const void* getter_function = var->getGetterFunctionPointer()) {
-					const int32_t func_ptr_size = var->getGetterFunctionPointerSize();
+					const size_t func_ptr_size = var->getGetterFunctionPointerSize();
 
 					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
 						// $TODO: Log error.
@@ -388,7 +388,7 @@ namespace
 
 				// Setter
 				if (const void* setter_function = var->getSetterFunctionPointer()) {
-					const int32_t func_ptr_size = var->getSetterFunctionPointerSize();
+					const size_t func_ptr_size = var->getSetterFunctionPointerSize();
 
 					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
 						// $TODO: Log error.

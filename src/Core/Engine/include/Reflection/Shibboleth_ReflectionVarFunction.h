@@ -125,11 +125,11 @@ public:
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
 
 	const void* getGetterFunctionPointer(void) const override;
-	int32_t getGetterFunctionPointerSize(void) const override;
+	size_t getGetterFunctionPointerSize(void) const override;
 	FunctionSignature getGetterSignature(void) const override;
 
 	const void* getSetterFunctionPointer(void) const override;
-	int32_t getSetterFunctionPointerSize(void) const override;
+	size_t getSetterFunctionPointerSize(void) const override;
 	FunctionSignature getSetterSignature(void) const override;
 
 private:

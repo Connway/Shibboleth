@@ -141,9 +141,9 @@ const void* VarFunction<T, FunctionPair>::getGetterFunctionPointer(void) const
 }
 
 template <class T, class FunctionPair>
-int32_t VarFunction<T, FunctionPair>::getGetterFunctionPointerSize(void) const
+size_t VarFunction<T, FunctionPair>::getGetterFunctionPointerSize(void) const
 {
-	return static_cast<int32_t>(sizeof(_data.get_set_funcs.first));
+	return sizeof(_data.get_set_funcs.first);
 }
 
 template <class T, class FunctionPair>
@@ -167,9 +167,9 @@ const void* VarFunction<T, FunctionPair>::getSetterFunctionPointer(void) const
 }
 
 template <class T, class FunctionPair>
-int32_t VarFunction<T, FunctionPair>::getSetterFunctionPointerSize(void) const
+size_t VarFunction<T, FunctionPair>::getSetterFunctionPointerSize(void) const
 {
-	return static_cast<int32_t>(sizeof(_data.get_set_funcs.second));
+	return sizeof(_data.get_set_funcs.second);
 }
 
 template <class T, class FunctionPair>

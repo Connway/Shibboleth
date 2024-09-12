@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ToDoWindow.h"
 #include "Shibboleth_EditorAttributesCommon.h"
+#include "Shibboleth_QtReflection.h"
 #include <Shibboleth_AppConfigs.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>

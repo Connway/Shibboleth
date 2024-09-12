@@ -20,45 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gen_ReflectionInit.h"
-#include <Shibboleth_AngelScriptManager.h>
-#include <Shibboleth_ModuleMacros.h>
+#pragma once
 
-SHIB_DEFINE_MODULE_BEGIN(Logic)
+#include <Gaff_Hashable.h>
+#include <QWidget>
 
-#ifdef SHIB_STATIC
-	namespace Logic
-	{
-		class Module final : public Shibboleth::Module
-		{
-		public:
-			bool preInit(Shibboleth::IApp& app) override;
-			bool postInit() override;
-		};
-
-		bool Module::preInit(Shibboleth::IApp& app)
-		{
-			static Shibboleth::ProxyAllocator s_logic_allocator("Logic");
-
-			if (!Shibboleth::Module::preInit(app)) {
-				return false;
-			}
-
-			app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::ICondition));
-			app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::IProcess));
-
-			Esprit::SetAllocator(&s_logic_allocator);
-
-			return true;
-		}
-
-		bool Module::postInit()
-		{
-			Shibboleth::AngelScriptManager::InitModuleThread();
-			return true;
-		}
-
-	}
-#endif
-
-SHIB_DEFINE_MODULE_END(Logic)
+NS_HASHABLE
+	GAFF_CLASS_HASHABLE(QWidget);
+NS_END
