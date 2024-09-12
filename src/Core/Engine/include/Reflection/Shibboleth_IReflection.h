@@ -22,12 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ReflectionDefines.h"
-#include "Containers/Shibboleth_Vector.h"
+#include "Shibboleth_IReflectionFunction.h"
 #include "Shibboleth_HashString.h"
-#include <Gaff_Assert.h>
-#include <Gaff_Flags.h>
-#include <Gaff_Hash.h>
 
 NS_SHIBBOLETH
 	class ISerializeReader;
@@ -283,6 +279,16 @@ public:
 	virtual bool isMap(void) const { return false; }
 	virtual bool isContainer(void) const { return isFixedArray() || isVector() || isMap(); }
 	virtual bool isPointer(void) const { return false; }
+
+	virtual int32_t getOffset(void) const { return -1; }
+
+	virtual const void* getGetterFunctionPointer(void) const { return nullptr; }
+	virtual int32_t getGetterFunctionPointerSize(void) const { return -1; }
+	virtual FunctionSignature getGetterSignature(void) const { return FunctionSignature{}; }
+
+	virtual const void* getSetterFunctionPointer(void) const { return nullptr; }
+	virtual int32_t getSetterFunctionPointerSize(void) const { return -1; }
+	virtual FunctionSignature getSetterSignature(void) const { return FunctionSignature{}; }
 
 	virtual const IReflection& getReflectionKey(void) const
 	{

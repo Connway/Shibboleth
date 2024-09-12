@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_AngelScriptManager.h>
 #include <Shibboleth_ModuleMacros.h>
 
 SHIB_DEFINE_MODULE_BEGIN(Logic)
@@ -32,6 +33,7 @@ SHIB_DEFINE_MODULE_BEGIN(Logic)
 		{
 		public:
 			bool preInit(Shibboleth::IApp& app) override;
+			bool postInit() override;
 		};
 
 		bool Module::preInit(Shibboleth::IApp& app)
@@ -49,6 +51,13 @@ SHIB_DEFINE_MODULE_BEGIN(Logic)
 
 			return true;
 		}
+
+		bool Module::postInit()
+		{
+			Shibboleth::AngelScriptManager::InitModuleThread();
+			return true;
+		}
+
 	}
 #endif
 

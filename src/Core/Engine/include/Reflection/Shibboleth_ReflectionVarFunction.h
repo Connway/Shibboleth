@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ReflectionVar.h"
-
 NS_REFLECTION
 
 template <class GetterFunc, class SetterFunc>
@@ -44,6 +43,15 @@ struct VarFuncTypeHelper< GetterSetterFuncs<GetType (T::*)(void) const, void (T:
 {
 	using GetVariableType = GetType;
 	using SetVariableType = SetType;
+	static constexpr bool k_getter_is_const = true;
+};
+
+template <class T, class GetType, class SetType>
+struct VarFuncTypeHelper< GetterSetterFuncs<GetType (T::*)(void), void (T::*)(SetType)> > final
+{
+	using GetVariableType = GetType;
+	using SetVariableType = SetType;
+	static constexpr bool k_getter_is_const = false;
 };
 
 template <class T, class GetterFunc, class SetterFunc>
@@ -115,6 +123,14 @@ public:
 
 	bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
 	void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+
+	const void* getGetterFunctionPointer(void) const override;
+	int32_t getGetterFunctionPointerSize(void) const override;
+	FunctionSignature getGetterSignature(void) const override;
+
+	const void* getSetterFunctionPointer(void) const override;
+	int32_t getSetterFunctionPointerSize(void) const override;
+	FunctionSignature getSetterSignature(void) const override;
 
 private:
 	using FuncData = VarFunctionData< T, FunctionPair, std::is_reference_v<GetVarType> >;

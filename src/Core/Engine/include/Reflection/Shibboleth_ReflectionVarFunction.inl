@@ -134,4 +134,52 @@ void VarFunction<T, FunctionPair>::save(Shibboleth::ISerializeWriter& writer, co
 	save(writer, value);
 }
 
+template <class T, class FunctionPair>
+const void* VarFunction<T, FunctionPair>::getGetterFunctionPointer(void) const
+{
+	return &_data.get_set_funcs.first;
+}
+
+template <class T, class FunctionPair>
+int32_t VarFunction<T, FunctionPair>::getGetterFunctionPointerSize(void) const
+{
+	return static_cast<int32_t>(sizeof(_data.get_set_funcs.first));
+}
+
+template <class T, class FunctionPair>
+FunctionSignature VarFunction<T, FunctionPair>::getGetterSignature(void) const
+{
+	FunctionSignature signature;
+
+	signature.return_value = GetFunctionArg<typename VarFuncTypeHelper<FunctionPair>::GetVariableType>();
+
+	if constexpr (VarFuncTypeHelper<FunctionPair>::k_getter_is_const) {
+		signature.flags.set(FunctionSignature::Flag::Const);
+	}
+
+	return signature;
+}
+
+template <class T, class FunctionPair>
+const void* VarFunction<T, FunctionPair>::getSetterFunctionPointer(void) const
+{
+	return &_data.get_set_funcs.second;
+}
+
+template <class T, class FunctionPair>
+int32_t VarFunction<T, FunctionPair>::getSetterFunctionPointerSize(void) const
+{
+	return static_cast<int32_t>(sizeof(_data.get_set_funcs.second));
+}
+
+template <class T, class FunctionPair>
+FunctionSignature VarFunction<T, FunctionPair>::getSetterSignature(void) const
+{
+	FunctionSignature signature;
+
+	GetFunctionArgs<typename VarFuncTypeHelper<FunctionPair>::SetVariableType>(signature.args);
+
+	return signature;
+}
+
 NS_END

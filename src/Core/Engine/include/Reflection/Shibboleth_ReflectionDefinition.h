@@ -299,6 +299,7 @@ public:
 	ReflectionDefinition& opLessThanOrEqual(void);
 	ReflectionDefinition& opGreaterThanOrEqual(void);
 
+	ReflectionDefinition& opNegate(void);
 	ReflectionDefinition& opMinus(void);
 	ReflectionDefinition& opPlus(void);
 
@@ -307,6 +308,45 @@ public:
 
 	template <class Other>
 	ReflectionDefinition& opComparison(void);
+
+	ReflectionDefinition& opPreIncrement(void);
+	ReflectionDefinition& opPostIncrement(void);
+	ReflectionDefinition& opPreDecrement(void);
+	ReflectionDefinition& opPostDecrement(void);
+
+	template <class Other>
+	ReflectionDefinition& opAssignment(void);
+
+	template <class Other>
+	ReflectionDefinition& opAddAssignment(void);
+
+	template <class Other>
+	ReflectionDefinition& opSubAssignment(void);
+
+	template <class Other>
+	ReflectionDefinition& opMulAssignment(void);
+
+	template <class Other>
+	ReflectionDefinition& opDivAssignment(void);
+
+	template <class Other>
+	ReflectionDefinition& opModAssignment(void);
+
+	template <class Other>
+	ReflectionDefinition& opBitAndAssignment(void);
+
+	template <class Other>
+	ReflectionDefinition& opBitOrAssignment(void);
+
+	template <class Other>
+	ReflectionDefinition& opBitXorAssignment(void);
+
+	template <class Other>
+	ReflectionDefinition& opBitShiftLeftAssignment(void);
+
+	template <class Other>
+	ReflectionDefinition& opBitShiftRightAssignment(void);
+
 
 	// apply() is not called on these functions.
 	template <class... Attrs>

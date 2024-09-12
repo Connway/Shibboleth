@@ -88,6 +88,7 @@ public:
 	virtual bool load(const Shibboleth::ISerializeReader& reader, T& object) = 0;
 	virtual void save(Shibboleth::ISerializeWriter& writer, const T& object) = 0;
 
+	int32_t getOffset(void) const override { return static_cast<int32_t>(_offset); }
 	void setOffset(ptrdiff_t offset);
 
 	const IVar<T>* getParent(void) const;
@@ -104,7 +105,7 @@ public:
 
 protected:
 	IVar<T>* _parent = nullptr;
-	ptrdiff_t _offset = 0;
+	ptrdiff_t _offset = -1;
 };
 
 

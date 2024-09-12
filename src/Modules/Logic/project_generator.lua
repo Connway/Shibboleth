@@ -65,6 +65,7 @@ local LinkDependencies = function()
 	table.insert(deps, "Resource")
 	table.insert(deps, "Script")
 	table.insert(deps, "Entity")
+	table.insert(deps, "AngelScript")
 	table.insert(deps, "Lua")
 
 	dependson(deps)

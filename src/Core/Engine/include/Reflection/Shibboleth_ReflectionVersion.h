@@ -201,6 +201,7 @@ public:
 	ReflectionVersionClass& opLessThanOrEqual(void);
 	ReflectionVersionClass& opGreaterThanOrEqual(void);
 
+	ReflectionVersionClass& opNegate(void);
 	ReflectionVersionClass& opMinus(void);
 	ReflectionVersionClass& opPlus(void);
 
@@ -209,6 +210,45 @@ public:
 
 	template <class Other>
 	ReflectionVersionClass& opComparison(void);
+
+	ReflectionVersionClass& opPreIncrement(void);
+	ReflectionVersionClass& opPostIncrement(void);
+	ReflectionVersionClass& opPreDecrement(void);
+	ReflectionVersionClass& opPostDecrement(void);
+
+	template <class Other>
+	ReflectionVersionClass& opAssignment(void);
+
+	template <class Other>
+	ReflectionVersionClass& opAddAssignment(void);
+
+	template <class Other>
+	ReflectionVersionClass& opSubAssignment(void);
+
+	template <class Other>
+	ReflectionVersionClass& opMulAssignment(void);
+
+	template <class Other>
+	ReflectionVersionClass& opDivAssignment(void);
+
+	template <class Other>
+	ReflectionVersionClass& opModAssignment(void);
+
+	template <class Other>
+	ReflectionVersionClass& opBitAndAssignment(void);
+
+	template <class Other>
+	ReflectionVersionClass& opBitOrAssignment(void);
+
+	template <class Other>
+	ReflectionVersionClass& opBitXorAssignment(void);
+
+	template <class Other>
+	ReflectionVersionClass& opBitShiftLeftAssignment(void);
+
+	template <class Other>
+	ReflectionVersionClass& opBitShiftRightAssignment(void);
+
 
 	template <class... Attrs>
 	ReflectionVersionClass& classAttrs(const Attrs&... attributes);

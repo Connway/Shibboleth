@@ -598,6 +598,12 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::opGreaterThanOrEqual(void)
 }
 
 template <class T>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opNegate(void)
+{
+	return opMinus();
+}
+
+template <class T>
 ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMinus(void)
 {
 	return staticFunc(OP_MINUS_NAME, Gaff::Minus<T>);
@@ -622,6 +628,107 @@ template <class Other>
 ReflectionVersionClass<T>& ReflectionVersionClass<T>::opComparison(void)
 {
 	return staticFunc(OP_COMP_NAME, Gaff::Comparison<T, Other>);
+}
+
+template <class T>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPreIncrement(void)
+{
+	return staticFunc(OP_PRE_INC_NAME, Gaff::PreIncrement<T>);
+}
+
+template <class T>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPostIncrement(void)
+{
+	return staticFunc(OP_POST_INC_NAME, Gaff::PostIncrement<T>);
+}
+
+template <class T>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPreDecrement(void)
+{
+	return staticFunc(OP_PRE_DEC_NAME, Gaff::PreDecrement<T>);
+}
+
+template <class T>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPostDecrement(void)
+{
+	return staticFunc(OP_POST_DEC_NAME, Gaff::PostDecrement<T>);
+}
+
+template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAssignment(void)
+{
+	return staticFunc(OP_ASSIGN_NAME, Gaff::Assignment<T, Other>);
+}
+
+template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAddAssignment(void)
+{
+	return staticFunc(OP_ADD_ASSIGN_NAME, Gaff::AddAssignment<T, Other>);
+}
+
+template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opSubAssignment(void)
+{
+	return staticFunc(OP_SUB_ASSIGN_NAME, Gaff::SubAssignment<T, Other>);
+}
+
+template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMulAssignment(void)
+{
+	return staticFunc(OP_MOD_ASSIGN_NAME, Gaff::ModAssignment<T, Other>);
+}
+
+template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opDivAssignment(void)
+{
+	return staticFunc(OP_DIV_ASSIGN_NAME, Gaff::DivAssignment<T, Other>);
+}
+
+template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opModAssignment(void)
+{
+	return staticFunc(OP_MOD_ASSIGN_NAME, Gaff::ModAssignment<T, Other>);
+}
+
+template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitAndAssignment(void)
+{
+	return staticFunc(OP_BIT_AND_ASSIGN_NAME, Gaff::BitAndAssignment<T, Other>);
+}
+
+template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitOrAssignment(void)
+{
+	return staticFunc(OP_BIT_OR_ASSIGN_NAME, Gaff::BitOrAssignment<T, Other>);
+}
+
+template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitXorAssignment(void)
+{
+	return staticFunc(OP_BIT_XOR_ASSIGN_NAME, Gaff::BitXorAssignment<T, Other>);
+}
+
+template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftLeftAssignment(void)
+{
+	return staticFunc(OP_BIT_LEFT_SHIFT_ASSIGN_NAME, Gaff::BitLeftShiftAssignment<T, Other>);
+}
+
+template <class T>
+template <class Other>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftRightAssignment(void)
+{
+	return staticFunc(OP_BIT_RIGHT_SHIFT_ASSIGN_NAME, Gaff::BitRightShiftAssignment<T, Other>);
 }
 
 template <class T>
