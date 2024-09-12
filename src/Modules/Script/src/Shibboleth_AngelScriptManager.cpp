@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_AngelScriptMath.h"
 #include "Shibboleth_ScriptDefines.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
+#include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Gaff_ContainerAlgorithm.h>
 #include "Shibboleth_IncludeAngelScript.h"
 
@@ -61,7 +62,22 @@ namespace
 		u8"opCall",
 		u8"opIndex",
 		nullptr, // OP_TO_STRING_NAME
-		u8"opCmp"
+		u8"opCmp",
+		u8"opPreInc",
+		u8"opPostInc",
+		u8"opPreDec",
+		u8"opPostDec",
+		u8"opAssign",
+		u8"opAddAssign",
+		u8"opSubAssign",
+		u8"opMulAssign",
+		u8"opDivAssign",
+		u8"opModAssign",
+		u8"opAndAssign",
+		u8"opOrAssign",
+		u8"opXorAssign",
+		u8"opShlAssign",
+		u8"opShrAssign",
 	};
 	static_assert(std::size(k_op_names) == static_cast<size_t>(Gaff::Operator::Count));
 
@@ -191,10 +207,6 @@ namespace
 		if (script_flags && script_flags->isValueType()) {
 			flags |= asOBJ_VALUE | asOBJ_APP_CLASS_DESTRUCTOR;
 
-			Gaff::Hash64 copy_ctor_hash = Gaff::FNV1aHash64Const(u8"const ");
-			copy_ctor_hash = Gaff::FNV1aHash64String(class_name_view.data(), copy_ctor_hash);
-			copy_ctor_hash = Gaff::FNV1aHash64String(u8"&", copy_ctor_hash);
-
 			int32_t ctor_count = 0;
 
 			if (ref_def.isConstructible()) {
@@ -239,6 +251,7 @@ namespace
 		for (int32_t i = 0; i < num_static_funcs; ++i) {
 			const Shibboleth::HashStringView32<> func_name = ref_def.getStaticFuncName(i);
 			const char8_t* raw_name = func_name.getBuffer();
+			asECallConvTypes call_conv = asCALL_CDECL;
 
 			// Is an operator function
 			if (Gaff::Find(func_name.getBuffer(), u8"__") == 0) {
@@ -254,6 +267,7 @@ namespace
 					continue;
 				}
 
+				call_conv = asCALL_CDECL_OBJFIRST;
 				raw_name = k_op_names[index];
 			}
 
@@ -268,7 +282,7 @@ namespace
 					reinterpret_cast<const char*>(class_name_view.data()),
 					reinterpret_cast<const char*>(decl.data()),
 					asFunctionPtr(func->getFunc()),
-					asCALL_CDECL
+					call_conv
 				);
 			}
 		}
@@ -296,14 +310,16 @@ namespace
 					);
 
 				} else {
-					if (!CheckMemberFunctionPointerSize(func->getFunctionPointerSize())) {
+					const int32_t func_ptr_size = func->getFunctionPointerSize();
+
+					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
 						// $TODO: Log error.
 						return false;
 					}
 
 					// Mark this as a class method
 					asSFuncPtr func_ptr(3);
-					func_ptr.CopyMethodPtr(func->getFunctionPointer(), func->getFunctionPointerSize());
+					func_ptr.CopyMethodPtr(func->getFunctionPointer(), func_ptr_size);
 
 					result = engine.RegisterObjectMethod(
 						reinterpret_cast<const char*>(class_name_view.data()),
@@ -323,6 +339,78 @@ namespace
 
 
 		// Register properties.
+		const int32_t num_vars = ref_def.getNumVars();
+
+		for (int32_t i = 0; i < num_vars; ++i) {
+			const Shibboleth::HashStringView32<> var_name = ref_def.getVarName(i);
+			const Refl::IReflectionVar* const var = ref_def.getVar(i);
+
+			if (const int32_t offset = var->getOffset(); offset >= 0) {
+				Shibboleth::U8String decl = ref_def.getReflectionInstance().getName();
+				decl += Shibboleth::U8String{ u8' ' } + var_name.getBuffer();
+
+				result = engine.RegisterObjectProperty(
+					reinterpret_cast<const char*>(class_name_view.data()),
+					reinterpret_cast<const char*>(decl.data()),
+					offset
+				);
+
+				if (result < 0) {
+					// $TODO: Log error.
+					return false;
+				}
+
+			// Uses getter/setter functions.
+			} else {
+				// Getter
+				if (const void* getter_function = var->getGetterFunctionPointer()) {
+					const int32_t func_ptr_size = var->getGetterFunctionPointerSize();
+
+					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
+						// $TODO: Log error.
+						return false;
+					}
+
+					const Refl::FunctionSignature sig = var->getGetterSignature();
+					const Shibboleth::U8String decl = GetFunctionDeclaration(sig, (Shibboleth::U8String{ u8"get_" } + var_name.getBuffer() + Shibboleth::U8String{ u8" property" }).data());
+
+					// Mark this as a class method
+					asSFuncPtr func_ptr(3);
+					func_ptr.CopyMethodPtr(getter_function, func_ptr_size);
+
+					result = engine.RegisterObjectMethod(
+						reinterpret_cast<const char*>(class_name_view.data()),
+						reinterpret_cast<const char*>(decl.data()),
+						func_ptr,
+						asCALL_THISCALL
+					);
+				}
+
+				// Setter
+				if (const void* setter_function = var->getSetterFunctionPointer()) {
+					const int32_t func_ptr_size = var->getSetterFunctionPointerSize();
+
+					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
+						// $TODO: Log error.
+						return false;
+					}
+
+					const Refl::FunctionSignature sig = var->getSetterSignature();
+					const Shibboleth::U8String decl = GetFunctionDeclaration(sig, (Shibboleth::U8String{ u8"set_" } + var_name.getBuffer() + Shibboleth::U8String{ u8" property" }).data());
+
+					// Mark this as a class method
+					asSFuncPtr func_ptr(3);
+					func_ptr.CopyMethodPtr(setter_function, func_ptr_size);
+
+					result = engine.RegisterObjectMethod(
+						reinterpret_cast<const char*>(class_name_view.data()),
+						reinterpret_cast<const char*>(decl.data()),
+						func_ptr,
+						asCALL_THISCALL
+					);
+				}
+			}
+		}
 
 		return true;
 	}
@@ -333,8 +421,18 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(AngelScriptManager)
 
+void AngelScriptManager::InitModuleThread(void)
+{
+	ManagerRef<AngelScriptManager> as_mgr;
+	as_mgr->initModuleThread();
+}
+
 AngelScriptManager::~AngelScriptManager(void)
 {
+	_engine->ShutDownAndRelease();
+	_engine = nullptr;
+
+	asUnprepareMultithread();
 }
 
 bool AngelScriptManager::initAllModulesLoaded(void)
@@ -344,6 +442,9 @@ bool AngelScriptManager::initAllModulesLoaded(void)
 
 bool AngelScriptManager::init(void)
 {
+	asPrepareMultithread();
+	_thread_mgr = asGetThreadManager();
+
 	_engine = asCreateScriptEngine();
 
 	if (!_engine) {
@@ -375,6 +476,7 @@ bool AngelScriptManager::init(void)
 	}
 
 	// $TODO: Register array type.
+	// $TODO: Register resource ptr.
 
 
 	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
@@ -391,11 +493,18 @@ bool AngelScriptManager::init(void)
 
 	if (ref_defs) {
 		for (const Refl::IReflectionDefinition* ref_def : *ref_defs) {
-			RegisterType(*_engine, *ref_def);
+			if (!RegisterType(*_engine, *ref_def)) {
+				success = false;
+			}
 		}
 	}
 
 	return success;
+}
+
+void AngelScriptManager::initModuleThread(void)
+{
+	asPrepareMultithread(_thread_mgr);
 }
 
 void AngelScriptManager::messageCallback(const asSMessageInfo* msg, void* param)

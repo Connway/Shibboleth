@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_IManager.h>
 
+class asIThreadManager;
 class asIScriptEngine;
 struct asSMessageInfo;
 
@@ -32,13 +33,17 @@ NS_SHIBBOLETH
 class AngelScriptManager final : public IManager
 {
 public:
+	static void InitModuleThread(void);
+
 	~AngelScriptManager(void);
 
 	bool initAllModulesLoaded(void) override;
 	bool init(void) override;
 
+	void initModuleThread(void);
 
 private:
+	asIThreadManager* _thread_mgr = nullptr;
 	asIScriptEngine* _engine = nullptr;
 
 	void messageCallback(const asSMessageInfo* msg, void* param);

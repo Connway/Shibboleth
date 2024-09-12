@@ -48,6 +48,21 @@ THE SOFTWARE.
 #define OP_INDEX_NAME u8"__idx"
 #define OP_TO_STRING_NAME u8"__tostring"
 #define OP_COMP_NAME u8"__comp"
+#define OP_PRE_INC_NAME u8"__preinc"
+#define OP_POST_INC_NAME u8"__preinc"
+#define OP_PRE_DEC_NAME u8"__predec"
+#define OP_POST_DEC_NAME u8"__predec"
+#define OP_ASSIGN_NAME u8"__assign"
+#define OP_ADD_ASSIGN_NAME u8"__add_assign"
+#define OP_SUB_ASSIGN_NAME u8"__sub_assign"
+#define OP_MUL_ASSIGN_NAME u8"__mul_assign"
+#define OP_DIV_ASSIGN_NAME u8"__div_assign"
+#define OP_MOD_ASSIGN_NAME u8"__mod_assign"
+#define OP_BIT_AND_ASSIGN_NAME u8"__band_assign"
+#define OP_BIT_OR_ASSIGN_NAME u8"__bor_assign"
+#define OP_BIT_XOR_ASSIGN_NAME u8"__bxor_assign"
+#define OP_BIT_LEFT_SHIFT_ASSIGN_NAME u8"__shl_assign"
+#define OP_BIT_RIGHT_SHIFT_ASSIGN_NAME u8"__shr_assign"
 
 NS_GAFF
 
@@ -85,6 +100,23 @@ enum class Operator
 
 	Comparison,
 
+	PreIncrement,
+	PostIncrement,
+	PreDecrement,
+	PostDecrement,
+
+	Assignment,
+	AddAssignment,
+	SubAssignment,
+	MulAssignment,
+	DivAssignment,
+	ModAssignment,
+	BitAndAssignment,
+	BitOrAssignment,
+	BitXorAssignment,
+	BitShiftLeftAssignment,
+	BitShiftRightAssignment,
+
 	Count
 };
 
@@ -112,7 +144,22 @@ static constexpr const char8_t* k_op_names[] = {
 	OP_CALL_NAME,
 	OP_INDEX_NAME,
 	OP_TO_STRING_NAME,
-	OP_COMP_NAME
+	OP_COMP_NAME,
+	OP_PRE_INC_NAME,
+	OP_POST_INC_NAME,
+	OP_PRE_DEC_NAME,
+	OP_POST_DEC_NAME,
+	OP_ASSIGN_NAME,
+	OP_ADD_ASSIGN_NAME,
+	OP_SUB_ASSIGN_NAME,
+	OP_MUL_ASSIGN_NAME,
+	OP_DIV_ASSIGN_NAME,
+	OP_MOD_ASSIGN_NAME,
+	OP_BIT_AND_ASSIGN_NAME,
+	OP_BIT_OR_ASSIGN_NAME,
+	OP_BIT_XOR_ASSIGN_NAME,
+	OP_BIT_LEFT_SHIFT_ASSIGN_NAME,
+	OP_BIT_RIGHT_SHIFT_ASSIGN_NAME
 };
 static_assert(std::size(k_op_names) == static_cast<size_t>(Operator::Count));
 
@@ -141,7 +188,23 @@ static constexpr const Hash32 k_op_hashes[] = {
 	FNV1aHash32Const(OP_INDEX_NAME, eastl::CharStrlen(OP_INDEX_NAME)),
 	FNV1aHash32Const(OP_TO_STRING_NAME, eastl::CharStrlen(OP_TO_STRING_NAME)),
 	FNV1aHash32Const(OP_COMP_NAME, eastl::CharStrlen(OP_COMP_NAME)),
+	FNV1aHash32Const(OP_PRE_INC_NAME, eastl::CharStrlen(OP_PRE_INC_NAME)),
+	FNV1aHash32Const(OP_POST_INC_NAME, eastl::CharStrlen(OP_POST_INC_NAME)),
+	FNV1aHash32Const(OP_PRE_DEC_NAME, eastl::CharStrlen(OP_PRE_DEC_NAME)),
+	FNV1aHash32Const(OP_POST_DEC_NAME, eastl::CharStrlen(OP_POST_DEC_NAME)),
+	FNV1aHash32Const(OP_ASSIGN_NAME, eastl::CharStrlen(OP_ASSIGN_NAME)),
+	FNV1aHash32Const(OP_ADD_ASSIGN_NAME, eastl::CharStrlen(OP_ADD_ASSIGN_NAME)),
+	FNV1aHash32Const(OP_SUB_ASSIGN_NAME, eastl::CharStrlen(OP_SUB_ASSIGN_NAME)),
+	FNV1aHash32Const(OP_MUL_ASSIGN_NAME, eastl::CharStrlen(OP_MUL_ASSIGN_NAME)),
+	FNV1aHash32Const(OP_DIV_ASSIGN_NAME, eastl::CharStrlen(OP_DIV_ASSIGN_NAME)),
+	FNV1aHash32Const(OP_MOD_ASSIGN_NAME, eastl::CharStrlen(OP_MOD_ASSIGN_NAME)),
+	FNV1aHash32Const(OP_BIT_AND_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_AND_ASSIGN_NAME)),
+	FNV1aHash32Const(OP_BIT_OR_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_OR_ASSIGN_NAME)),
+	FNV1aHash32Const(OP_BIT_XOR_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_XOR_ASSIGN_NAME)),
+	FNV1aHash32Const(OP_BIT_LEFT_SHIFT_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_LEFT_SHIFT_ASSIGN_NAME)),
+	FNV1aHash32Const(OP_BIT_RIGHT_SHIFT_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_RIGHT_SHIFT_ASSIGN_NAME))
 };
+static_assert(std::size(k_op_hashes) == static_cast<size_t>(Operator::Count));
 
 static constexpr const char8_t* GetOpName(Operator op) { return k_op_names[static_cast<size_t>(op)]; }
 static constexpr Hash32 GetOpNameHash(Operator op) { return k_op_hashes[static_cast<size_t>(op)]; }
@@ -295,6 +358,107 @@ static int32_t Comparison(const LHS& lhs, const RHS& rhs)
 	} else {
 		return 0;
 	}
+}
+
+template <class T>
+static auto PreIncrement(T& value)
+{
+	return ++value;
+}
+
+template <class T>
+static auto PostIncrement(T& value)
+{
+	return value++;
+}
+
+template <class T>
+static auto PreDecrement(T& value)
+{
+	return --value;
+}
+
+template <class T>
+static auto PostDecrement(T& value)
+{
+	return value--;
+}
+
+template <class LHS, class RHS>
+static auto Assignment(LHS& lhs, const RHS& rhs)
+{
+	lhs = rhs;
+	return lhs;
+}
+
+template <class LHS, class RHS>
+static auto AddAssignment(LHS& lhs, const RHS& rhs)
+{
+	lhs += rhs;
+	return lhs;
+}
+
+template <class LHS, class RHS>
+static auto SubAssignment(LHS& lhs, const RHS& rhs)
+{
+	lhs -= rhs;
+	return lhs;
+}
+
+template <class LHS, class RHS>
+static auto MulAssignment(LHS& lhs, const RHS& rhs)
+{
+	lhs *= rhs;
+	return lhs;
+}
+
+template <class LHS, class RHS>
+static auto DivAssignment(LHS& lhs, const RHS& rhs)
+{
+	lhs /= rhs;
+	return lhs;
+}
+
+template <class LHS, class RHS>
+static auto ModAssignment(LHS& lhs, const RHS& rhs)
+{
+	lhs %= rhs;
+	return lhs;
+}
+
+template <class LHS, class RHS>
+static auto BitAndAssignment(LHS& lhs, const RHS& rhs)
+{
+	lhs &= rhs;
+	return lhs;
+}
+
+template <class LHS, class RHS>
+static auto BitOrAssignment(LHS& lhs, const RHS& rhs)
+{
+	lhs |= rhs;
+	return lhs;
+}
+
+template <class LHS, class RHS>
+static auto BitXorAssignment(LHS& lhs, const RHS& rhs)
+{
+	lhs ^= rhs;
+	return lhs;
+}
+
+template <class LHS, class RHS>
+static auto BitLeftShiftAssignment(LHS& lhs, const RHS& rhs)
+{
+	lhs <<= rhs;
+	return lhs;
+}
+
+template <class LHS, class RHS>
+static auto BitRightShiftAssignment(LHS& lhs, const RHS& rhs)
+{
+	lhs >>= rhs;
+	return lhs;
 }
 
 NS_END

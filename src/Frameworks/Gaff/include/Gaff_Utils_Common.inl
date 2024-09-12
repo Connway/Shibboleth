@@ -39,6 +39,7 @@ constexpr ptrdiff_t OffsetOfMember(R T::*m)
 template <class Base, class Derived>
 constexpr ptrdiff_t OffsetOfClass(void)
 {
+	static_assert(std::is_base_of_v<Base, Derived>, "Derived class does not inherit from Base.");
 	return ((ptrdiff_t)(Base*)(Derived*)1) - 1;
 }
 
