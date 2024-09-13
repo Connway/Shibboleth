@@ -364,12 +364,6 @@ void ReflectionDefinition<T>::BaseVarPtr<Base>::save(Shibboleth::ISerializeWrite
 
 // ReflectionDefinition
 template <class T>
-const char8_t* ReflectionDefinition<T>::getFriendlyName(void) const
-{
-	return _friendly_name.data();
-}
-
-template <class T>
 bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, void* object, Gaff::Flags<LoadFlags> flags) const
 {
 	return load(reader, *reinterpret_cast<T*>(object), flags);
@@ -533,8 +527,6 @@ void ReflectionDefinition<T>::setAllocator(const Shibboleth::ProxyAllocator& all
 	_func_attrs.set_allocator(allocator);
 	_class_attrs.set_allocator(allocator);
 	_static_func_attrs.set_allocator(allocator);
-
-	_friendly_name.set_allocator(allocator);
 
 	_allocator = allocator;
 }
@@ -1008,17 +1000,10 @@ IVar<T>* ReflectionDefinition<T>::getVarT(Gaff::Hash32 name) const
 }
 
 template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::friendlyName(const char8_t* name)
-{
-	_friendly_name = name;
-	return *this;
-}
-
-template <class T>
 template <class Base>
 ReflectionDefinition<T>& ReflectionDefinition<T>::base(const char8_t* name)
 {
-	static_assert(std::is_base_of<Base, T>::value, "Class is not a base class of T.");
+	static_assert(std::is_base_of_v<Base, T>, "Class is not a base class of T.");
 
 	const ptrdiff_t offset = Gaff::OffsetOfClass<Base, T>();
 	auto pair = eastl::make_pair(
@@ -1036,9 +1021,13 @@ template <class T>
 template <class Base>
 ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 {
-	static_assert(std::is_base_of<Base, T>::value, "Class is not a base class of T.");
+	static_assert(Reflection<Base>::HasReflection || Hash::ClassHashable<Base>::k_is_hashable, "Base class has no reflection and is not hashable.");
+	static_assert(std::is_base_of_v<Base, T>, "Class is not a base class of T.");
 
 	if constexpr (Reflection<Base>::HasReflection) {
+		// ReflectionBuilderBase<Base> builder{ this };
+		// Reflection<Base>::BuildReflection<ReflectionBuilderBase<Base>, T>(builder);
+
 		// So that hasInterface() calls will properly report inheritance if the base class hasn't been defined yet.
 		if (_base_class_offsets.find(Reflection<Base>::GetNameHash()) == _base_class_offsets.end()) {
 			base<Base>(Reflection<Base>::GetName());
@@ -1260,8 +1249,8 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 		addAttributes(*pair.second, ptr, attrs, attributes...);
 	}
 
-	_num_vars += 1 + static_cast<int32_t>(pair.second->getSubVars().size());
 	pair.second->setSubVarBaseName(name);
+	_num_vars += 1 + static_cast<int32_t>(pair.second->getSubVars().size());
 
 	_vars.insert(std::move(pair));
 
@@ -1305,8 +1294,8 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 		addAttributes(*pair.second, getter, setter, attrs, attributes...);
 	}
 
-	_num_vars += 1 + static_cast<int32_t>(pair.second->getSubVars().size());
 	pair.second->setSubVarBaseName(name);
+	_num_vars += 1 + static_cast<int32_t>(pair.second->getSubVars().size());
 
 	_vars.insert(std::move(pair));
 
@@ -1613,7 +1602,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char8_t (&nam
 	if (it == _static_funcs.end()) {
 		it = _static_funcs.emplace(
 			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-			StaticFuncData(_allocator)
+			StaticFuncData{}
 		).first;
 
 		ref_func = SHIB_ALLOCT(StaticFuncType, _allocator, func);
@@ -2097,10 +2086,6 @@ void ReflectionDefinition<T>::finish(void)
 			for (IAttributePtr& attr : it.second) {
 				attr->finish(*this);
 			}
-		}
-
-		if (_friendly_name.empty()) {
-			_friendly_name = getReflectionInstance().getName();
 		}
 	}
 }

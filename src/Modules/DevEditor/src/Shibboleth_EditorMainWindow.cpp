@@ -84,11 +84,7 @@ EditorMainWindow::EditorMainWindow(QWidget *parent):
 
 	if (wnd_bucket) {
 		for (const Refl::IReflectionDefinition* ref_def : *wnd_bucket) {
-			const char8_t* name = ref_def->getFriendlyName();
-
-			if (!name || !eastl::CharStrlen(name)) {
-				name = ref_def->getReflectionInstance().getName();
-			}
+			const char8_t* const name = ref_def->getReflectionInstance().getName();
 
 			const Shibboleth::EditorWindowAttribute* const attr = ref_def->getClassAttr<Shibboleth::EditorWindowAttribute>();
 			GAFF_ASSERT(attr);

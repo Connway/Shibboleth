@@ -721,7 +721,7 @@ void App::ThreadInit(uintptr_t thread_id)
 
 	for (const auto& entry : app._manager_map) {
 		if (!entry.second->initThread(thread_id)) {
-			LogErrorDefault("Failed to initialize thread for '%s'.", entry.second->getReflectionDefinition().getFriendlyName());
+			LogErrorDefault("Failed to initialize thread for '%s'.", entry.second->getReflectionDefinition().getReflectionInstance().getName());
 
 			app.quit();
 			break;

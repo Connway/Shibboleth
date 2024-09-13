@@ -317,7 +317,7 @@ UserData* PushUserTypeReference(lua_State* state, const void* value, const Refl:
 	user_data->reference = const_cast<void*>(value);
 	user_data->ref_def = &ref_def;
 
-	const char8_t* name = ref_def.getFriendlyName();
+	const char8_t* name = ref_def.getReflectionInstance().getName();
 
 	luaL_getmetatable(state, reinterpret_cast<const char*>(name));
 	lua_setmetatable(state, -2);
@@ -343,7 +343,7 @@ UserData* PushUserType(lua_State* state, const Refl::IReflectionDefinition& ref_
 	user_data->ref_def = &ref_def;
 	//value->root = value;
 
-	const char8_t* name = ref_def.getFriendlyName();
+	const char8_t* name = ref_def.getReflectionInstance().getName();
 
 	luaL_getmetatable(state, reinterpret_cast<const char*>(name));
 	lua_setmetatable(state, -2);
@@ -771,7 +771,7 @@ void RegisterType(lua_State* state, const Refl::IReflectionDefinition& ref_def)
 		return;
 	}
 
-	U8String friendly_name = ref_def.getFriendlyName();
+	U8String friendly_name = ref_def.getReflectionInstance().getName();
 
 	if (Gaff::EndsWith(friendly_name.data(), u8"<>")) {
 		friendly_name.erase(friendly_name.size() - 2);
@@ -936,7 +936,7 @@ int UserTypeFunctionCall(lua_State* state)
 
 			} else {
 				// First element on the stack is our object instance.
-				UserData* const object = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getFriendlyName())));
+				UserData* const object = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())));
 
 				if (!func->callStack(object->getData(), args.data(), static_cast<int32_t>(args.size()), ret, allocator)) {
 					continue;
@@ -973,7 +973,7 @@ int UserTypeToString(lua_State* state)
 int UserTypeDestroy(lua_State* state)
 {
 	const Refl::IReflectionDefinition& ref_def = *reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
-	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getFriendlyName())));
+	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())));
 
 	if (!user_data->meta.flags.testAll(UserData::MetaData::HeaderFlag::IsReference)) {
 		ref_def.destroyInstance(user_data->getData());
@@ -985,7 +985,7 @@ int UserTypeDestroy(lua_State* state)
 int UserTypeNewIndex(lua_State* state)
 {
 	const Refl::IReflectionDefinition& ref_def = *reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
-	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getFriendlyName())));
+	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())));
 	void* input = user_data->getData();
 
 	if (lua_type(state, 2) == LUA_TSTRING) {
@@ -1111,7 +1111,7 @@ int UserTypeNewIndex(lua_State* state)
 				// Is a user defined type.
 				} else {
 					if (&ref_def == &var_ref_def) {
-						const UserData* const value = reinterpret_cast<UserData*>(luaL_checkudata(state, 3, reinterpret_cast<const char*>(ref_def.getFriendlyName())));
+						const UserData* const value = reinterpret_cast<UserData*>(luaL_checkudata(state, 3, reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())));
 						var->setData(input, value->getData());
 
 					} else {
@@ -1131,7 +1131,7 @@ int UserTypeNewIndex(lua_State* state)
 int UserTypeIndex(lua_State* state)
 {
 	const Refl::IReflectionDefinition& ref_def = *reinterpret_cast<Refl::IReflectionDefinition*>(lua_touserdata(state, k_ref_def_index));
-	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getFriendlyName())));
+	UserData* const user_data = reinterpret_cast<UserData*>(luaL_checkudata(state, 1, reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())));
 	const void* input = user_data->getData();
 
 	if (lua_type(state, 2) == LUA_TSTRING) {

@@ -29,7 +29,9 @@ THE SOFTWARE.
 #define GET_INTERFACE(class_type, data) template getInterface<class_type>(CLASS_HASH(class_type), data)
 #define CREATET(class_type, allocator, ...) template createT<class_type>(CLASS_HASH(class_type), allocator, ##__VA_ARGS__)
 
-#define SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(type) friend class Refl::Reflection<type>
+#define SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(type) \
+	template <class BaseType> \
+	friend class Refl::Reflection
 
 #define SHIB_REFLECTION_ALLOW_NESTED_PRIVATE_ACCESS_DECLARE(module_name) \
 	namespace Gen \

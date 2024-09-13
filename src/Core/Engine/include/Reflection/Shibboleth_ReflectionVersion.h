@@ -71,8 +71,6 @@ public:
 	using InstanceHashFunc = Gaff::Hash64 (*)(const T&, Gaff::Hash64);
 	using StackCtorFunc = void (*)(void*, const FunctionStackEntry*, int32_t);
 
-	ReflectionVersionClass& friendlyName(const char8_t* name);
-
 	template <class Base>
 	ReflectionVersionClass& base(const char8_t* name);
 

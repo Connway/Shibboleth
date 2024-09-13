@@ -37,7 +37,6 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ToDoWindow)
 	.classAttrs(Shibboleth::EditorWindowAttribute())
-	.friendlyName(u8"ToDo")
 
 	.BASE(QWidget)
 

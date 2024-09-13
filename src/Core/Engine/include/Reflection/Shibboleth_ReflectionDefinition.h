@@ -91,8 +91,6 @@ public:
 
 	constexpr static bool IsBuiltIn(void) { return false; }
 
-	const char8_t* getFriendlyName(void) const override;
-
 	bool load(const Shibboleth::ISerializeReader& reader, void* object, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const override;
 	void save(Shibboleth::ISerializeWriter& writer, const void* object, Gaff::Flags<SaveFlags> flags = Gaff::Flags<SaveFlags>{}) const override;
 	bool load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const;
@@ -176,8 +174,6 @@ public:
 
 	IVar<T>* getVarT(int32_t index) const;
 	IVar<T>* getVarT(Gaff::Hash32 name) const;
-
-	ReflectionDefinition& friendlyName(const char8_t* name);
 
 	template <class Base>
 	ReflectionDefinition& base(const char8_t* name);
@@ -654,11 +650,6 @@ private:
 	{
 		StaticFuncData(void) = default;
 
-		StaticFuncData(const Shibboleth::ProxyAllocator& allocator)
-		{
-			_allocator = allocator;
-		}
-
 		StaticFuncData(const StaticFuncData& rhs)
 		{
 			*this = rhs;
@@ -676,7 +667,6 @@ private:
 			return *this;
 		}
 
-		Shibboleth::ProxyAllocator _allocator;
 		constexpr static int32_t k_num_overloads = 8;
 		Gaff::Hash64 hash[k_num_overloads] =
 		{
@@ -701,8 +691,6 @@ private:
 	Shibboleth::VectorMap<Gaff::Hash64, AttributeList> _func_attrs{ Shibboleth::ProxyAllocator("Reflection") };
 	Shibboleth::VectorMap<Gaff::Hash64, AttributeList> _static_func_attrs{ Shibboleth::ProxyAllocator("Reflection") };
 	AttributeList _class_attrs{ Shibboleth::ProxyAllocator("Reflection") };
-
-	Shibboleth::U8String _friendly_name;
 
 	InstanceHashFunc _instance_hash = nullptr;
 	LoadFunc _serialize_load = nullptr;
@@ -798,7 +786,6 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		const IReflection& getReflectionInstance(void) const override { return Reflection<class_type>::GetInstance();; } \
 		int32_t size(void) const override { return static_cast<int32_t>(sizeof(class_type)); } \
 		bool isBuiltIn(void) const override { return true; } \
-		const char8_t* getFriendlyName(void) const override { return GAFF_STR_U8(class_type); } \
 		bool load(const Shibboleth::ISerializeReader& reader, void* object, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const override { return load(reader, *reinterpret_cast<class_type*>(object), flags); } \
 		void save(Shibboleth::ISerializeWriter& writer, const void* object, Gaff::Flags<SaveFlags> flags = Gaff::Flags<SaveFlags>{}) const override { save(writer, *reinterpret_cast<const class_type*>(object), flags); } \
 		bool load(const Shibboleth::ISerializeReader& reader, class_type& out, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const \

@@ -48,6 +48,7 @@ THE SOFTWARE.
 		{ \
 			return Gaff::FNV1aHash64Const(GAFF_STR_U8(type)); \
 		} \
+		static constexpr bool k_is_hashable = true; \
 	}
 
 #define GAFF_CLASS_HASHABLE(type) \
@@ -69,6 +70,7 @@ THE SOFTWARE.
 		{ \
 			return Gaff::FNV1aHash64Const(GAFF_STR_U8(type) u8"&"); \
 		} \
+		static constexpr bool k_is_hashable = true; \
 	}; \
 	template <> \
 	struct ClassHashable<type*> final \
@@ -88,6 +90,7 @@ THE SOFTWARE.
 		{ \
 			return Gaff::FNV1aHash64Const(GAFF_STR_U8(type) u8"*"); \
 		} \
+		static constexpr bool k_is_hashable = true; \
 	}; \
 	GAFF_CLASS_HASHABLE_NO_REF(type)
 
@@ -124,6 +127,7 @@ THE SOFTWARE.
 			const auto name = GetName(); \
 			return Gaff::FNV1aHash64Const(u8"&", Gaff::FNV1aHash64StringConst(name.data.data())); \
 		} \
+		static constexpr bool k_is_hashable = true; \
 	}; \
 	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
 	struct ClassHashable< type<__VA_ARGS__>* > final \
@@ -157,6 +161,7 @@ THE SOFTWARE.
 			const auto name = GetName(); \
 			return Gaff::FNV1aHash64Const(u8"*", Gaff::FNV1aHash64StringConst(name.data.data())); \
 		} \
+		static constexpr bool k_is_hashable = true; \
 	}; \
 	template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
 	struct ClassHashable< type<__VA_ARGS__> > final \
@@ -190,6 +195,7 @@ THE SOFTWARE.
 			const auto name = GetName(); \
 			return Gaff::FNV1aHash64StringConst(name.data.data()); \
 		} \
+		static constexpr bool k_is_hashable = true; \
 	}
 
 
@@ -209,6 +215,8 @@ struct ClassHashable final
 		GAFF_TEMPLATE_STATIC_ASSERT(false, "Did not overload GetHash() for type.");
 		return Gaff::k_init_hash64;
 	}
+
+	static constexpr bool k_is_hashable = false;
 };
 
 

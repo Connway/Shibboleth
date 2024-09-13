@@ -647,8 +647,6 @@ public:
 
 	virtual bool isBuiltIn(void) const = 0;
 
-	virtual const char8_t* getFriendlyName(void) const = 0;
-
 	virtual bool load(const Shibboleth::ISerializeReader& reader, void* object, Gaff::Flags<LoadFlags> flags = Gaff::Flags<LoadFlags>{}) const = 0;
 	virtual void save(Shibboleth::ISerializeWriter& writer, const void* object, Gaff::Flags<SaveFlags> flags = Gaff::Flags<SaveFlags>{}) const = 0;
 

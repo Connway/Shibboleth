@@ -30,3 +30,6 @@ THE SOFTWARE.
 #ifndef NS_END
 	#define NS_END }
 #endif
+
+#define REFLECTION_ALLOCATOR_POOL_NAME "Reflection"
+#define REFLECTION_ALLOCATOR Shibboleth::ProxyAllocator{ REFLECTION_ALLOCATOR_POOL_NAME }
