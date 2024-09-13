@@ -107,9 +107,6 @@ public:
 	bool hasInterface(Gaff::Hash64 class_hash) const override;
 	bool hasInterface(const IReflectionDefinition& ref_def) const override;
 
-	void setAllocator(const Shibboleth::ProxyAllocator& allocator);
-	Shibboleth::ProxyAllocator& getAllocator(void) override;
-
 	const IReflection& getReflectionInstance(void) const override;
 
 	int32_t size(void) const override;
@@ -590,10 +587,10 @@ private:
 		{
 		}
 
-		IReflectionStaticFunctionBase* clone(Shibboleth::ProxyAllocator& allocator) const override
+		IReflectionStaticFunctionBase* clone(void) const override
 		{
 			using Type = ReflectionStaticFunction<Ret, Args...>;
-			return SHIB_ALLOCT(Type, allocator, getFunc());
+			return SHIB_ALLOCT(Type, REFLECTION_ALLOCATOR, getFunc());
 		}
 
 		bool callStack(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
@@ -808,7 +805,6 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		void* getInterface(const IReflectionDefinition&, void*) const override { return nullptr; } \
 		bool hasInterface(Gaff::Hash64) const override { return false; } \
 		bool hasInterface(const IReflectionDefinition&) const override { return false; } \
-		Shibboleth::ProxyAllocator& getAllocator(void) override { return _allocator; } \
 		int32_t getNumVars(void) const override { return 0; } \
 		Shibboleth::HashStringView32<> getVarName(int32_t) const override { return Shibboleth::HashStringView32<>(); } \
 		IReflectionVar* getVar(int32_t) const override { return nullptr; } \
@@ -872,10 +868,8 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		bool isCopyAssignable(void) const override { return std::is_copy_assignable_v<class_type> && !std::is_trivially_copy_assignable_v<class_type>; } \
 		bool isConstructible(void) const override { return std::is_default_constructible_v<class_type> && !std::is_trivially_default_constructible_v<class_type>; } \
 		bool isDestructible(void) const override { return std::is_destructible_v<class_type> && !std::is_trivially_destructible_v<class_type>; } \
-		void setAllocator(const Shibboleth::ProxyAllocator&) {} \
 		void finish(void) {} \
 	private: \
-		Shibboleth::ProxyAllocator _allocator; \
 		ptrdiff_t getBasePointerOffset(Gaff::Hash64) const override { return 0; } \
 		void instantiated(void*) const override {} \
 	}

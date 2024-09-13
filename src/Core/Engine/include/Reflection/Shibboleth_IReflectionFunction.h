@@ -302,7 +302,7 @@ public:
 	virtual bool callStack(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const = 0;
 
 	virtual int32_t numArgs(void) const = 0;
-	virtual IReflectionStaticFunctionBase* clone(Shibboleth::ProxyAllocator& allocator) const = 0;
+	virtual IReflectionStaticFunctionBase* clone(void) const = 0;
 
 	virtual FunctionSignature getSignature(void) const = 0;
 

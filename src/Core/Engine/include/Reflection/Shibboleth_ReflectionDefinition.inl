@@ -514,30 +514,6 @@ bool ReflectionDefinition<T>::hasInterface(const IReflectionDefinition& ref_def)
 }
 
 template <class T>
-void ReflectionDefinition<T>::setAllocator(const Shibboleth::ProxyAllocator& allocator)
-{
-	_base_class_offsets.set_allocator(allocator);
-	_factories.set_allocator(allocator);
-	_ctors.set_allocator(allocator);
-	_vars.set_allocator(allocator);
-	_funcs.set_allocator(allocator);
-	_static_funcs.set_allocator(allocator);
-
-	_var_attrs.set_allocator(allocator);
-	_func_attrs.set_allocator(allocator);
-	_class_attrs.set_allocator(allocator);
-	_static_func_attrs.set_allocator(allocator);
-
-	_allocator = allocator;
-}
-
-template <class T>
-Shibboleth::ProxyAllocator& ReflectionDefinition<T>::getAllocator(void)
-{
-	return _allocator;
-}
-
-template <class T>
 const IReflection& ReflectionDefinition<T>::getReflectionInstance(void) const
 {
 	return Reflection<T>::GetInstance();
@@ -1007,7 +983,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(const char8_t* name)
 
 	const ptrdiff_t offset = Gaff::OffsetOfClass<Base, T>();
 	auto pair = eastl::make_pair(
-		Shibboleth::HashString64<>(name, _allocator),
+		Shibboleth::HashString64<>(name, REFLECTION_ALLOCATOR),
 		offset
 	);
 
@@ -1049,7 +1025,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 
 				eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
 					it.first,
-					IVarPtr(SHIB_ALLOCT(BaseVarPtr<Base> , _allocator, it.second.get()))
+					IVarPtr(SHIB_ALLOCT(BaseVarPtr<Base> , REFLECTION_ALLOCATOR, it.second.get()))
 				);
 
 				pair.second->setNoSerialize(!it.second->canSerialize());
@@ -1063,7 +1039,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 				// Copy attributes
 				if (attr_it != base_ref_def._var_attrs.end()) {
 					auto& attrs = _var_attrs[pair.first.getHash()];
-					attrs.set_allocator(_allocator);
+					attrs.set_allocator(REFLECTION_ALLOCATOR);
 
 					for (const IAttributePtr& attr : attr_it->second) {
 						if (attr->canInherit()) {
@@ -1104,7 +1080,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 
 					ReflectionBaseFunction* const ref_func = SHIB_ALLOCT(
 						ReflectionBaseFunction,
-						_allocator,
+						REFLECTION_ALLOCATOR,
 						it.second.func[i]->getBaseRefDef(),
 						it.second.func[i].get()
 					);
@@ -1118,7 +1094,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 
 					if (attr_it != base_ref_def._func_attrs.end()) {
 						auto& attrs = _func_attrs[attr_hash];
-						attrs.set_allocator(_allocator);
+						attrs.set_allocator(REFLECTION_ALLOCATOR);
 
 						for (const IAttributePtr& attr : attr_it->second) {
 							if (attr->canInherit()) {
@@ -1157,7 +1133,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 					}
 
 					static_func_data.hash[index] = it.second.hash[i];
-					static_func_data.func[index].reset(it.second.func[i]->clone(_allocator));
+					static_func_data.func[index].reset(it.second.func[i]->clone());
 
 					// Copy attributes.
 					const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(static_func_data.hash[i], Gaff::FNV1aHash64T(Gaff::FNV1aHash32T(it.first.getHash())));
@@ -1165,7 +1141,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 
 					if (attr_it != base_ref_def._static_func_attrs.end()) {
 						auto& attrs = _static_func_attrs[attr_hash];
-						attrs.set_allocator(_allocator);
+						attrs.set_allocator(REFLECTION_ALLOCATOR);
 
 						for (const IAttributePtr& attr : attr_it->second) {
 							if (attr->canInherit()) {
@@ -1209,7 +1185,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::ctor(Gaff::Hash64 factory_hash
 
 	using ConstructorFunction = ReflectionStaticFunction<void, T*, Args&&...>;
 
-	_ctors[factory_hash].reset(SHIB_ALLOCT(ConstructorFunction, _allocator, construct_func));
+	_ctors[factory_hash].reset(SHIB_ALLOCT(ConstructorFunction, REFLECTION_ALLOCATOR, construct_func));
 	_factories.emplace(factory_hash, reinterpret_cast<VoidFunc>(factory_func));
 
 	return *this;
@@ -1232,8 +1208,8 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	using RefVarType = VarTypeHelper<T, Var>::Type;
 
 	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
-		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-		IVarPtr(SHIB_ALLOCT(RefVarType, _allocator, ptr))
+		Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
+		IVarPtr(SHIB_ALLOCT(RefVarType, REFLECTION_ALLOCATOR, ptr))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
@@ -1243,7 +1219,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	pair.second->setName(hash_name);
 
 	auto& attrs = _var_attrs[hash_name];
-	attrs.set_allocator(_allocator);
+	attrs.set_allocator(REFLECTION_ALLOCATOR);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(*pair.second, ptr, attrs, attributes...);
@@ -1277,8 +1253,8 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	using RefVarType = VarTypeHelper<T, FuncStorage>::Type;
 
 	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
-		Shibboleth::HashString32<>(name, name_size - 1, _allocator),
-		IVarPtr(SHIB_ALLOCT(RefVarType, _allocator, FuncStorage(getter, setter)))
+		Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
+		IVarPtr(SHIB_ALLOCT(RefVarType, REFLECTION_ALLOCATOR, FuncStorage(getter, setter)))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
@@ -1288,7 +1264,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name
 	pair.second->setName(hash_name);
 
 	auto& attrs = _var_attrs[hash_name];
-	attrs.set_allocator(_allocator);
+	attrs.set_allocator(REFLECTION_ALLOCATOR);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(*pair.second, getter, setter, attrs, attributes...);
@@ -1324,12 +1300,12 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	if (it == _funcs.end()) {
 		ref_func = SHIB_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionFunction<true, Ret, Args...>),
-			_allocator,
+			REFLECTION_ALLOCATOR,
 			ptr
 		);
 
 		eastl::pair<Shibboleth::HashString32<>, FuncData> pair(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+			Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
 			FuncData()
 		);
 
@@ -1346,7 +1322,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
 				ref_func = SHIB_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionFunction<true, Ret, Args...>),
-					_allocator,
+					REFLECTION_ALLOCATOR,
 					ptr
 				);
 
@@ -1363,7 +1339,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
 
 	auto& attrs = _func_attrs[attr_hash];
-	attrs.set_allocator(_allocator);
+	attrs.set_allocator(REFLECTION_ALLOCATOR);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(*ref_func, ptr, attrs, attributes...);
@@ -1394,12 +1370,12 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	if (it == _funcs.end()) {
 		ref_func = SHIB_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionFunction<false, Ret, Args...>),
-			_allocator,
+			REFLECTION_ALLOCATOR,
 			ptr
 		);
 
 		it = _funcs.emplace(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+			Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
 			FuncData()
 		).first;
 
@@ -1415,7 +1391,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
 				ref_func = SHIB_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionFunction<false, Ret, Args...>),
-					_allocator,
+					REFLECTION_ALLOCATOR,
 					ptr
 				);
 
@@ -1432,7 +1408,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
 
 	auto& attrs = _func_attrs[attr_hash];
-	attrs.set_allocator(_allocator);
+	attrs.set_allocator(REFLECTION_ALLOCATOR);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(*ref_func, ptr, attrs, attributes...);
@@ -1463,12 +1439,12 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	if (it == _funcs.end()) {
 		ref_func = SHIB_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionExtensionFunction<true, Ret, Args...>),
-			_allocator,
+			REFLECTION_ALLOCATOR,
 			ptr
 		);
 
 		it = _funcs.emplace(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+			Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
 			FuncData()
 		).first;
 
@@ -1484,7 +1460,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
 				ref_func = SHIB_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionExtensionFunction<true, Ret, Args...>),
-					_allocator,
+					REFLECTION_ALLOCATOR,
 					ptr
 				);
 
@@ -1501,7 +1477,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
 
 	auto& attrs = _func_attrs[attr_hash];
-	attrs.set_allocator(_allocator);
+	attrs.set_allocator(REFLECTION_ALLOCATOR);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(*ref_func, ptr, attrs, attributes...);
@@ -1532,12 +1508,12 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	if (it == _funcs.end()) {
 		ref_func = SHIB_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionExtensionFunction<false, Ret, Args...>),
-			_allocator,
+			REFLECTION_ALLOCATOR,
 			ptr
 		);
 
 		it = _funcs.emplace(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+			Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
 			FuncData()
 		).first;
 
@@ -1553,7 +1529,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 			if (!func_data.func[i] || func_data.func[i]->isBase()) {
 				ref_func = SHIB_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionExtensionFunction<false, Ret, Args...>),
-					_allocator,
+					REFLECTION_ALLOCATOR,
 					ptr
 				);
 
@@ -1570,7 +1546,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[nam
 	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
 
 	auto& attrs = _func_attrs[attr_hash];
-	attrs.set_allocator(_allocator);
+	attrs.set_allocator(REFLECTION_ALLOCATOR);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(*ref_func, ptr, attrs, attributes...);
@@ -1601,11 +1577,11 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char8_t (&nam
 
 	if (it == _static_funcs.end()) {
 		it = _static_funcs.emplace(
-			Shibboleth::HashString32<>(name, name_size - 1, _allocator),
+			Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
 			StaticFuncData{}
 		).first;
 
-		ref_func = SHIB_ALLOCT(StaticFuncType, _allocator, func);
+		ref_func = SHIB_ALLOCT(StaticFuncType, REFLECTION_ALLOCATOR, func);
 		it->second.func[0].reset(ref_func);
 		it->second.hash[0] = arg_hash;
 
@@ -1618,7 +1594,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char8_t (&nam
 				continue;
 			}
 
-			ref_func = SHIB_ALLOCT(StaticFuncType, _allocator, func);
+			ref_func = SHIB_ALLOCT(StaticFuncType, REFLECTION_ALLOCATOR, func);
 			func_data.func[i].reset(ref_func);
 			func_data.hash[i] = arg_hash;
 			break;
@@ -1631,7 +1607,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char8_t (&nam
 	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
 
 	auto& attrs = _static_func_attrs[attr_hash];
-	attrs.set_allocator(_allocator);
+	attrs.set_allocator(REFLECTION_ALLOCATOR);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(*ref_func, func, attrs, attributes...);

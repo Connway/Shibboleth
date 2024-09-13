@@ -659,8 +659,6 @@ public:
 	virtual bool hasInterface(Gaff::Hash64 class_hash) const = 0;
 	virtual bool hasInterface(const IReflectionDefinition& ref_def) const = 0;
 
-	virtual Shibboleth::ProxyAllocator& getAllocator(void) = 0;
-
 	virtual int32_t getNumVars(void) const = 0;
 	virtual Shibboleth::HashStringView32<> getVarName(int32_t index) const = 0;
 	virtual IReflectionVar* getVar(int32_t index) const = 0;

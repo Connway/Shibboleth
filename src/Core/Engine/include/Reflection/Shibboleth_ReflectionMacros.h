@@ -148,9 +148,7 @@ NS_END
 					GetName() \
 				); \
 			} else { \
-				Shibboleth::ProxyAllocator allocator("Reflection"); \
-				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(RefDefType<type>), allocator); \
-				g_instance._ref_def->setAllocator(allocator); \
+				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(RefDefType<type>), REFLECTION_ALLOCATOR); \
 				BuildReflection(*g_instance._ref_def); \
 				app.getReflectionManager().registerReflection(g_instance._ref_def); \
 			} \
@@ -235,9 +233,7 @@ NS_END
 					GetName() \
 				); \
 			} else { \
-				Shibboleth::ProxyAllocator allocator("Reflection"); \
-				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(ReflectionDefinition< type<__VA_ARGS__> >), allocator); \
-				g_instance._ref_def->setAllocator(allocator); \
+				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(ReflectionDefinition< type<__VA_ARGS__> >), REFLECTION_ALLOCATOR); \
 				BuildReflection(*g_instance._ref_def); \
 				app.getReflectionManager().registerReflection(g_instance._ref_def); \
 			} \
