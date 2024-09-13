@@ -35,7 +35,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LuaProcess)
 	.BASE(Esprit::IProcess)
 	.template ctor<>()
 
-	.var("script", &Shibboleth::LuaProcess::_script)
+	.var("script", &Type::_script)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::LuaProcess)
 
 NS_SHIBBOLETH

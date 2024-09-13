@@ -45,7 +45,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntitySceneComponent)
 		Shibboleth::ReadOnlyAttribute{},
 		Shibboleth::NoCopyAttribute{}
 	)
-
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntitySceneComponent)
 
 

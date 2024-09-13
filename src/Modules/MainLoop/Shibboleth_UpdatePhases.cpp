@@ -27,7 +27,7 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::UpdateRow)
 	.template ctor<>()
 
-	.var("systems", &Shibboleth::UpdateRow::systems, Shibboleth::InstancedOptionalAttribute{ u8"!", Shibboleth::InstancedOptionalAttribute::Flag::StripPrefix })
+	.var("systems", &Type::systems, Shibboleth::InstancedOptionalAttribute{ u8"!", Shibboleth::InstancedOptionalAttribute::Flag::StripPrefix })
 SHIB_REFLECTION_DEFINE_END(Shibboleth::UpdateRow)
 
 
@@ -35,7 +35,7 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::UpdateRow)
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::UpdateBlock)
 	.template ctor<>()
 
-	.var("update_rows", &Shibboleth::UpdateBlock::update_rows)
+	.var("update_rows", &Type::update_rows)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::UpdateBlock)
 
 
@@ -46,7 +46,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::UpdatePhases)
 		Shibboleth::InitFromConfigAttribute()
 	)
 
-	.var("update_blocks", &Shibboleth::UpdatePhases::update_blocks)
+	.var("update_blocks", &Type::update_blocks)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::UpdatePhases)
 
 

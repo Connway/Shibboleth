@@ -31,8 +31,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
 
 	.template ctor<>()
 
-	.var("root_scene_component", &Shibboleth::Entity::_root_scene_comp, Shibboleth::ReadOnlyAttribute{})
-	.var("components", &Shibboleth::Entity::_components, Shibboleth::OptionalAttribute{})
+	.var("root_scene_component", &Type::_root_scene_comp, Shibboleth::ReadOnlyAttribute{})
+	.var("components", &Type::_components, Shibboleth::OptionalAttribute{})
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Entity)
 
 

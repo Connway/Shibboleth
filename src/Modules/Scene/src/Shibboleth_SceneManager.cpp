@@ -30,7 +30,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneManager)
 	.template base<Shibboleth::IManager>()
 	.template ctor<>()
 
-	.var(u8"primary_scene_resource", &Shibboleth::SceneManager::_primary_scene_resource)
+	.var(u8"primary_scene_resource", &Type::_primary_scene_resource)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneManager)
 
 namespace

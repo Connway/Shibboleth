@@ -26,7 +26,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachineComponent)
 	.template base<Shibboleth::EntityComponent>()
 	// .serialize(Shibboleth::StateMachine::Load)
 
-	.var("resource", &Shibboleth::StateMachineComponent::_resource)
+	.var("resource", &Type::_resource)
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::StateMachine)
 

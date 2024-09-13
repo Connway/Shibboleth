@@ -32,10 +32,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderPipeline)
 		Shibboleth::InitFromConfigAttribute{}
 	)
 
-	.serialize(&Shibboleth::RenderPipeline::Load)
+	.serialize(&Type::Load)
 
-	.var("render_data", &Shibboleth::RenderPipeline::_render_data)
-	.var("stages", &Shibboleth::RenderPipeline::_stages)
+	.var("render_data", &Type::_render_data)
+	.var("stages", &Type::_stages)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderPipeline)
 
 NS_SHIBBOLETH

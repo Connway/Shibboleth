@@ -32,8 +32,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraPipelineData)
 	.template ctor<>()
 
-	.func("getView", static_cast<const Shibboleth::CameraView& (Shibboleth::CameraPipelineData::*)(int32_t) const>(&Shibboleth::CameraPipelineData::getView))
-	.func("getView", static_cast<Shibboleth::CameraView& (Shibboleth::CameraPipelineData::*)(int32_t)>(&Shibboleth::CameraPipelineData::getView))
+	.func("getView", static_cast<const Shibboleth::CameraView& (Type::*)(int32_t) const>(&Type::getView))
+	.func("getView", static_cast<Shibboleth::CameraView& (Type::*)(int32_t)>(&Type::getView))
 
 //	.func("getRenderData", static_cast<const Shibboleth::CameraRenderData& (Shibboleth::CameraPipelineData::*)(int32_t) const>(&Shibboleth::CameraPipelineData::getRenderData))
 //	.func("getRenderData", static_cast<Shibboleth::CameraRenderData& (Shibboleth::CameraPipelineData::*)(int32_t)>(&Shibboleth::CameraPipelineData::getRenderData))

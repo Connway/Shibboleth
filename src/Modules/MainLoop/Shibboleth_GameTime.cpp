@@ -30,14 +30,14 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GameTimeManager)
 	.template base<Shibboleth::IManager>()
 	.template ctor<>()
 
-	.var("game_time_scale", &Shibboleth::GameTimeManager::_game_time_scale)
-	.var("real_time", &Shibboleth::GameTimeManager::_real_time)
-	.var("game_time", &Shibboleth::GameTimeManager::_game_time)
+	.var("game_time_scale", &Type::_game_time_scale)
+	.var("real_time", &Type::_real_time)
+	.var("game_time", &Type::_game_time)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GameTimeManager)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Time)
-	.var("total", &Shibboleth::Time::total)
-	.var("delta", &Shibboleth::Time::delta)
+	.var("total", &Type::total)
+	.var("delta", &Type::delta)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Time)
 
 NS_SHIBBOLETH

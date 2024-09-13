@@ -451,8 +451,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugManager)
 
 	.var(
 		"Debug Flags",
-		&Shibboleth::DebugManager::_debug_flags,
-		Shibboleth::DebugMenuItemAttribute(u8"Debug")
+		&Type::_debug_flags,
+		Shibboleth::DebugMenuItemAttribute{ u8"Debug" }
 	)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugManager)
 

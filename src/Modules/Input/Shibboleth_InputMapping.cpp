@@ -29,9 +29,9 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMapping::Flag)
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMapping)
 	.template ctor<>()
 
-	.var(u8"activators", &Shibboleth::InputMapping::activators)
-	.var(u8"alias_name", &Shibboleth::InputMapping::alias_name)
-	.var(u8"flags", &Shibboleth::InputMapping::flags)
+	.var(u8"activators", &Type::activators)
+	.var(u8"alias_name", &Type::alias_name)
+	.var(u8"flags", &Type::flags)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMapping)
 
 

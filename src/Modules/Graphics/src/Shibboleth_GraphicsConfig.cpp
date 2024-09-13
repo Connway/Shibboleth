@@ -26,28 +26,28 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfigWindow)
 	.var("monitor_id", &Shibboleth::GraphicsConfigWindow::monitor_id)
 
-	.var("width", &Shibboleth::GraphicsConfigWindow::width)
-	.var("height", &Shibboleth::GraphicsConfigWindow::height)
-	.var("refresh_rate", &Shibboleth::GraphicsConfigWindow::refresh_rate)
-	.var("vsync", &Shibboleth::GraphicsConfigWindow::vsync)
+	.var("width", &Type::width)
+	.var("height", &Type::height)
+	.var("refresh_rate", &Type::refresh_rate)
+	.var("vsync", &Type::vsync)
 
-	.var("pos_x", &Shibboleth::GraphicsConfigWindow::pos_x)
-	.var("pos_y", &Shibboleth::GraphicsConfigWindow::pos_y)
-	.var("windowed", &Shibboleth::GraphicsConfigWindow::windowed)
+	.var("pos_x", &Type::pos_x)
+	.var("pos_y", &Type::pos_y)
+	.var("windowed", &Type::windowed)
 
-	.var("tags", &Shibboleth::GraphicsConfigWindow::tags)
+	.var("tags", &Type::tags)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfigWindow)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)
 	.classAttrs(
-		Shibboleth::ConfigFileAttribute{ u8"graphics/graphics" },
+		Shibboleth::ConfigFileAttribute{ u8"graphics/graphics" },s
 		Shibboleth::GlobalConfigAttribute{}
 	)
 
-	.var("texture_filtering_sampler", &Shibboleth::GraphicsConfig::texture_filtering_sampler)
-	.var("icon", &Shibboleth::GraphicsConfig::icon, Shibboleth::OptionalAttribute())
+	.var("texture_filtering_sampler", &Type::texture_filtering_sampler)
+	.var("icon", &Type::icon, Shibboleth::OptionalAttribute{})
 
-	.var("windows", &Shibboleth::GraphicsConfig::windows, Shibboleth::OptionalAttribute())
+	.var("windows", &Type::windows, Shibboleth::OptionalAttribute{})
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfig)
 
 

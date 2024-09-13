@@ -26,7 +26,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMappingResource)
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
 
-	.var(u8"mappings", &Shibboleth::InputMappingResource::_mappings)
+	.var(u8"mappings", &Type::_mappings)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMappingResource)
 
 

@@ -45,7 +45,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelResource)
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
 
-	.var("instances_per_buffer", &Shibboleth::ModelResource::_instances_per_buffer)
+	.var("instances_per_buffer", &Type::_instances_per_buffer)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelResource)
 
 NS_SHIBBOLETH

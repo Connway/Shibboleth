@@ -26,8 +26,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Scene)
 	.template ctor<>()
 
-	.func(u8"start", &Shibboleth::Scene::start)
-	.func(u8"end", &Shibboleth::Scene::end)
+	.func(u8"start", &Type::start)
+	.func(u8"end", &Type::end)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Scene)
 
 

@@ -28,7 +28,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ScriptConfig)
 		Shibboleth::GlobalConfigAttribute{}
 	)
 
-	.var(u8"num_threads", &Shibboleth::ScriptConfig::num_threads, Shibboleth::OptionalAttribute{})
+	.var(u8"num_threads", &Type::num_threads, Shibboleth::OptionalAttribute{})
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ScriptConfig)
 
 

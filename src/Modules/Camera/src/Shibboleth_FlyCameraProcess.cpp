@@ -36,8 +36,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::FlyCameraProcess)
 	.BASE(Esprit::IProcess)
 	.template ctor<>()
 
-	.var("angular_speed", &Shibboleth::FlyCameraProcess::_angular_speed)
-	.var("linear_speed", &Shibboleth::FlyCameraProcess::_linear_speed)
+	.var("angular_speed", &Type::_angular_speed)
+	.var("linear_speed", &Type::_linear_speed)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::FlyCameraProcess)
 
 

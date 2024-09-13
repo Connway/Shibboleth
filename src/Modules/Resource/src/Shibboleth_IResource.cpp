@@ -45,12 +45,14 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IResource)
 		Shibboleth::ClassBucketAttribute()
 	)
 
-	.func("requestLoad", &Shibboleth::IResource::requestLoad)
-	.func("getFilePath", &Shibboleth::IResource::getFilePath)
-	.func("getState", &Shibboleth::IResource::getState)
-	.func("hasFailed", &Shibboleth::IResource::hasFailed)
-	.func("isPending", &Shibboleth::IResource::isPending)
-	.func("isLoaded", &Shibboleth::IResource::isLoaded)
+	.func("requestLoad", &Type::requestLoad)
+	.func("getFilePath", &Type::getFilePath)
+
+	.func("getState", &Type::getState)
+	.func("isDeferred", &Type::isDeferred)
+	.func("hasFailed", &Type::hasFailed)
+	.func("isPending", &Type::isPending)
+	.func("isLoaded", &Type::isLoaded)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::IResource)
 
 

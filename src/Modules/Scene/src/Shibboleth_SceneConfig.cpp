@@ -27,7 +27,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneConfig)
 		Shibboleth::GlobalConfigAttribute()
 	)
 
-	.var("starting_scene", &Shibboleth::SceneConfig::starting_scene)
+	.var("starting_scene", &Type::starting_scene)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneConfig)
 
 

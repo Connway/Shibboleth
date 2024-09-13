@@ -28,7 +28,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::CameraComponent)
 	.template base<Shibboleth::EntitySceneComponent>()
 	.template ctor<>()
 
-	.var("view", &Shibboleth::CameraComponent::_view, Shibboleth::OptionalAttribute())
+	.var("view", &Type::_view, Shibboleth::OptionalAttribute())
 SHIB_REFLECTION_DEFINE_END(Shibboleth::CameraComponent)
 
 

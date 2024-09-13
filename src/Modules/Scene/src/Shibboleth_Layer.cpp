@@ -26,11 +26,11 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Layer)
 	.template ctor<>()
 
-	.var(u8"layer_resource", &Shibboleth::Layer::_layer_resource)
-	.var(u8"entities", &Shibboleth::Layer::_entities)
+	.var(u8"layer_resource", &Type::_layer_resource)
+	.var(u8"entities", &Type::_entities)
 
-	.func(u8"start", &Shibboleth::Layer::start)
-	.func(u8"end", &Shibboleth::Layer::end)
+	.func(u8"start", &Type::start)
+	.func(u8"end", &Type::end)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::Layer)
 
 

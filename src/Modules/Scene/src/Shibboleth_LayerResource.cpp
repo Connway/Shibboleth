@@ -29,8 +29,8 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerEntityData)
 	.serialize(nullptr, &Shibboleth::LayerEntityData::Save)
 
-	// .var("entity_definition", &Shibboleth::LayerEntityData::entity_definition)
-	.var("entity_base", &Shibboleth::LayerEntityData::entity_base)
+	// .var("entity_definition", &Type::entity_definition)
+	.var("entity_base", &Type::entity_base)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::LayerEntityData)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerResource)
@@ -42,7 +42,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LayerResource)
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
 
-	.var("entities", &Shibboleth::LayerResource::_entities)
+	.var("entities", &Type::_entities)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::LayerResource)
 
 

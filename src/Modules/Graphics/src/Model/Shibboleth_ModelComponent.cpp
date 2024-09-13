@@ -29,7 +29,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelComponent)
 	.template base<Shibboleth::EntitySceneComponent>()
 	.template ctor<>()
 
-	.var("data", &Shibboleth::ModelComponent::_model_instance_data)
+	.var("data", &Type::_model_instance_data)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelComponent)
 
 

@@ -34,8 +34,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneResource)
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
 
-	.var("deferred_layers", &Shibboleth::SceneResource::_deferred_layers, Shibboleth::OptionalAttribute{})
-	.var("layers", &Shibboleth::SceneResource::_layers)
+	.var("deferred_layers", &Type::_deferred_layers, Shibboleth::OptionalAttribute{})
+	.var("layers", &Type::_layers)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneResource)
 
 namespace

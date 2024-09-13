@@ -34,7 +34,7 @@ THE SOFTWARE.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderGBufferStage)
 	.template base<Shibboleth::IRenderPipelineStage>()
 
-	.var("render_g_buffer_material", &Shibboleth::RenderGBufferStage::_render_g_buffer_material)
+	.var("render_g_buffer_material", &Type::_render_g_buffer_material)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderGBufferStage)
 
 NS_SHIBBOLETH

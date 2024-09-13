@@ -29,8 +29,8 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponentFlag)
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponent)
 	.template ctor<>()
 
-	.var("flags", &Shibboleth::EntityComponent::_flags)
-	.var("name", &Shibboleth::EntityComponent::_name)
+	.var("flags", &Type::_flags)
+	.var("name", &Type::_name)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponent)
 
 

@@ -35,7 +35,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityResource)
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
 
-	.var("definition", &Shibboleth::EntityResource::_definition)
+	.var("definition", &Type::_definition)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityResource)
 
 
