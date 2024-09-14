@@ -257,12 +257,12 @@ protected:
 };
 
 template <class Ret, class... Args>
-class IReflectionStaticFunction : public IReflectionStaticFunctionBase
+class ReflectionStaticFunction  final : public IReflectionStaticFunctionBase
 {
 public:
 	using Func = Ret (*)(Args...);
 
-	explicit IReflectionStaticFunction(Func func):
+	explicit ReflectionStaticFunction(Func func):
 		IReflectionStaticFunctionBase(reinterpret_cast<VoidFunc>(func))
 	{
 	}
@@ -291,6 +291,14 @@ public:
 
 		return signature;
 	}
+
+	// $TODO: Delete me.
+	IReflectionStaticFunctionBase* clone(void) const override
+	{
+		using Type = ReflectionStaticFunction<Ret, Args...>;
+		return SHIB_ALLOCT(Type, REFLECTION_ALLOCATOR, getFunc());
+	}
+
 };
 
 NS_END

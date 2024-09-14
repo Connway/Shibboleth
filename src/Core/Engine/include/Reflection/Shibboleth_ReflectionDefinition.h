@@ -522,27 +522,6 @@ private:
 		const IReflectionFunctionBase* const _func;
 	};
 
-	template <class Ret, class... Args>
-	class ReflectionStaticFunction final : public IReflectionStaticFunction<Ret, Args...>
-	{
-	public:
-		using IReflectionStaticFunction<Ret, Args...>::getFunc;
-		using IReflectionStaticFunction<Ret, Args...>::numArgs;
-		using IReflectionStaticFunction<Ret, Args...>::call;
-
-		explicit ReflectionStaticFunction(typename IReflectionStaticFunction<Ret, Args...>::Func func):
-			IReflectionStaticFunction<Ret, Args...>(func)
-		{
-		}
-
-		IReflectionStaticFunctionBase* clone(void) const override
-		{
-			using Type = ReflectionStaticFunction<Ret, Args...>;
-			return SHIB_ALLOCT(Type, REFLECTION_ALLOCATOR, getFunc());
-		}
-	};
-
-
 	using IVarPtr = Shibboleth::UniquePtr< IVar<T> >;
 
 	struct FuncData final
@@ -626,8 +605,6 @@ private:
 	LoadFunc _serialize_load = nullptr;
 	SaveFunc _serialize_save = nullptr;
 
-	mutable Shibboleth::ProxyAllocator _allocator;
-
 	int32_t _dependents_remaining = 0;
 	int32_t _num_vars = 0;
 
@@ -665,9 +642,6 @@ private:
 
 	template <bool is_const, class Ret, class... Args>
 	friend class ReflectionFunction;
-
-	template <class Ret, class... Args>
-	class ReflectionStaticFunction;
 };
 
 

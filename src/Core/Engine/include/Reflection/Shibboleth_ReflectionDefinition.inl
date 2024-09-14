@@ -1001,9 +1001,6 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
 	static_assert(std::is_base_of_v<Base, T>, "Class is not a base class of T.");
 
 	if constexpr (Reflection<Base>::HasReflection) {
-		// ReflectionBuilderBase<Base> builder{ this };
-		// Reflection<Base>::BuildReflection<ReflectionBuilderBase<Base>, T>(builder);
-
 		// So that hasInterface() calls will properly report inheritance if the base class hasn't been defined yet.
 		if (_base_class_offsets.find(Reflection<Base>::GetNameHash()) == _base_class_offsets.end()) {
 			base<Base>(Reflection<Base>::GetName());
@@ -2006,14 +2003,14 @@ template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftLeftAssignment(void)
 {
-	return staticFunc(OP_BIT_LEFT_SHIFT_ASSIGN_NAME, Gaff::BitLeftShiftAssignment<T, Other>);
+	return staticFunc(OP_BIT_SHIFT_LEFT_ASSIGN_NAME, Gaff::BitLeftShiftAssignment<T, Other>);
 }
 
 template <class T>
 template <class Other>
 ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftRightAssignment(void)
 {
-	return staticFunc(OP_BIT_RIGHT_SHIFT_ASSIGN_NAME, Gaff::BitRightShiftAssignment<T, Other>);
+	return staticFunc(OP_BIT_SHIFT_RIGHT_ASSIGN_NAME, Gaff::BitRightShiftAssignment<T, Other>);
 }
 
 template <class T>

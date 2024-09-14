@@ -61,8 +61,8 @@ THE SOFTWARE.
 #define OP_BIT_AND_ASSIGN_NAME u8"__band_assign"
 #define OP_BIT_OR_ASSIGN_NAME u8"__bor_assign"
 #define OP_BIT_XOR_ASSIGN_NAME u8"__bxor_assign"
-#define OP_BIT_LEFT_SHIFT_ASSIGN_NAME u8"__shl_assign"
-#define OP_BIT_RIGHT_SHIFT_ASSIGN_NAME u8"__shr_assign"
+#define OP_BIT_SHIFT_LEFT_ASSIGN_NAME u8"__shl_assign"
+#define OP_BIT_SHIFT_RIGHT_ASSIGN_NAME u8"__shr_assign"
 
 NS_GAFF
 
@@ -158,8 +158,8 @@ static constexpr const char8_t* k_op_names[] = {
 	OP_BIT_AND_ASSIGN_NAME,
 	OP_BIT_OR_ASSIGN_NAME,
 	OP_BIT_XOR_ASSIGN_NAME,
-	OP_BIT_LEFT_SHIFT_ASSIGN_NAME,
-	OP_BIT_RIGHT_SHIFT_ASSIGN_NAME
+	OP_BIT_SHIFT_LEFT_ASSIGN_NAME,
+	OP_BIT_SHIFT_RIGHT_ASSIGN_NAME
 };
 static_assert(std::size(k_op_names) == static_cast<size_t>(Operator::Count));
 
@@ -201,8 +201,8 @@ static constexpr const Hash32 k_op_hashes[] = {
 	FNV1aHash32Const(OP_BIT_AND_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_AND_ASSIGN_NAME)),
 	FNV1aHash32Const(OP_BIT_OR_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_OR_ASSIGN_NAME)),
 	FNV1aHash32Const(OP_BIT_XOR_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_XOR_ASSIGN_NAME)),
-	FNV1aHash32Const(OP_BIT_LEFT_SHIFT_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_LEFT_SHIFT_ASSIGN_NAME)),
-	FNV1aHash32Const(OP_BIT_RIGHT_SHIFT_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_RIGHT_SHIFT_ASSIGN_NAME))
+	FNV1aHash32Const(OP_BIT_SHIFT_LEFT_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_SHIFT_LEFT_ASSIGN_NAME)),
+	FNV1aHash32Const(OP_BIT_SHIFT_RIGHT_ASSIGN_NAME, eastl::CharStrlen(OP_BIT_SHIFT_RIGHT_ASSIGN_NAME))
 };
 static_assert(std::size(k_op_hashes) == static_cast<size_t>(Operator::Count));
 

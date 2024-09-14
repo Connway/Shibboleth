@@ -714,14 +714,14 @@ template <class T>
 template <class Other>
 ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftLeftAssignment(void)
 {
-	return staticFunc(OP_BIT_LEFT_SHIFT_ASSIGN_NAME, Gaff::BitLeftShiftAssignment<T, Other>);
+	return staticFunc(OP_BIT_SHIFT_LEFT_ASSIGN_NAME, Gaff::BitLeftShiftAssignment<T, Other>);
 }
 
 template <class T>
 template <class Other>
 ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftRightAssignment(void)
 {
-	return staticFunc(OP_BIT_RIGHT_SHIFT_ASSIGN_NAME, Gaff::BitRightShiftAssignment<T, Other>);
+	return staticFunc(OP_BIT_SHIFT_RIGHT_ASSIGN_NAME, Gaff::BitRightShiftAssignment<T, Other>);
 }
 
 template <class T>
