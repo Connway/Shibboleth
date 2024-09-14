@@ -29,9 +29,8 @@ NS_SHIBBOLETH
 class ScriptConfig final : public Refl::IReflectionObject
 {
 public:
-	static constexpr const char8_t* const k_script_pool_name = u8"Lua";
+	static constexpr const char8_t* const k_script_pool_name = u8"Script";
 	static constexpr Gaff::Hash32 k_script_pool = Gaff::FNV1aHash32StringConst(k_script_pool_name);
-	static constexpr const char* const k_script_loaded_chunks_name = "__loaded_chunks";
 
 	int32_t num_threads = 4;
 

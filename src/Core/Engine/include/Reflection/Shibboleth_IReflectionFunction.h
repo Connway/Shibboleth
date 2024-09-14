@@ -39,55 +39,6 @@ NS_REFLECTION
 class IEnumReflectionDefinition;
 class IReflectionDefinition;
 
-struct FunctionStackEntry final
-{
-	enum class Flag
-	{
-		IsReference,
-		IsStringU8,
-		IsString,
-		IsArray,
-		IsMap,
-
-		Count
-	};
-
-	struct ArrayData final
-	{
-		void* data;
-		int32_t size;
-	};
-
-	union Value final
-	{
-		ArrayData arr;
-		void* vp;
-		bool b;
-		int8_t i8;
-		int16_t i16;
-		int32_t i32;
-		int64_t i64;
-		uint8_t u8;
-		uint16_t u16;
-		uint32_t u32;
-		uint64_t u64;
-		float f;
-		double d;
-	};
-
-	FunctionStackEntry(void)
-	{
-		// Zero out everything.
-		value.arr.data = nullptr;
-		value.arr.size = 0;
-	}
-
-	const IEnumReflectionDefinition* enum_ref_def = nullptr;
-	const IReflectionDefinition* ref_def = nullptr;
-	Gaff::Flags<Flag> flags;
-	Value value;
-};
-
 class IFunctionStackAllocator : public Gaff::IAllocator
 {
 public:
@@ -242,9 +193,6 @@ public:
 	IReflectionFunctionBase(void) {}
 	virtual ~IReflectionFunctionBase(void) {}
 
-	virtual bool callStack(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const = 0;
-	virtual bool callStack(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const = 0;
-
 	virtual int32_t numArgs(void) const = 0;
 	virtual bool isConst(void) const = 0;
 	virtual bool isBase(void) const { return false; }
@@ -299,10 +247,8 @@ public:
 
 	VoidFunc getFunc(void) const { return _func; }
 
-	virtual bool callStack(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const = 0;
-
 	virtual int32_t numArgs(void) const = 0;
-	virtual IReflectionStaticFunctionBase* clone(void) const = 0;
+	virtual IReflectionStaticFunctionBase* clone(void) const = 0; // $TODO: Delete me.
 
 	virtual FunctionSignature getSignature(void) const = 0;
 

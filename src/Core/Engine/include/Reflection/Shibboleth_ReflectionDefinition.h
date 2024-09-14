@@ -414,27 +414,6 @@ private:
 			_func = func;
 		}
 
-		bool callStack(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
-		{
-			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
-			return callStack(const_cast<void*>(object), args, num_args, ret, allocator);
-		}
-
-		bool callStack(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
-		{
-			if (num_args != static_cast<int32_t>(sizeof...(Args))) {
-				// $TODO: Log error.
-				return false;
-			}
-
-			if constexpr (sizeof...(Args) > 0) {
-				return CallFuncStackHelper<ReflectionExtensionFunction<is_const, Ret, Args...>, Ret, Args...>(*this, object, args, ret, 0, allocator);
-			} else {
-				GAFF_REF(args);
-				return CallFuncStackHelper<ReflectionExtensionFunction<is_const, Ret, Args...>, Ret>(*this, object, ret, allocator);
-			}
-		}
-
 		Ret call(const void* object, Args&&... args) const override
 		{
 			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
@@ -467,27 +446,6 @@ private:
 			_func = func;
 		}
 
-		bool callStack(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
-		{
-			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
-			return callStack(const_cast<void*>(object), args, num_args, ret, allocator);
-		}
-
-		bool callStack(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
-		{
-			if (num_args != static_cast<int32_t>(sizeof...(Args))) {
-				// $TODO: Log error.
-				return false;
-			}
-
-			if constexpr (sizeof...(Args) > 0) {
-				return CallFuncStackHelper<ReflectionFunction<is_const, Ret, Args...>, Ret, Args...>(*this, object, args, ret, 0, allocator);
-			} else {
-				GAFF_REF(args);
-				return CallFuncStackHelper<ReflectionFunction<is_const, Ret, Args...>, Ret>(*this, object, ret, allocator);
-			}
-		}
-
 		Ret call(const void* object, Args&&... args) const override
 		{
 			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
@@ -515,16 +473,6 @@ private:
 		ReflectionBaseFunction(const IReflectionDefinition& base_ref_def, const IReflectionFunctionBase* ref_func):
 			_base_ref_def(base_ref_def), _func(ref_func)
 		{
-		}
-
-		bool callStack(const void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
-		{
-			return _func->callStack(object, args, num_args, ret, allocator);
-		}
-
-		bool callStack(void* object, const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
-		{
-			return _func->callStack(object, args, num_args, ret, allocator);
 		}
 
 		int32_t numArgs(void) const override { return _func->numArgs(); }
@@ -591,21 +539,6 @@ private:
 		{
 			using Type = ReflectionStaticFunction<Ret, Args...>;
 			return SHIB_ALLOCT(Type, REFLECTION_ALLOCATOR, getFunc());
-		}
-
-		bool callStack(const FunctionStackEntry* args, int32_t num_args, FunctionStackEntry& ret, IFunctionStackAllocator& allocator) const override
-		{
-			if (num_args != static_cast<int32_t>(sizeof...(Args))) {
-				// $TODO: Log error.
-				return false;
-			}
-
-			if constexpr (sizeof...(Args) > 0) {
-				return CallFuncStackHelper<ReflectionStaticFunction<Ret, Args...>, Ret, Args...>(*this, nullptr, args, ret, 0, allocator);
-			} else {
-				GAFF_REF(args);
-				return CallFuncStackHelper<ReflectionStaticFunction<Ret, Args...>, Ret>(*this, nullptr, ret, allocator);
-			}
 		}
 	};
 
@@ -725,36 +658,6 @@ private:
 	void instantiated(void* object) const override;
 
 	const IAttribute* getAttribute(const AttributeList& attributes, Gaff::Hash64 attr_name) const;
-
-
-	template <class Callable, class Ret, class First, class... Rest, class... CurrentArgs>
-	static bool CallFuncStackHelper(
-		const Callable& callable,
-		void* object,
-		const FunctionStackEntry* args,
-		FunctionStackEntry& ret,
-		int32_t arg_index,
-		IFunctionStackAllocator& allocator,
-		CurrentArgs&&... current_args
-	);
-
-	template <class Callable, class Ret, class... CurrentArgs>
-	static bool CallFuncStackHelper(
-		const Callable& callable,
-		void* object,
-		FunctionStackEntry& ret,
-		IFunctionStackAllocator& allocator,
-		CurrentArgs&&... current_args
-	);
-
-	template <bool is_const, class Ret, class... Args, class... CurrentArgs>
-	static Ret CallCallableStackHelper(const ReflectionExtensionFunction<is_const, Ret, Args...>& func, void* object, CurrentArgs&&... current_args);
-
-	template <bool is_const, class Ret, class... Args, class... CurrentArgs>
-	static Ret CallCallableStackHelper(const ReflectionFunction<is_const, Ret, Args...>& func, void* object, CurrentArgs&&... current_args);
-
-	template <class Ret, class... Args, class... CurrentArgs>
-	static Ret CallCallableStackHelper(const ReflectionStaticFunction<Ret, Args...>& func, void*, CurrentArgs&&... current_args);
 
 
 	template <class RefT>
