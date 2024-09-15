@@ -234,4 +234,10 @@ EnumReflectionDefinition<Enum>& EnumReflectionDefinition<Enum>::addAttributes(Sh
 	}
 }
 
+template <class Enum>
+EnumReflectionDefinition<Enum>& EnumReflectionDefinition<Enum>::getInitialBuilder(void)
+{
+	return *this;
+}
+
 NS_END

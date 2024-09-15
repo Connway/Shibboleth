@@ -38,6 +38,7 @@ THE SOFTWARE.
 #define OP_LOGIC_AND_NAME u8"__and"
 #define OP_LOGIC_OR_NAME u8"__or"
 #define OP_EQUAL_NAME u8"__eq"
+#define OP_NOT_EQUAL_NAME u8"__neq"
 #define OP_LESS_THAN_NAME u8"__lt"
 #define OP_GREATER_THAN_NAME u8"__gt"
 #define OP_LESS_THAN_OR_EQUAL_NAME u8"__le"
@@ -85,6 +86,7 @@ enum class Operator
 	LogicOr,
 
 	Equal,
+	NotEqual,
 	LessThan,
 	GreaterThan,
 	LessThanOrEqual,
@@ -135,6 +137,7 @@ static constexpr const char8_t* k_op_names[] = {
 	OP_LOGIC_AND_NAME,
 	OP_LOGIC_OR_NAME,
 	OP_EQUAL_NAME,
+	OP_NOT_EQUAL_NAME,
 	OP_LESS_THAN_NAME,
 	OP_GREATER_THAN_NAME,
 	OP_LESS_THAN_OR_EQUAL_NAME,
@@ -178,6 +181,7 @@ static constexpr const Hash32 k_op_hashes[] = {
 	FNV1aHash32Const(OP_LOGIC_AND_NAME, eastl::CharStrlen(OP_LOGIC_AND_NAME)),
 	FNV1aHash32Const(OP_LOGIC_OR_NAME, eastl::CharStrlen(OP_LOGIC_OR_NAME)),
 	FNV1aHash32Const(OP_EQUAL_NAME, eastl::CharStrlen(OP_EQUAL_NAME)),
+	FNV1aHash32Const(OP_NOT_EQUAL_NAME, eastl::CharStrlen(OP_NOT_EQUAL_NAME)),
 	FNV1aHash32Const(OP_LESS_THAN_NAME, eastl::CharStrlen(OP_LESS_THAN_NAME)),
 	FNV1aHash32Const(OP_GREATER_THAN_NAME, eastl::CharStrlen(OP_GREATER_THAN_NAME)),
 	FNV1aHash32Const(OP_LESS_THAN_OR_EQUAL_NAME, eastl::CharStrlen(OP_LESS_THAN_OR_EQUAL_NAME)),
@@ -211,133 +215,139 @@ static constexpr Hash32 GetOpNameHash(Operator op) { return k_op_hashes[static_c
 
 
 template <class LHS, class RHS>
-static auto Add(const LHS& lhs, const RHS& rhs)
+static decltype(auto) Add(const LHS& lhs, const RHS& rhs)
 {
 	return lhs + rhs;
 }
 
 template <class LHS, class RHS>
-static auto Sub(const LHS& lhs, const RHS& rhs)
+static decltype(auto) Sub(const LHS& lhs, const RHS& rhs)
 {
 	return lhs - rhs;
 }
 
 template <class LHS, class RHS>
-static auto Mul(const LHS& lhs, const RHS& rhs)
+static decltype(auto) Mul(const LHS& lhs, const RHS& rhs)
 {
 	return lhs * rhs;
 }
 
 template <class LHS, class RHS>
-static auto Div(const LHS& lhs, const RHS& rhs)
+static decltype(auto) Div(const LHS& lhs, const RHS& rhs)
 {
 	return lhs / rhs;
 }
 
 template <class LHS, class RHS>
-static auto Mod(const LHS& lhs, const RHS& rhs)
+static decltype(auto) Mod(const LHS& lhs, const RHS& rhs)
 {
 	return lhs % rhs;
 }
 
 template <class LHS, class RHS>
-static auto BitAnd(const LHS& lhs, const RHS& rhs)
+static decltype(auto) BitAnd(const LHS& lhs, const RHS& rhs)
 {
 	return lhs & rhs;
 }
 
 template <class LHS, class RHS>
-static auto BitOr(const LHS& lhs, const RHS& rhs)
+static decltype(auto) BitOr(const LHS& lhs, const RHS& rhs)
 {
 	return lhs | rhs;
 }
 
 template <class LHS, class RHS>
-static auto BitXor(const LHS& lhs, const RHS& rhs)
+static decltype(auto) BitXor(const LHS& lhs, const RHS& rhs)
 {
 	return lhs ^ rhs;
 }
 
 template <class T>
-static auto BitNot(const T& value)
+static decltype(auto) BitNot(const T& value)
 {
 	return ~value;
 }
 
 template <class LHS, class RHS>
-static auto BitShiftLeft(const LHS& lhs, const RHS& rhs)
+static decltype(auto) BitShiftLeft(const LHS& lhs, const RHS& rhs)
 {
 	return lhs << rhs;
 }
 
 template <class LHS, class RHS>
-static auto BitShiftRight(const LHS& lhs, const RHS& rhs)
+static decltype(auto) BitShiftRight(const LHS& lhs, const RHS& rhs)
 {
 	return lhs >> rhs;
 }
 
 template <class LHS, class RHS>
-static auto LogicAnd(const LHS& lhs, const RHS& rhs)
+static decltype(auto) LogicAnd(const LHS& lhs, const RHS& rhs)
 {
 	return lhs && rhs;
 }
 
 template <class LHS, class RHS>
-static auto LogicOr(const LHS& lhs, const RHS& rhs)
+static decltype(auto) LogicOr(const LHS& lhs, const RHS& rhs)
 {
 	return lhs || rhs;
 }
 
 template <class LHS, class RHS>
-static auto Equal(const LHS& lhs, const RHS& rhs)
+static decltype(auto) Equal(const LHS& lhs, const RHS& rhs)
 {
 	return lhs == rhs;
 }
 
 template <class LHS, class RHS>
-static auto LessThan(const LHS& lhs, const RHS& rhs)
+static decltype(auto) NotEqual(const LHS& lhs, const RHS& rhs)
+{
+	return lhs != rhs;
+}
+
+template <class LHS, class RHS>
+static decltype(auto) LessThan(const LHS& lhs, const RHS& rhs)
 {
 	return lhs < rhs;
 }
 
 template <class LHS, class RHS>
-static auto GreaterThan(const LHS& lhs, const RHS& rhs)
+static decltype(auto) GreaterThan(const LHS& lhs, const RHS& rhs)
 {
 	return lhs > rhs;
 }
 
 template <class LHS, class RHS>
-static auto LessThanOrEqual(const LHS& lhs, const RHS& rhs)
+static decltype(auto) LessThanOrEqual(const LHS& lhs, const RHS& rhs)
 {
 	return lhs <= rhs;
 }
 
 template <class LHS, class RHS>
-static auto GreaterThanOrEqual(const LHS& lhs, const RHS& rhs)
+static decltype(auto) GreaterThanOrEqual(const LHS& lhs, const RHS& rhs)
 {
 	return lhs >= rhs;
 }
 
 template <class T>
-static auto Minus(const T& value)
+static decltype(auto) Minus(const T& value)
 {
 	return -value;
 }
 
 template <class T>
-static auto Plus(const T& value)
+static decltype(auto) Plus(const T& value)
 {
 	return +value;
 }
 
 template <class T, class... Args>
-static auto Call(T& value, Args&&... args)
+static decltype(auto) Call(T& value, Args&&... args)
 {
 	return value(std::forward<Args>(args)...);
 }
 
 template <class T, class Idx>
-static auto Index(T& value, const Idx& index)
+static decltype(auto) Index(T& value, const Idx& index)
 {
 	return value[index];
 }
@@ -361,104 +371,93 @@ static int32_t Comparison(const LHS& lhs, const RHS& rhs)
 }
 
 template <class T>
-static auto PreIncrement(T& value)
+static decltype(auto) PreIncrement(T& value)
 {
 	return ++value;
 }
 
 template <class T>
-static auto PostIncrement(T& value)
+static decltype(auto) PostIncrement(T& value)
 {
 	return value++;
 }
 
 template <class T>
-static auto PreDecrement(T& value)
+static decltype(auto) PreDecrement(T& value)
 {
 	return --value;
 }
 
 template <class T>
-static auto PostDecrement(T& value)
+static decltype(auto) PostDecrement(T& value)
 {
 	return value--;
 }
 
 template <class LHS, class RHS>
-static auto Assignment(LHS& lhs, const RHS& rhs)
+static decltype(auto) Assignment(LHS& lhs, const RHS& rhs)
 {
-	lhs = rhs;
-	return lhs;
+	return (lhs = rhs);
 }
 
 template <class LHS, class RHS>
-static auto AddAssignment(LHS& lhs, const RHS& rhs)
+static decltype(auto) AddAssignment(LHS& lhs, const RHS& rhs)
 {
-	lhs += rhs;
-	return lhs;
+	return (lhs += rhs);
 }
 
 template <class LHS, class RHS>
-static auto SubAssignment(LHS& lhs, const RHS& rhs)
+static decltype(auto) SubAssignment(LHS& lhs, const RHS& rhs)
 {
-	lhs -= rhs;
-	return lhs;
+	return (lhs -= rhs);
 }
 
 template <class LHS, class RHS>
-static auto MulAssignment(LHS& lhs, const RHS& rhs)
+static decltype(auto) MulAssignment(LHS& lhs, const RHS& rhs)
 {
-	lhs *= rhs;
-	return lhs;
+	return (lhs *= rhs);
 }
 
 template <class LHS, class RHS>
-static auto DivAssignment(LHS& lhs, const RHS& rhs)
+static decltype(auto) DivAssignment(LHS& lhs, const RHS& rhs)
 {
-	lhs /= rhs;
-	return lhs;
+	return (lhs /= rhs);
 }
 
 template <class LHS, class RHS>
-static auto ModAssignment(LHS& lhs, const RHS& rhs)
+static decltype(auto) ModAssignment(LHS& lhs, const RHS& rhs)
 {
-	lhs %= rhs;
-	return lhs;
+	return (lhs %= rhs);
 }
 
 template <class LHS, class RHS>
-static auto BitAndAssignment(LHS& lhs, const RHS& rhs)
+static decltype(auto) BitAndAssignment(LHS& lhs, const RHS& rhs)
 {
-	lhs &= rhs;
-	return lhs;
+	return (lhs &= rhs);
 }
 
 template <class LHS, class RHS>
-static auto BitOrAssignment(LHS& lhs, const RHS& rhs)
+static decltype(auto) BitOrAssignment(LHS& lhs, const RHS& rhs)
 {
-	lhs |= rhs;
-	return lhs;
+	return (lhs |= rhs);
 }
 
 template <class LHS, class RHS>
-static auto BitXorAssignment(LHS& lhs, const RHS& rhs)
+static decltype(auto) BitXorAssignment(LHS& lhs, const RHS& rhs)
 {
-	lhs ^= rhs;
-	return lhs;
+	return (lhs ^= rhs);
 }
 
 template <class LHS, class RHS>
-static auto BitLeftShiftAssignment(LHS& lhs, const RHS& rhs)
+static decltype(auto) BitShiftLeftAssignment(LHS& lhs, const RHS& rhs)
 {
-	lhs <<= rhs;
-	return lhs;
+	return (lhs <<= rhs);
 }
 
 template <class LHS, class RHS>
-static auto BitRightShiftAssignment(LHS& lhs, const RHS& rhs)
+static decltype(auto) BitShiftRightAssignment(LHS& lhs, const RHS& rhs)
 {
-	lhs >>= rhs;
-	return lhs;
+	return (lhs >>= rhs);
 }
 
 NS_END

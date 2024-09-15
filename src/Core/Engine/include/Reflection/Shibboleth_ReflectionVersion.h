@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ReflectionDefines.h"
+#include "Shibboleth_ReflectionMacros.h"
 #include <Gaff_Assert.h>
 #include <Gaff_Utils.h>
 #include <Gaff_Hash.h>
@@ -69,15 +70,12 @@ public:
 	using LoadFunc = bool (*)(const Shibboleth::ISerializeReader&, T&);
 	using SaveFunc = void (*)(Shibboleth::ISerializeWriter&, const T&);
 	using InstanceHashFunc = Gaff::Hash64 (*)(const T&, Gaff::Hash64);
-	using StackCtorFunc = void (*)(void*, const FunctionStackEntry*, int32_t);
 
 	template <class Base>
 	ReflectionVersionClass& base(const char8_t* name);
 
 	template <class Base>
 	ReflectionVersionClass& base(void);
-
-	ReflectionVersionClass& stackCtor(StackCtorFunc func);
 
 	template <class... Args>
 	ReflectionVersionClass& ctor(Gaff::Hash64 factory_hash);
@@ -133,119 +131,115 @@ public:
 	template <size_t name_size, class Ret, class... Args, class... Attrs>
 	ReflectionVersionClass& staticFunc(const char (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opAdd(void);
-	template <class Other>
-	ReflectionVersionClass& opSub(void);
-	template <class Other>
-	ReflectionVersionClass& opMul(void);
-	template <class Other>
-	ReflectionVersionClass& opDiv(void);
-	template <class Other>
-	ReflectionVersionClass& opMod(void);
 
-	template <class Other>
-	ReflectionVersionClass& opBitAnd(void);
-	template <class Other>
-	ReflectionVersionClass& opBitOr(void);
-	template <class Other>
-	ReflectionVersionClass& opBitXor(void);
-	template <class Other>
-	ReflectionVersionClass& opBitShiftLeft(void);
-	template <class Other>
-	ReflectionVersionClass& opBitShiftRight(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opAdd(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opSub(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opMul(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opDiv(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opMod(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opAnd(void);
-	template <class Other>
-	ReflectionVersionClass& opOr(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opBitAnd(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opBitOr(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opBitXor(const Attrs&... attributes);
+	template <class Other, class... Attrs>
+	ReflectionVersionClass& opBitShiftLeft(const Attrs&... attributes);
+	template <class Other, class... Attrs>
+	ReflectionVersionClass& opBitShiftRight(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opEqual(void);
-	template <class Other>
-	ReflectionVersionClass& opLessThan(void);
-	template <class Other>
-	ReflectionVersionClass& opGreaterThan(void);
-	template <class Other>
-	ReflectionVersionClass& opLessThanOrEqual(void);
-	template <class Other>
-	ReflectionVersionClass& opGreaterThanOrEqual(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opAnd(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opOr(const Attrs&... attributes);
 
-	template <class... Args>
-	ReflectionVersionClass& opCall(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opEqual(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opNotEqual(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opLessThan(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opGreaterThan(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opLessThanOrEqual(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opGreaterThanOrEqual(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opIndex(void);
+	template <bool is_const, class Ret, class... Args, class... Attrs>
+	ReflectionVersionClass& opCall(const Attrs&... attributes);
 
-	ReflectionVersionClass& opAdd(void);
-	ReflectionVersionClass& opSub(void);
-	ReflectionVersionClass& opMul(void);
-	ReflectionVersionClass& opDiv(void);
-	ReflectionVersionClass& opMod(void);
+	template <class Ret, class Other, class... Attrs>
+	ReflectionVersionClass& opIndex(const Attrs&... attributes);
 
-	ReflectionVersionClass& opBitAnd(void);
-	ReflectionVersionClass& opBitOr(void);
-	ReflectionVersionClass& opBitXor(void);
-	ReflectionVersionClass& opBitNot(void);
-	ReflectionVersionClass& opBitShiftLeft(void);
-	ReflectionVersionClass& opBitShiftRight(void);
+	template <class... Attrs>
+	ReflectionVersionClass& opBitNot(const Attrs&... attributes);
 
-	ReflectionVersionClass& opAnd(void);
-	ReflectionVersionClass& opOr(void);
+	template <class... Attrs>
+	ReflectionVersionClass& opNegate(const Attrs&... attributes);
 
-	ReflectionVersionClass& opEqual(void);
-	ReflectionVersionClass& opLessThan(void);
-	ReflectionVersionClass& opGreaterThan(void);
-	ReflectionVersionClass& opLessThanOrEqual(void);
-	ReflectionVersionClass& opGreaterThanOrEqual(void);
+	template <class... Attrs>
+	ReflectionVersionClass& opMinus(const Attrs&... attributes);
 
-	ReflectionVersionClass& opNegate(void);
-	ReflectionVersionClass& opMinus(void);
-	ReflectionVersionClass& opPlus(void);
+	template <class... Attrs>
+	ReflectionVersionClass& opPlus(const Attrs&... attributes);
 
-	template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
-	ReflectionVersionClass& opToString(void);
+	template <int32_t (*to_string_func)(const T&, char8_t*, int32_t), class... Attrs>
+	ReflectionVersionClass& opToString(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opComparison(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opComparison(const Attrs&... attributes);
 
-	ReflectionVersionClass& opPreIncrement(void);
-	ReflectionVersionClass& opPostIncrement(void);
-	ReflectionVersionClass& opPreDecrement(void);
-	ReflectionVersionClass& opPostDecrement(void);
+	template <class... Attrs>
+	ReflectionVersionClass& opPreIncrement(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opAssignment(void);
+	template <class... Attrs>
+	ReflectionVersionClass& opPostIncrement(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opAddAssignment(void);
+	template <class... Attrs>
+	ReflectionVersionClass& opPreDecrement(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opSubAssignment(void);
+	template <class... Attrs>
+	ReflectionVersionClass& opPostDecrement(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opMulAssignment(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opAssignment(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opDivAssignment(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opAddAssignment(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opModAssignment(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opSubAssignment(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opBitAndAssignment(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opMulAssignment(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opBitOrAssignment(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opDivAssignment(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opBitXorAssignment(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opModAssignment(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opBitShiftLeftAssignment(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opBitAndAssignment(const Attrs&... attributes);
 
-	template <class Other>
-	ReflectionVersionClass& opBitShiftRightAssignment(void);
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opBitOrAssignment(const Attrs&... attributes);
+
+	template <class Other = T, class... Attrs>
+	ReflectionVersionClass& opBitXorAssignment(const Attrs&... attributes);
+
+	template <class Other, class... Attrs>
+	ReflectionVersionClass& opBitShiftLeftAssignment(const Attrs&... attributes);
+
+	template <class Other, class... Attrs>
+	ReflectionVersionClass& opBitShiftRightAssignment(const Attrs&... attributes);
 
 
 	template <class... Attrs>

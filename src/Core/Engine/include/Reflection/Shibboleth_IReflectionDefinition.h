@@ -62,23 +62,6 @@ public:
 		Count
 	};
 
-	template <class T, class... Args>
-	using ConstructFuncT = void (*)(T*, Args&&...);
-
-	template <class... Args>
-	using ConstructFunc = void (*)(void*, Args&&...);
-
-	template <class T, class... Args>
-	using FactoryFuncT = T* (*)(Gaff::IAllocator&, Args&&...);
-
-	template <class... Args>
-	using FactoryFunc = void* (*)(Gaff::IAllocator&, Args&&...);
-
-	template <class Ret, class... Args>
-	using TemplateFunc = Ret (*)(Args...);
-
-	using VoidFunc = void (*)(void);
-
 	template <class T>
 	ptrdiff_t getBasePointerOffset(void) const
 	{
@@ -215,16 +198,16 @@ public:
 	}
 
 	template <class T>
-	const T* getFuncAttr(Gaff::Hash64 name_arg_hash, Gaff::Hash64 attr_name) const
+	const T* getFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const
 	{
-		const auto* const attr = getFuncAttr(name_arg_hash, attr_name);
+		const auto* const attr = getFuncAttr(name_hash, args_hash, attr_name);
 		return (attr) ? static_cast<const T*>(attr) : nullptr;
 	}
 
 	template <class T>
-	const T* getStaticFuncAttr(Gaff::Hash64 name_arg_hash, Gaff::Hash64 attr_name) const
+	const T* getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const
 	{
-		const auto* const attr = getStaticFuncAttr(name_arg_hash, attr_name);
+		const auto* const attr = getStaticFuncAttr(name_hash, args_hash, attr_name);
 		return (attr) ? static_cast<const T*>(attr) : nullptr;
 	}
 
@@ -240,16 +223,18 @@ public:
 		return getVarAttr<T>(name, Hash::template ClassHashable<T>::GetHash());
 	}
 
-	template <class T>
-	const T* getFuncAttr(Gaff::Hash32 name) const
+	template <class T, class Ret, class... Args>
+	const T* getFuncAttr(Gaff::Hash32 func_name) const
 	{
-		return getFuncAttr<T>(name, Hash::template ClassHashable<T>::GetHash());
+		constexpr Gaff::Hash64 args_hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
+		return getFuncAttr<T>(func_name, args_hash, Hash::template ClassHashable<T>::GetHash());
 	}
 
-	template <class T>
-	const T* getStaticFuncAttr(Gaff::Hash32 name) const
+	template <class T, class Ret, class... Args>
+	const T* getStaticFuncAttr(Gaff::Hash32 func_name) const
 	{
-		return getStaticFuncAttr<T>(name, Hash::template ClassHashable<T>::GetHash());
+		constexpr Gaff::Hash64 args_hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
+		return getStaticFuncAttr<T>(func_name, args_hash, Hash::template ClassHashable<T>::GetHash());
 	}
 
 	template <class T>
@@ -330,11 +315,10 @@ public:
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
 			const Shibboleth::HashStringView32<> name = getFuncName(j);
-			const Gaff::Hash64 func_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name.getHash()));
-			const int32_t size = getNumFuncAttrs(func_hash);
+			const int32_t size = getNumFuncAttrs(name.getHash(), arg_hash);
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getFuncAttr(func_hash, i);
+				const IAttribute* const attribute = getFuncAttr(name.getHash(), arg_hash, i);
 				const T* const attr = attribute->getReflectionDefinition().template getInterface<T>(attribute->getBasePointer());
 
 				if (attr) {
@@ -354,13 +338,13 @@ public:
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
 			const Shibboleth::HashStringView32<> name = getFuncName(j);
-			const Gaff::Hash64 func_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name.getHash()));
-			const int32_t size = getNumFuncAttrs(func_hash);
+			const int32_t size = getNumFuncAttrs(name.getHash(), arg_hash);
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getFuncAttr(func_hash, i);
-				const void* attr = attribute->getReflectionDefinition().getInterface(
-					attr_name, attribute->getBasePointer()
+				const IAttribute* const attribute = getFuncAttr(name.getHash(), arg_hash, i);
+				const void* const attr = attribute->getReflectionDefinition().getInterface(
+					attr_name,
+					attribute->getBasePointer()
 				);
 
 				if (attr) {
@@ -380,11 +364,10 @@ public:
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
 			const Shibboleth::HashStringView32<> name = getStaticFuncName(j);
-			const Gaff::Hash64 func_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name.getHash()));
-			const int32_t size = getNumStaticFuncAttrs(func_hash);
+			const int32_t size = getNumStaticFuncAttrs(name.getHash(), arg_hash);
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getStaticFuncAttr(func_hash, i);
+				const IAttribute* const attribute = getStaticFuncAttr(name.getHash(), arg_hash, i);
 				const T* const attr = attribute->getReflectionDefinition().template getInterface<T>(attribute->getBasePointer());
 
 				if (attr) {
@@ -404,13 +387,13 @@ public:
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
 			const Shibboleth::HashStringView32<> name = getStaticFuncName(j);
-			const Gaff::Hash64 func_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name.getHash()));
-			const int32_t size = getNumStaticFuncAttrs(func_hash);
+			const int32_t size = getNumStaticFuncAttrs(name.getHash(), arg_hash);
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getStaticFuncAttr(func_hash, i);
-				const void* attr = attribute->getReflectionDefinition().getInterface(
-					attr_name, attribute->getBasePointer()
+				const IAttribute* const attribute = getStaticFuncAttr(name.getHash(), arg_hash, i);
+				const void* const attr = attribute->getReflectionDefinition().getInterface(
+					attr_name,
+					attribute->getBasePointer()
 				);
 
 				if (attr) {
@@ -518,11 +501,10 @@ public:
 	void getFuncAttrs(Gaff::Hash32 name, Shibboleth::Vector<const T*>& out) const
 	{
 		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
-		const Gaff::Hash64 func_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name.getHash()));
-		const int32_t size = getNumFuncAttrs(func_hash);
+		const int32_t size = getNumFuncAttrs(name, arg_hash);
 
 		for (int32_t i = 0; i < size; ++i) {
-			const IAttribute* const attribute = getFuncAttr(func_hash, i);
+			const IAttribute* const attribute = getFuncAttr(name, arg_hash, i);
 			const T* const attr = attribute->getReflectionDefinition().template getInterface<T>(attribute->getBasePointer());
 
 			if (attr) {
@@ -539,12 +521,10 @@ public:
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
 			const Shibboleth::HashStringView32<> name = getFuncName(j);
-			const Gaff::Hash64 func_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name.getHash()));
-
-			const int32_t size = getNumFuncAttrs(func_hash);
+			const int32_t size = getNumFuncAttrs(name.getHash(), arg_hash);
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getFuncAttr(func_hash, i);
+				const IAttribute* const attribute = getFuncAttr(name.getHash(), arg_hash, i);
 				const T* const attr = attribute->getReflectionDefinition().template getInterface<T>(attribute->getBasePointer());
 
 				if (attr) {
@@ -558,11 +538,10 @@ public:
 	void getStaticFuncAttrs(Gaff::Hash32 name, Shibboleth::Vector<const T*>& out) const
 	{
 		constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
-		const Gaff::Hash64 func_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name));
-		const int32_t size = getNumStaticFuncAttrs(func_hash);
+		const int32_t size = getNumStaticFuncAttrs(name, arg_hash);
 
 		for (int32_t i = 0; i < size; ++i) {
-			const IAttribute* const attribute = getStaticFuncAttr(func_hash, i);
+			const IAttribute* const attribute = getStaticFuncAttr(name, arg_hash, i);
 			const T* const attr = attribute->getReflectionDefinition().template getInterface<T>(attribute->getBasePointer());
 
 			if (attr) {
@@ -579,11 +558,10 @@ public:
 
 		for (int32_t j = 0; j < num_funcs; ++j) {
 			const Shibboleth::HashStringView32<> name = getStaticFuncName(j);
-			const Gaff::Hash64 func_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name.getHash()));
-			const int32_t size = getNumStaticFuncAttrs(func_hash);
+			const int32_t size = getNumStaticFuncAttrs(name.getHash(), arg_hash);
 
 			for (int32_t i = 0; i < size; ++i) {
-				const IAttribute* const attribute = getStaticFuncAttr(func_hash, i);
+				const IAttribute* const attribute = getStaticFuncAttr(name.getHash(), arg_hash, i);
 				const T* const attr = attribute->getReflectionDefinition().template getInterface<T>(attribute->getBasePointer());
 
 				if (attr) {
@@ -667,12 +645,10 @@ public:
 	virtual int32_t getNumFuncs(void) const = 0;
 	virtual int32_t getNumFuncOverrides(int32_t index) const = 0;
 	virtual Shibboleth::HashStringView32<> getFuncName(int32_t index) const = 0;
-	virtual int32_t getFuncIndex(Gaff::Hash32 name) const = 0;
 
 	virtual int32_t getNumStaticFuncs(void) const = 0;
 	virtual int32_t getNumStaticFuncOverrides(int32_t index) const = 0;
 	virtual Shibboleth::HashStringView32<> getStaticFuncName(int32_t) const = 0;
-	virtual int32_t getStaticFuncIndex(Gaff::Hash32 name) const = 0;
 
 	virtual int32_t getNumClassAttrs(void) const = 0;
 	virtual const IAttribute* getClassAttr(Gaff::Hash64 attr_name) const = 0;
@@ -685,14 +661,14 @@ public:
 	virtual const IAttribute* getVarAttr(Gaff::Hash32 name, int32_t index) const = 0;
 	virtual bool hasVarAttr(Gaff::Hash64 attr_name) const = 0;
 
-	virtual int32_t getNumFuncAttrs(Gaff::Hash64 name_arg_hash) const = 0;
-	virtual const IAttribute* getFuncAttr(Gaff::Hash64 name_arg_hash, Gaff::Hash64 attr_name) const = 0;
-	virtual const IAttribute* getFuncAttr(Gaff::Hash64 name_arg_hash, int32_t index) const = 0;
+	virtual int32_t getNumFuncAttrs(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash) const = 0;
+	virtual const IAttribute* getFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const = 0;
+	virtual const IAttribute* getFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, int32_t index) const = 0;
 	virtual bool hasFuncAttr(Gaff::Hash64 attr_name) const = 0;
 
-	virtual int32_t getNumStaticFuncAttrs(Gaff::Hash64 name_arg_hash) const = 0;
-	virtual const IAttribute* getStaticFuncAttr(Gaff::Hash64 name_arg_hash, Gaff::Hash64 attr_name) const = 0;
-	virtual const IAttribute* getStaticFuncAttr(Gaff::Hash64 name_arg_hash, int32_t index) const = 0;
+	virtual int32_t getNumStaticFuncAttrs(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash) const = 0;
+	virtual const IAttribute* getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const = 0;
+	virtual const IAttribute* getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, int32_t index) const = 0;
 	virtual bool hasStaticFuncAttr(Gaff::Hash64 attr_name) const = 0;
 
 	virtual int32_t getNumConstructors(void) const = 0;

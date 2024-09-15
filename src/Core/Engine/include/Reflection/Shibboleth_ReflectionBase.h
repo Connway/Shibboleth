@@ -93,14 +93,10 @@ public:
 	const IEnumReflectionDefinition& getEnumReflectionDefinition(void) const override;
 	const IReflectionDefinition& getReflectionDefinition(void) const override;
 
-	void registerOnDefinedCallback(const eastl::function<void (void)>& callback);
-	void registerOnDefinedCallback(eastl::function<void (void)>&& callback);
-
 	bool load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags< RefDefLoadFlags<T> > flags = Gaff::Flags< RefDefLoadFlags<T> >{});
 	void save(Shibboleth::ISerializeWriter& writer, const T& object, Gaff::Flags< RefDefSaveFlags<T> > flags = Gaff::Flags< RefDefSaveFlags<T> >{});
 
 protected:
-	Shibboleth::Vector< eastl::function<void (void)> > _on_defined_callbacks{ Shibboleth::ProxyAllocator("Reflection") };
 	RefDefType<T>* _ref_def = nullptr;
 	ReflectionVersion<T> _version;
 	bool _defined = false;

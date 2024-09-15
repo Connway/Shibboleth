@@ -22,25 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Reflection/Shibboleth_ReflectionDefinitionVariable.h"
+#include "Shibboleth_ReflectionDefinitionVariable.h"
+#include "Shibboleth_ReflectionMacros.h"
+#include "Ptrs/Shibboleth_SmartPtrs.h"
+#include <Gaff_ContainerAlgorithm.h>
 #include <Gaff_Ops.h>
 
 NS_REFLECTION
-
-template <class T>
-struct IsConstRefHelper final
-{
-	static constexpr bool k_value = false;
-};
-
-template <class T>
-struct IsConstRefHelper<const T&> final
-{
-	static constexpr bool k_value = true;
-};
-
-template <class T>
-using IsConstRef = IsConstRefHelper<T>::k_value;
 
 template <bool is_const, class T, class Ret, class... Args>
 struct ExtensionFuncTypeHelper;
@@ -81,6 +69,12 @@ using MemFuncType = typename MemFuncTypeHelper<is_const, T, Ret, Args...>::Type;
 using IAttributePtr = Shibboleth::UniquePtr<IAttribute>;
 using AttributeList = Shibboleth::Vector<IAttributePtr>;
 
+using IRefStaticFuncPtr = Shibboleth::UniquePtr<IReflectionStaticFunctionBase>;
+using IRefFuncPtr = Shibboleth::UniquePtr<IReflectionFunctionBase>;
+
+template <class T>
+using IVarPtr = Shibboleth::UniquePtr< IVar<T> >;
+
 template <class FuncPtrType>
 struct FuncData final
 {
@@ -93,10 +87,11 @@ struct FuncData final
 	Shibboleth::VectorMap<Gaff::Hash64, Override> overrides{ REFLECTION_ALLOCATOR };
 };
 
+template<class T>
 struct VarData final
 {
 	AttributeList attrs{ REFLECTION_ALLOCATOR };
-	IVarPtr var;
+	IVarPtr<T> var;
 };
 
 struct BaseClassData final
@@ -118,13 +113,7 @@ struct ReflectionData final
 	using SaveFunc = void (*)(Shibboleth::ISerializeWriter&, const T&);
 	using InstanceHashFunc = Gaff::Hash64 (*)(const T&, Gaff::Hash64);
 
-	using IRefStaticFuncPtr = Shibboleth::UniquePtr<IReflectionStaticFunctionBase>;
-	using IRefFuncPtr = Shibboleth::UniquePtr<IReflectionFunctionBase>;
-	using IVarPtr = Shibboleth::UniquePtr< IVar<T> >;
-
-	using VoidFunc = void (*)(void);
-
-	Shibboleth::VectorMap<Shibboleth::HashString32<>, VarData> vars{ REFLECTION_ALLOCATOR };
+	Shibboleth::VectorMap< Shibboleth::HashString32<>, VarData<T> > vars{ REFLECTION_ALLOCATOR };
 	Shibboleth::VectorMap< Shibboleth::HashString32<>, FuncData<IRefFuncPtr> > funcs{ REFLECTION_ALLOCATOR };
 	Shibboleth::VectorMap< Shibboleth::HashString32<>, FuncData<IRefStaticFuncPtr> > static_funcs{ REFLECTION_ALLOCATOR };
 	Shibboleth::VectorMap<Gaff::Hash64, ConstructData> factories{ REFLECTION_ALLOCATOR };
@@ -138,13 +127,15 @@ struct ReflectionData final
 };
 
 template <class T, class BaseType>
-class ReflectionBuilder final : public IReflectionDefinition
+class ReflectionBuilder final
 {
 public:
 	static_assert(std::is_same_v<T, BaseType> || std::is_base_of_v<BaseType, T>);
 	static constexpr bool k_is_initial_type = std::is_same_v<T, BaseType>;
 
-	ReflectionBuilder(ReflectionData<T>& data);
+	ReflectionBuilder(ReflectionData<T>& data, IReflectionDefinition& ref_def);
+	ReflectionBuilder(const ReflectionBuilder&) = default;
+	ReflectionBuilder(ReflectionBuilder&&) = default;
 
 	template <class Base>
 	ReflectionBuilder& base(const char8_t* name);
@@ -200,42 +191,44 @@ public:
 	template <size_t name_size, class Ret, class... Args, class... Attrs>
 	ReflectionBuilder& staticFunc(const char (&name)[name_size], Ret (*ptr)(Args...), const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opAdd(const Attrs&... attributes);
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opSub(const Attrs&... attributes);
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opMul(const Attrs&... attributes);
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opDiv(const Attrs&... attributes);
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opMod(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opBitAnd(const Attrs&... attributes);
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opBitOr(const Attrs&... attributes);
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opBitXor(const Attrs&... attributes);
 	template <class Other, class... Attrs>
 	ReflectionBuilder& opBitShiftLeft(const Attrs&... attributes);
 	template <class Other, class... Attrs>
 	ReflectionBuilder& opBitShiftRight(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opAnd(const Attrs&... attributes);
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opOr(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opEqual(const Attrs&... attributes);
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
+	ReflectionBuilder& opNotEqual(const Attrs&... attributes);
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opLessThan(const Attrs&... attributes);
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opGreaterThan(const Attrs&... attributes);
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opLessThanOrEqual(const Attrs&... attributes);
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opGreaterThanOrEqual(const Attrs&... attributes);
 
 	template <bool is_const, class Ret, class... Args, class... Attrs>
@@ -256,10 +249,10 @@ public:
 	template <class... Attrs>
 	ReflectionBuilder& opPlus(const Attrs&... attributes);
 
-	template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
+	template <int32_t (*to_string_func)(const T&, char8_t*, int32_t), class... Attrs>
 	ReflectionBuilder& opToString(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opComparison(const Attrs&... attributes);
 
 	template <class... Attrs>
@@ -274,31 +267,31 @@ public:
 	template <class... Attrs>
 	ReflectionBuilder& opPostDecrement(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opAssignment(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opAddAssignment(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opSubAssignment(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opMulAssignment(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opDivAssignment(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opModAssignment(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opBitAndAssignment(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opBitOrAssignment(const Attrs&... attributes);
 
-	template <class Other, class... Attrs>
+	template <class Other = T, class... Attrs>
 	ReflectionBuilder& opBitXorAssignment(const Attrs&... attributes);
 
 	template <class Other, class... Attrs>
@@ -313,7 +306,11 @@ public:
 
 	ReflectionBuilder& version(uint32_t version);
 
-	ReflectionBuilder& serialize(LoadFunc serialize_load, SaveFunc serialize_save = nullptr);
+	ReflectionBuilder& serialize(typename ReflectionData<T>::LoadFunc serialize_load, typename ReflectionData<T>::SaveFunc serialize_save = nullptr);
+
+	ReflectionBuilder& setInstanceHash(typename ReflectionData<T>::InstanceHashFunc hash_func);
+
+	void finish(void);
 
 private:
 	template <bool is_const, class Ret, class... Args>
@@ -376,7 +373,7 @@ private:
 		MemFuncType<is_const, T, Ret, Args...> _func;
 	};
 
-
+	IReflectionDefinition& _ref_def;
 	ReflectionData<T>& _data;
 
 
@@ -400,8 +397,6 @@ private:
 	template <class First, class... Rest>
 	void addAttributes(Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
 };
-
-
 
 template <class T, class... Args>
 void ConstructFuncImpl(T* obj, Args&&... args);

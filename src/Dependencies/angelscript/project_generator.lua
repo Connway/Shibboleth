@@ -17,7 +17,8 @@ DependencyProject "AngelScript"
 	files
 	{
 		"angelscript/**.h",
-		"angelscript/**.cpp"
+		"angelscript/**.cpp",
+		"**/scriptarray.*"
 	}
 
 	includedirs
@@ -36,6 +37,9 @@ DependencyProject "AngelScript"
 
 	filter { "system:windows", "action:vs*", "platforms:x64" }
 		files { "angelscript/source/as_callfunc_x64_msvc_asm.asm"}
+
+	filter { "files:**/scriptarray.cpp" }
+		defines { "AS_USE_STLNAMES=1" }
 
 	--filter { "system:windows" }
 	--	defines { "_CRT_SECURE_NO_WARNINGS" }

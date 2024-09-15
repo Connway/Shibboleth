@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_AngelScriptManager.h"
 #include "Shibboleth_AngelScriptString.h"
+#include "Shibboleth_AngelScriptArray.h"
 #include "Shibboleth_AngelScriptMath.h"
 #include "Shibboleth_ScriptDefines.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
@@ -81,6 +82,8 @@ namespace
 	};
 	static_assert(std::size(k_op_names) == static_cast<size_t>(Gaff::Operator::Count));
 
+	static Shibboleth::ProxyAllocator s_allocator{ SCRIPT_ALLOCATOR };
+
 	static bool CheckMemberFunctionPointerSize(size_t mem_func_size)
 	{
 		return mem_func_size == static_cast<size_t>(SINGLE_PTR_SIZE) ||
@@ -92,7 +95,7 @@ namespace
 
 	static Shibboleth::U8String GetFunctionDeclaration(const Refl::FunctionSignature& sig, const char8_t* name)
 	{
-		Shibboleth::U8String decl{ SCRIPT_ALLOCATOR };
+		Shibboleth::U8String decl{ s_allocator };
 
 		decl = sig.return_value.getArgString(true) + u8' ' + name + u8'(';
 
@@ -414,6 +417,16 @@ namespace
 
 		return true;
 	}
+
+	static void* ScriptAlloc(size_t size)
+	{
+		return SHIB_ALLOC(size, s_allocator);
+	}
+
+	static void ScriptFree(void* data)
+	{
+		SHIB_FREE(data, s_allocator);
+	}
 }
 
 
@@ -443,6 +456,8 @@ bool AngelScriptManager::initAllModulesLoaded(void)
 bool AngelScriptManager::init(void)
 {
 	asPrepareMultithread();
+	asSetGlobalMemoryFunctions(ScriptAlloc, ScriptFree);
+
 	_thread_mgr = asGetThreadManager();
 
 	_engine = asCreateScriptEngine();
@@ -475,7 +490,11 @@ bool AngelScriptManager::init(void)
 		return false;
 	}
 
-	// $TODO: Register array type.
+	if (!RegisterScriptArray_Native(_engine)) {
+		// $TODO: Log error.
+		return false;
+	}
+
 	// $TODO: Register resource ptr.
 
 
@@ -505,6 +524,7 @@ bool AngelScriptManager::init(void)
 void AngelScriptManager::initModuleThread(void)
 {
 	asPrepareMultithread(_thread_mgr);
+	asSetGlobalMemoryFunctions(ScriptAlloc, ScriptFree);
 }
 
 void AngelScriptManager::messageCallback(const asSMessageInfo* msg, void* param)

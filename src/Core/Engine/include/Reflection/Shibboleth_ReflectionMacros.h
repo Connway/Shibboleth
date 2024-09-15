@@ -73,7 +73,7 @@ THE SOFTWARE.
 	public: \
 		static constexpr bool HasReflection = true; \
 		static void Init(void); \
-		template <class ReflectionBuilder, class Type = type> \
+		template <class Type = type, class ReflectionBuilder> \
 		static void BuildReflection(ReflectionBuilder& builder); \
 		static Reflection<type>& GetInstance(void) \
 		{ \
@@ -133,7 +133,7 @@ NS_END
 			BuildReflection(g_instance._version); \
 			const RefDefInterface<type>* ref_def_interface = nullptr; \
 			Shibboleth::IApp& app = Shibboleth::GetApp(); \
-			if constexpr (std::is_enum<type>::value) { \
+			if constexpr (std::is_enum_v<type>) { \
 				ref_def_interface = reinterpret_cast<const RefDefInterface<type>*>(app.getReflectionManager().getEnumReflection(GetNameHash())); /* To calm the compiler, even though this should be compiled out ... */ \
 			} else { \
 				ref_def_interface = reinterpret_cast<const RefDefInterface<type>*>(app.getReflectionManager().getReflection(GetNameHash())); /* To calm the compiler, even though this should be compiled out ... */ \
@@ -149,16 +149,13 @@ NS_END
 				); \
 			} else { \
 				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(RefDefType<type>), REFLECTION_ALLOCATOR); \
-				BuildReflection(*g_instance._ref_def); \
+				decltype(g_instance._ref_def->getInitialBuilder()) builder = g_instance._ref_def->getInitialBuilder(); \
+				BuildReflection(builder); \
 				app.getReflectionManager().registerReflection(g_instance._ref_def); \
 			} \
 			g_instance._defined = true; \
-			for (auto& func : g_instance._on_defined_callbacks) { \
-				func(); \
-			} \
-			g_instance._on_defined_callbacks.clear(); \
 		} \
-		template <class ReflectionBuilder, class Type> \
+		template <class Type, class ReflectionBuilder> \
 		void Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
 		{ \
 			GCC_DISABLE_WARNING_PUSH("-Wunused-value") \
@@ -234,19 +231,60 @@ NS_END
 				); \
 			} else { \
 				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(ReflectionDefinition< type<__VA_ARGS__> >), REFLECTION_ALLOCATOR); \
-				BuildReflection(*g_instance._ref_def); \
+				decltype(g_instance._ref_def->getInitialBuilder()) builder = g_instance._ref_def->getInitialBuilder(); \
+				BuildReflection(builder); \
 				app.getReflectionManager().registerReflection(g_instance._ref_def); \
 			} \
 			g_instance._defined = true; \
-			for (auto& func : g_instance._on_defined_callbacks) { \
-				func(); \
-			} \
-			g_instance._on_defined_callbacks.clear(); \
 		} \
 		template < GAFF_FOR_EACH_COMMA(GAFF_PREPEND_CLASS, __VA_ARGS__) > \
-		template <class ReflectionBuilder> \
+		template <class Type, class ReflectionBuilder> \
 		void Reflection< type<__VA_ARGS__> >::BuildReflection(ReflectionBuilder& builder) \
 		{ \
 			builder
 
 #define SHIB_TEMPLATE_REFLECTION_DEFINE_END(type, ...) SHIB_REFLECTION_DEFINE_END(type<GAFF_SINGLE_ARG(__VA_ARGS__)>)
+
+#define SHIB_REFL_UNARY_OP_IMPL_CONST(operator_symbol, require_expr, op_name, func_name, backup_func, ret_type) \
+	static constexpr bool k_can_perform_op = requires(T value) { require_expr; }; \
+	static_assert(k_can_perform_op, "Cannot perform `" #operator_symbol "T`."); \
+	static constexpr bool k_is_method = requires(void) { static_cast<ret_type (T::*)(void) const>(&T::func_name); }; \
+	if constexpr (k_is_method) { \
+		const auto ptr = static_cast<ret_type (T::*)(void) const>(&T::func_name); \
+		return func(op_name, ptr, attributes...); \
+	} else { \
+		return staticFunc(op_name, backup_func<T>, attributes...); \
+	}
+
+#define SHIB_REFL_UNARY_OP_IMPL(operator_symbol, require_expr, op_name, func_name, backup_func, ret_type, args) \
+	static constexpr bool k_can_perform_op = requires(T value) { require_expr; }; \
+	static_assert(k_can_perform_op, "Cannot perform `" #operator_symbol "T`."); \
+	static constexpr bool k_is_method = requires(void) { static_cast<ret_type (T::*)(args)>(&T::func_name); }; \
+	if constexpr (k_is_method) { \
+		const auto ptr = static_cast<ret_type (T::*)(args)>(&T::func_name); \
+		return func(op_name, ptr, attributes...); \
+	} else { \
+		return staticFunc(op_name, backup_func<T>, attributes...); \
+	}
+
+#define SHIB_REFL_BINARY_OP_IMPL_CONST(operator_symbol, op_name, func_name, backup_func, ret_type) \
+	static constexpr bool k_can_perform_op = requires(T lhs, const Other& rhs) { lhs operator_symbol rhs; }; \
+	static_assert(k_can_perform_op, "Cannot perform `T " #operator_symbol " Other`."); \
+	static constexpr bool k_is_method = requires(void) { static_cast<ret_type (T::*)(const Other&) const>(&T::func_name); }; \
+	if constexpr (k_is_method) { \
+		const auto ptr = static_cast<ret_type (T::*)(const Other&) const>(&T::func_name); \
+		return func(op_name, ptr, attributes...); \
+	} else { \
+		return staticFunc(op_name, backup_func<T, Other>, attributes...); \
+	}
+
+#define SHIB_REFL_BINARY_OP_IMPL(operator_symbol, op_name, func_name, backup_func, ret_type) \
+	static constexpr bool k_can_perform_op = requires(T lhs, const Other& rhs) { lhs operator_symbol rhs; }; \
+	static_assert(k_can_perform_op, "Cannot perform `T " #operator_symbol " Other`."); \
+	static constexpr bool k_is_method = requires(void) { static_cast<ret_type (T::*)(const Other&)>(&T::func_name); }; \
+	if constexpr (k_is_method) { \
+		const auto ptr = static_cast<ret_type (T::*)(const Other&)>(&T::func_name); \
+		return func(op_name, ptr, attributes...); \
+	} else { \
+		return staticFunc(op_name, backup_func<T, Other>, attributes...); \
+	}

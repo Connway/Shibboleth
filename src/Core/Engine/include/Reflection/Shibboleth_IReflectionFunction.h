@@ -36,6 +36,24 @@ namespace Shibboleth
 
 NS_REFLECTION
 
+template <class T, class... Args>
+using ConstructFuncT = void (*)(T*, Args&&...);
+
+template <class... Args>
+using ConstructFunc = void (*)(void*, Args&&...);
+
+template <class T, class... Args>
+using FactoryFuncT = T* (*)(Gaff::IAllocator&, Args&&...);
+
+template <class... Args>
+using FactoryFunc = void* (*)(Gaff::IAllocator&, Args&&...);
+
+template <class Ret, class... Args>
+using TemplateFunc = Ret (*)(Args...);
+
+using VoidFunc = void (*)(void);
+
+
 class IEnumReflectionDefinition;
 class IReflectionDefinition;
 
@@ -195,8 +213,6 @@ public:
 
 	virtual int32_t numArgs(void) const = 0;
 	virtual bool isConst(void) const = 0;
-	virtual bool isBase(void) const { return false; }
-	virtual const IReflectionDefinition& getBaseRefDef(void) const = 0;
 
 	virtual const void* getFunctionPointer(void) const = 0;
 	virtual size_t getFunctionPointerSize(void) const = 0;
@@ -218,7 +234,7 @@ public:
 	virtual Ret call(const void* object, Args&&... args) const = 0;
 	virtual Ret call(void* object, Args&&... args) const = 0;
 
-	FunctionSignature getSignature(void) const override
+	FunctionSignature getSignature(void) const override final
 	{
 		FunctionSignature signature;
 

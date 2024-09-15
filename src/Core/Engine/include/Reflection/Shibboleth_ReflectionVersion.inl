@@ -81,7 +81,6 @@ Gaff::Hash64 ReflectionVersionEnum<T>::getHash(void) const
 
 enum class VersionValues
 {
-	HasStackCtor,
 	HasSerializeFuncs,
 	HasInstanceFunc
 };
@@ -113,13 +112,6 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::base(void)
 	} else {
 		return base<Base>(Hash::ClassHashable<Base>::GetName().data.data());
 	}
-}
-
-template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::stackCtor(StackCtorFunc /*func*/)
-{
-	_hash = Gaff::FNV1aHash64T(VersionValues::HasStackCtor, _hash);
-	return *this;
 }
 
 template <class T>
@@ -333,395 +325,340 @@ ReflectionVersionClass<T>& ReflectionVersionClass<T>::staticFunc(const char (&na
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAdd(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAdd(const Attrs&... attributes)
 {
-	staticFunc(OP_ADD_NAME, Gaff::Add<T, Other>);
-	return staticFunc(OP_ADD_NAME, Gaff::Add<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(+, OP_ADD_NAME, operator+, Gaff::Add, T)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opSub(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opSub(const Attrs&... attributes)
 {
-	staticFunc(OP_SUB_NAME, Gaff::Sub<T, Other>);
-	return staticFunc(OP_SUB_NAME, Gaff::Sub<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(-, OP_SUB_NAME, operator-, Gaff::Sub, T)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMul(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMul(const Attrs&... attributes)
 {
-	staticFunc(OP_MUL_NAME, Gaff::Mul<T, Other>);
-	return staticFunc(OP_MUL_NAME, Gaff::Mul<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(*, OP_MUL_NAME, operator*, Gaff::Mul, T)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opDiv(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opDiv(const Attrs&... attributes)
 {
-	staticFunc(OP_DIV_NAME, Gaff::Div<T, Other>);
-	return staticFunc(OP_DIV_NAME, Gaff::Div<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(/, OP_DIV_NAME, operator/, Gaff::Div, T)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMod(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMod(const Attrs&... attributes)
 {
-	staticFunc(OP_MOD_NAME, Gaff::Mod<T, Other>);
-	return staticFunc(OP_MOD_NAME, Gaff::Mod<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(%, OP_SUB_NAME, operator%, Gaff::Mod, T)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitAnd(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitAnd(const Attrs&... attributes)
 {
-	staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<T, Other>);
-	return staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(&, OP_BIT_AND_NAME, operator&, Gaff::BitAnd, T)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitOr(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitOr(const Attrs&... attributes)
 {
-	staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<T, Other>);
-	return staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(|, OP_BIT_OR_NAME, operator|, Gaff::BitOr, T)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitXor(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitXor(const Attrs&... attributes)
 {
-	staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<T, Other>);
-	return staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(^, OP_BIT_XOR_NAME, operator^, Gaff::BitXor, T)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftLeft(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftLeft(const Attrs&... attributes)
 {
-	staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<T, Other>);
-	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(<<, OP_BIT_SHIFT_LEFT_NAME, operator<<, Gaff::BitShiftLeft, T)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftRight(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftRight(const Attrs&... attributes)
 {
-	staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<T, Other>);
-	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(>>, OP_BIT_SHIFT_RIGHT_NAME, operator>>, Gaff::BitShiftRight, T)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAnd(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAnd(const Attrs&... attributes)
 {
-	staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<T, Other>);
-	return staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(&&, OP_LOGIC_AND_NAME, operator&&, Gaff::LogicAnd, bool)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opOr(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opOr(const Attrs&... attributes)
 {
-	staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<T, Other>);
-	return staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(||, OP_LOGIC_OR_NAME, operator||, Gaff::LogicOr, bool)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opEqual(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opEqual(const Attrs&... attributes)
 {
-	staticFunc(OP_EQUAL_NAME, Gaff::Equal<T, Other>);
-	return staticFunc(OP_EQUAL_NAME, Gaff::Equal<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(==, OP_EQUAL_NAME, operator==, Gaff::Equal, bool)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opLessThan(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opNotEqual(const Attrs&... attributes)
 {
-	staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<T, Other>);
-	return staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(!=, OP_NOT_EQUAL_NAME, operator!=, Gaff::NotEqual, bool)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opGreaterThan(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opLessThan(const Attrs&... attributes)
 {
-	staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<T, Other>);
-	return staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(<, OP_LESS_THAN_NAME, operator<, Gaff::LessThan, bool)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opLessThanOrEqual(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opGreaterThan(const Attrs&... attributes)
 {
-	staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<T, Other>);
-	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(>, OP_GREATER_THAN_NAME, operator>, Gaff::GreaterThan, bool)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opGreaterThanOrEqual(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opLessThanOrEqual(const Attrs&... attributes)
 {
-	staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<T, Other>);
-	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<Other, T>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(<=, OP_LESS_THAN_OR_EQUAL_NAME, operator<=, Gaff::LessThanOrEqual, bool)
 }
 
 template <class T>
-template <class... Args>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opCall(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opGreaterThanOrEqual(const Attrs&... attributes)
 {
-	return staticFunc(OP_CALL_NAME, Gaff::Call<T, Args...>);
+	SHIB_REFL_BINARY_OP_IMPL_CONST(>=, OP_GREATER_THAN_OR_EQUAL_NAME, operator>=, Gaff::GreaterThanOrEqual, bool)
 }
 
 template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opIndex(void)
+template <bool is_const, class Ret, class... Args, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opCall(const Attrs&... attributes)
 {
-	return staticFunc(OP_INDEX_NAME, Gaff::Index<T, Other>);
+	static constexpr bool k_can_perform_op = requires(T lhs, Args&&... args) { lhs(std::forward<Args>(args)...); };
+	static_assert(k_can_perform_op, "Cannot perform `T(Args...)`.");
+
+	if constexpr (is_const) {
+		static constexpr bool k_is_method = requires(void) { static_cast<Ret (T::*)(Args...) const>(&T::operator()); };
+
+		if constexpr (k_is_method) {
+			const auto ptr = static_cast<Ret (T::*)(Args...) const>(&T::operator());
+			return func(OP_CALL_NAME, ptr, attributes...);
+		} else {
+			return staticFunc(OP_CALL_NAME, Gaff::Call<T, Args...>, attributes...);
+		}
+
+	} else {
+		static constexpr bool k_is_method = requires(void) { static_cast<Ret (T::*)(Args...)>(&T::operator()); };
+
+		if constexpr (k_is_method) {
+			const auto ptr = static_cast<Ret (T::*)(Args...)>(&T::operator());
+			return func(OP_CALL_NAME, ptr, attributes...);
+		} else {
+			return staticFunc(OP_CALL_NAME, Gaff::Call<T, Args...>, attributes...);
+		}
+	}
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAdd(void)
+template <class Ret, class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opIndex(const Attrs&... attributes)
 {
-	return staticFunc(OP_ADD_NAME, Gaff::Add<T, T>);
+	static constexpr bool k_can_perform_op = requires(T lhs, const Other& rhs) { lhs[rhs]; };
+	static_assert(k_can_perform_op, "Cannot perform `T[Other]`.");
+
+	using NoRef = std::remove_reference_t<Ret>;
+	using NoPtr = std::remove_pointer_t<NoRef>;
+
+	if constexpr (std::is_const_v<NoPtr>) {
+		static constexpr bool k_is_method = requires(void) { static_cast<Ret (T::*)(Other) const>(&T::operator[]); };
+
+		if constexpr (k_is_method) {
+			const auto ptr = static_cast<Ret (T::*)(Other) const>(&T::operator[]);
+			return func(OP_INDEX_NAME, ptr, attributes...);
+
+		} else {
+			return staticFunc(OP_INDEX_NAME, Gaff::Index<T, Other>, attributes...);
+		}
+
+	} else {
+		static constexpr bool k_is_method = requires(void) { static_cast<Ret (T::*)(Other)>(&T::operator[]); };
+
+		if constexpr (k_is_method) {
+			const auto ptr = static_cast<Ret (T::*)(Other)>(&T::operator[]);
+			return func(OP_INDEX_NAME, ptr, attributes...);
+
+		} else {
+			return staticFunc(OP_INDEX_NAME, Gaff::Index<T, Other>, attributes...);
+		}
+
+	}
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opSub(void)
+template <class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitNot(const Attrs&... attributes)
 {
-	return staticFunc(OP_SUB_NAME, Gaff::Sub<T, T>);
+	SHIB_REFL_UNARY_OP_IMPL_CONST(~, ~value, OP_BIT_NOT_NAME, operator~, Gaff::BitNot, T)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMul(void)
+template <class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opNegate(const Attrs&... attributes)
 {
-	return staticFunc(OP_MUL_NAME, Gaff::Mul<T, T>);
+	return opMinus(attributes...);
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opDiv(void)
+template <class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMinus(const Attrs&... attributes)
 {
-	return staticFunc(OP_DIV_NAME, Gaff::Div<T, T>);
+	SHIB_REFL_UNARY_OP_IMPL_CONST(-, -value, OP_MINUS_NAME, operator-, Gaff::Minus, T)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMod(void)
+template <class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPlus(const Attrs&... attributes)
 {
-	return staticFunc(OP_MOD_NAME, Gaff::Mod<T, T>);
+	SHIB_REFL_UNARY_OP_IMPL_CONST(+, +value, OP_PLUS_NAME, operator+, Gaff::Plus, T)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitAnd(void)
+template <int32_t (*to_string_func)(const T&, char8_t*, int32_t), class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opToString(const Attrs&... attributes)
 {
-	return staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<T, T>);
+	return staticFunc(OP_TO_STRING_NAME, to_string_func, attributes...);
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitOr(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opComparison(const Attrs&... attributes)
 {
-	return staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<T, T>);
+	return staticFunc(OP_COMP_NAME, Gaff::Comparison<T, Other>, attributes...);
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitXor(void)
+template <class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPreIncrement(const Attrs&... attributes)
 {
-	return staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<T, T>);
+	SHIB_REFL_UNARY_OP_IMPL(++, ++value, OP_PRE_INC_NAME, operator++, Gaff::PreIncrement, T&, void)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitNot(void)
+template <class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPostIncrement(const Attrs&... attributes)
 {
-	return staticFunc(OP_BIT_NOT_NAME, Gaff::BitNot<T>);
+	SHIB_REFL_UNARY_OP_IMPL(++, value++, OP_POST_INC_NAME, operator++, Gaff::PostIncrement, T, int)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftLeft(void)
+template <class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPreDecrement(const Attrs&... attributes)
 {
-	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<T, T>);
+	SHIB_REFL_UNARY_OP_IMPL(--, --value, OP_PRE_DEC_NAME, operator--, Gaff::PreDecrement, T&, void)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftRight(void)
+template <class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPostDecrement(const Attrs&... attributes)
 {
-	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<T, T>);
+	SHIB_REFL_UNARY_OP_IMPL(--, value--, OP_POST_DEC_NAME, operator--, Gaff::PostDecrement, T, int)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAnd(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAssignment(const Attrs&... attributes)
 {
-	return staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<T, T>);
+	SHIB_REFL_BINARY_OP_IMPL(=, OP_ASSIGN_NAME, operator=, Gaff::Assignment, T&)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opOr(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAddAssignment(const Attrs&... attributes)
 {
-	return staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<T, T>);
+	SHIB_REFL_BINARY_OP_IMPL(+=, OP_ADD_ASSIGN_NAME, operator+=, Gaff::AddAssignment, T&)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opEqual(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opSubAssignment(const Attrs&... attributes)
 {
-	return staticFunc(OP_EQUAL_NAME, Gaff::Equal<T, T>);
+	SHIB_REFL_BINARY_OP_IMPL(-=, OP_SUB_ASSIGN_NAME, operator-=, Gaff::SubAssignment, T&)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opLessThan(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMulAssignment(const Attrs&... attributes)
 {
-	return staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<T, T>);
+	SHIB_REFL_BINARY_OP_IMPL(*=, OP_MUL_ASSIGN_NAME, operator*=, Gaff::MulAssignment, T&)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opGreaterThan(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opDivAssignment(const Attrs&... attributes)
 {
-	return staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<T, T>);
+	SHIB_REFL_BINARY_OP_IMPL(/=, OP_DIV_ASSIGN_NAME, operator/=, Gaff::DivAssignment, T&)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opLessThanOrEqual(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opModAssignment(const Attrs&... attributes)
 {
-	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<T, T>);
+	SHIB_REFL_BINARY_OP_IMPL(%=, OP_MOD_ASSIGN_NAME, operator%=, Gaff::ModAssignment, T&)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opGreaterThanOrEqual(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitAndAssignment(const Attrs&... attributes)
 {
-	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<T, T>);
+	SHIB_REFL_BINARY_OP_IMPL(&=, OP_BIT_AND_ASSIGN_NAME, operator&=, Gaff::BitAndAssignment, T&)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opNegate(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitOrAssignment(const Attrs&... attributes)
 {
-	return opMinus();
+	SHIB_REFL_BINARY_OP_IMPL(|=, OP_BIT_OR_ASSIGN_NAME, operator|=, Gaff::BitOrAssignment, T&)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMinus(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitXorAssignment(const Attrs&... attributes)
 {
-	return staticFunc(OP_MINUS_NAME, Gaff::Minus<T>);
+	SHIB_REFL_BINARY_OP_IMPL(^=, OP_BIT_XOR_ASSIGN_NAME, operator^=, Gaff::BitXorAssignment, T&)
 }
 
 template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPlus(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftLeftAssignment(const Attrs&... attributes)
 {
-	return staticFunc(OP_PLUS_NAME, Gaff::Plus<T>);
+	SHIB_REFL_BINARY_OP_IMPL(<<=, OP_BIT_SHIFT_LEFT_ASSIGN_NAME, operator<<=, Gaff::BitShiftLeftAssignment, T&)
 }
 
 template <class T>
-template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opToString(void)
+template <class Other, class... Attrs>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftRightAssignment(const Attrs&... attributes)
 {
-	staticFunc(OP_TO_STRING_NAME, Gaff::ToStringHelper<T, to_string_func>);
-	return staticFunc(OP_TO_STRING_NAME, to_string_func);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opComparison(void)
-{
-	return staticFunc(OP_COMP_NAME, Gaff::Comparison<T, Other>);
-}
-
-template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPreIncrement(void)
-{
-	return staticFunc(OP_PRE_INC_NAME, Gaff::PreIncrement<T>);
-}
-
-template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPostIncrement(void)
-{
-	return staticFunc(OP_POST_INC_NAME, Gaff::PostIncrement<T>);
-}
-
-template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPreDecrement(void)
-{
-	return staticFunc(OP_PRE_DEC_NAME, Gaff::PreDecrement<T>);
-}
-
-template <class T>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opPostDecrement(void)
-{
-	return staticFunc(OP_POST_DEC_NAME, Gaff::PostDecrement<T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAssignment(void)
-{
-	return staticFunc(OP_ASSIGN_NAME, Gaff::Assignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opAddAssignment(void)
-{
-	return staticFunc(OP_ADD_ASSIGN_NAME, Gaff::AddAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opSubAssignment(void)
-{
-	return staticFunc(OP_SUB_ASSIGN_NAME, Gaff::SubAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opMulAssignment(void)
-{
-	return staticFunc(OP_MOD_ASSIGN_NAME, Gaff::ModAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opDivAssignment(void)
-{
-	return staticFunc(OP_DIV_ASSIGN_NAME, Gaff::DivAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opModAssignment(void)
-{
-	return staticFunc(OP_MOD_ASSIGN_NAME, Gaff::ModAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitAndAssignment(void)
-{
-	return staticFunc(OP_BIT_AND_ASSIGN_NAME, Gaff::BitAndAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitOrAssignment(void)
-{
-	return staticFunc(OP_BIT_OR_ASSIGN_NAME, Gaff::BitOrAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitXorAssignment(void)
-{
-	return staticFunc(OP_BIT_XOR_ASSIGN_NAME, Gaff::BitXorAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftLeftAssignment(void)
-{
-	return staticFunc(OP_BIT_SHIFT_LEFT_ASSIGN_NAME, Gaff::BitLeftShiftAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionVersionClass<T>& ReflectionVersionClass<T>::opBitShiftRightAssignment(void)
-{
-	return staticFunc(OP_BIT_SHIFT_RIGHT_ASSIGN_NAME, Gaff::BitRightShiftAssignment<T, Other>);
+	SHIB_REFL_BINARY_OP_IMPL(>>=, OP_BIT_SHIFT_RIGHT_ASSIGN_NAME, operator>>=, Gaff::BitShiftRightAssignment, T&)
 }
 
 template <class T>

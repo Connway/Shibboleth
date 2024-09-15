@@ -96,18 +96,6 @@ const IReflectionDefinition& ReflectionBase<T>::getReflectionDefinition(void) co
 }
 
 template <class T>
-void ReflectionBase<T>::registerOnDefinedCallback(const eastl::function<void(void)>& callback)
-{
-	_on_defined_callbacks.emplace_back(callback);
-}
-
-template <class T>
-void ReflectionBase<T>::registerOnDefinedCallback(eastl::function<void(void)>&& callback)
-{
-	_on_defined_callbacks.emplace_back(std::move(callback));
-}
-
-template <class T>
 bool ReflectionBase<T>::load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags< RefDefLoadFlags<T> > flags)
 {
 	return _ref_def->load(reader, object, flags);

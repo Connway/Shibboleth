@@ -22,55 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Reflection/Shibboleth_ReflectionDefinitionVariable.h"
+#include "Reflection/Shibboleth_ReflectionBuilder.h"
 #include "Shibboleth_IReflectionDefinition.h"
-#include "Shibboleth_AppConfigs.h"
-#include "Ptrs/Shibboleth_SmartPtrs.h"
-#include "Shibboleth_Utilities.h"
-#include "Shibboleth_String.h"
-#include <Gaff_ContainerAlgorithm.h>
-#include <Gaff_Math.h>
-#include <Gaff_JSON.h>
-#include <Gaff_Ops.h>
+#include <Gaff_ArrayString.h>
 
 NS_REFLECTION
-
-template <bool is_const, class T, class Ret, class... Args>
-struct ExtensionFuncTypeHelper;
-
-template <class T, class Ret, class... Args>
-struct ExtensionFuncTypeHelper<true, T, Ret, Args...> final
-{
-	using Type = Ret (*)(const T&, Args...);
-};
-
-template <class T, class Ret, class... Args>
-struct ExtensionFuncTypeHelper<false, T, Ret, Args...> final
-{
-	using Type = Ret (*)(T&, Args...);
-};
-
-template <bool is_const, class T, class Ret, class... Args>
-struct MemFuncTypeHelper;
-
-template <class T, class Ret, class... Args>
-struct MemFuncTypeHelper<true, T, Ret, Args...> final
-{
-	using Type = Ret (T::*)(Args...) const;
-};
-
-template <class T, class Ret, class... Args>
-struct MemFuncTypeHelper<false, T, Ret, Args...> final
-{
-	using Type = Ret (T::*)(Args...);
-};
-
-template <bool is_const, class T, class Ret, class... Args>
-using ExtensionFuncType = typename ExtensionFuncTypeHelper<is_const, T, Ret, Args...>::Type;
-
-template <bool is_const, class T, class Ret, class... Args>
-using MemFuncType = typename MemFuncTypeHelper<is_const, T, Ret, Args...>::Type;
-
 
 template <class T>
 class ReflectionDefinition final : public IReflectionDefinition
@@ -79,11 +35,6 @@ public:
 	// Add to this list as needed.
 	using IReflectionDefinition::getClassAttr;
 	using IReflectionDefinition::getVarAttr;
-
-	using IAttributePtr = Shibboleth::UniquePtr<IAttribute>;
-	using LoadFunc = bool (*)(const Shibboleth::ISerializeReader&, T&);
-	using SaveFunc = void (*)(Shibboleth::ISerializeWriter&, const T&);
-	using InstanceHashFunc = Gaff::Hash64 (*)(const T&, Gaff::Hash64);
 
 	GAFF_STRUCTORS_DEFAULT(ReflectionDefinition);
 	GAFF_NO_COPY(ReflectionDefinition);
@@ -98,7 +49,6 @@ public:
 
 	Gaff::Hash64 getInstanceHash(const void* object, Gaff::Hash64 init = Gaff::k_init_hash64) const override;
 	Gaff::Hash64 getInstanceHash(const T& object, Gaff::Hash64 init = Gaff::k_init_hash64) const;
-	ReflectionDefinition& setInstanceHash(InstanceHashFunc hash_func);
 
 	const void* getInterface(Gaff::Hash64 class_hash, const void* object) const override;
 	void* getInterface(Gaff::Hash64 class_hash, void* object) const override;
@@ -121,12 +71,10 @@ public:
 	int32_t getNumFuncs(void) const override;
 	int32_t getNumFuncOverrides(int32_t index) const override;
 	Shibboleth::HashStringView32<> getFuncName(int32_t index) const override;
-	int32_t getFuncIndex(Gaff::Hash32 name) const override;
 
 	int32_t getNumStaticFuncs(void) const override;
 	int32_t getNumStaticFuncOverrides(int32_t index) const override;
 	Shibboleth::HashStringView32<> getStaticFuncName(int32_t) const override;
-	int32_t getStaticFuncIndex(Gaff::Hash32 name) const override;
 
 	int32_t getNumClassAttrs(void) const override;
 	const IAttribute* getClassAttr(Gaff::Hash64 attr_name) const override;
@@ -139,14 +87,14 @@ public:
 	const IAttribute* getVarAttr(Gaff::Hash32 name, int32_t index) const override;
 	bool hasVarAttr(Gaff::Hash64 attr_name) const override;
 
-	int32_t getNumFuncAttrs(Gaff::Hash64 name_arg_hash) const override;
-	const IAttribute* getFuncAttr(Gaff::Hash64 name_arg_hash, Gaff::Hash64 attr_name) const override;
-	const IAttribute* getFuncAttr(Gaff::Hash64 name_arg_hash, int32_t index) const override;
+	int32_t getNumFuncAttrs(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash) const override;
+	const IAttribute* getFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const override;
+	const IAttribute* getFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, int32_t index) const override;
 	bool hasFuncAttr(Gaff::Hash64 attr_name) const override;
 
-	int32_t getNumStaticFuncAttrs(Gaff::Hash64 name_arg_hash) const override;
-	const IAttribute* getStaticFuncAttr(Gaff::Hash64 name_arg_hash, Gaff::Hash64 attr_name) const override;
-	const IAttribute* getStaticFuncAttr(Gaff::Hash64 name_arg_hash, int32_t index) const override;
+	int32_t getNumStaticFuncAttrs(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash) const override;
+	const IAttribute* getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const override;
+	const IAttribute* getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, int32_t index) const override;
 	bool hasStaticFuncAttr(Gaff::Hash64 attr_name) const override;
 
 	int32_t getNumConstructors(void) const override;
@@ -172,484 +120,21 @@ public:
 	IVar<T>* getVarT(int32_t index) const;
 	IVar<T>* getVarT(Gaff::Hash32 name) const;
 
-	template <class Base>
-	ReflectionDefinition& base(const char8_t* name);
-
-	template <class Base>
-	ReflectionDefinition& base(void);
-
-	template <class... Args>
-	ReflectionDefinition& ctor(Gaff::Hash64 factory_hash);
-
-	template <class... Args>
-	ReflectionDefinition& ctor(void);
-
-	template <class Var, size_t name_size, class... Attrs>
-	ReflectionDefinition& var(const char8_t (&name)[name_size], Var T::* ptr, const Attrs&... attributes);
-
-	template <class Var, size_t name_size, class... Attrs>
-	ReflectionDefinition& var(const char (&name)[name_size], Var T::* ptr, const Attrs&... attributes);
-
-	template <class Ret, class Var, size_t name_size, class... Attrs>
-	ReflectionDefinition& var(const char8_t (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
-
-	template <class Ret, class Var, size_t name_size, class... Attrs>
-	ReflectionDefinition& var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
-
-	template <size_t name_size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& func(const char8_t (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
-
-	template <size_t name_size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& func(const char (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
-
-	template <size_t name_size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& func(const char8_t (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
-
-	template <size_t name_size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
-
-	template <size_t name_size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& func(const char8_t (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes);
-
-	template <size_t name_size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& func(const char (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes);
-
-	template <size_t name_size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& func(const char8_t (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes);
-
-	template <size_t name_size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& func(const char (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes);
-
-	template <size_t name_size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& staticFunc(const char8_t (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes);
-
-	template <size_t name_size, class Ret, class... Args, class... Attrs>
-	ReflectionDefinition& staticFunc(const char (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes);
-
-	template <class Other>
-	ReflectionDefinition& opAdd(void);
-	template <class Other>
-	ReflectionDefinition& opSub(void);
-	template <class Other>
-	ReflectionDefinition& opMul(void);
-	template <class Other>
-	ReflectionDefinition& opDiv(void);
-	template <class Other>
-	ReflectionDefinition& opMod(void);
-
-	template <class Other>
-	ReflectionDefinition& opBitAnd(void);
-	template <class Other>
-	ReflectionDefinition& opBitOr(void);
-	template <class Other>
-	ReflectionDefinition& opBitXor(void);
-	template <class Other>
-	ReflectionDefinition& opBitShiftLeft(void);
-	template <class Other>
-	ReflectionDefinition& opBitShiftRight(void);
-
-	template <class Other>
-	ReflectionDefinition& opAnd(void);
-	template <class Other>
-	ReflectionDefinition& opOr(void);
-
-	template <class Other>
-	ReflectionDefinition& opEqual(void);
-	template <class Other>
-	ReflectionDefinition& opLessThan(void);
-	template <class Other>
-	ReflectionDefinition& opGreaterThan(void);
-	template <class Other>
-	ReflectionDefinition& opLessThanOrEqual(void);
-	template <class Other>
-	ReflectionDefinition& opGreaterThanOrEqual(void);
-
-	template <class... Args>
-	ReflectionDefinition& opCall(void);
-
-	template <class Other>
-	ReflectionDefinition& opIndex(void);
-
-	ReflectionDefinition& opAdd(void);
-	ReflectionDefinition& opSub(void);
-	ReflectionDefinition& opMul(void);
-	ReflectionDefinition& opDiv(void);
-	ReflectionDefinition& opMod(void);
-
-	ReflectionDefinition& opBitAnd(void);
-	ReflectionDefinition& opBitOr(void);
-	ReflectionDefinition& opBitXor(void);
-	ReflectionDefinition& opBitNot(void);
-	ReflectionDefinition& opBitShiftLeft(void);
-	ReflectionDefinition& opBitShiftRight(void);
-
-	ReflectionDefinition& opAnd(void);
-	ReflectionDefinition& opOr(void);
-
-	ReflectionDefinition& opEqual(void);
-	ReflectionDefinition& opLessThan(void);
-	ReflectionDefinition& opGreaterThan(void);
-	ReflectionDefinition& opLessThanOrEqual(void);
-	ReflectionDefinition& opGreaterThanOrEqual(void);
-
-	ReflectionDefinition& opNegate(void);
-	ReflectionDefinition& opMinus(void);
-	ReflectionDefinition& opPlus(void);
-
-	template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
-	ReflectionDefinition& opToString(void);
-
-	template <class Other>
-	ReflectionDefinition& opComparison(void);
-
-	ReflectionDefinition& opPreIncrement(void);
-	ReflectionDefinition& opPostIncrement(void);
-	ReflectionDefinition& opPreDecrement(void);
-	ReflectionDefinition& opPostDecrement(void);
-
-	template <class Other>
-	ReflectionDefinition& opAssignment(void);
-
-	template <class Other>
-	ReflectionDefinition& opAddAssignment(void);
-
-	template <class Other>
-	ReflectionDefinition& opSubAssignment(void);
-
-	template <class Other>
-	ReflectionDefinition& opMulAssignment(void);
-
-	template <class Other>
-	ReflectionDefinition& opDivAssignment(void);
-
-	template <class Other>
-	ReflectionDefinition& opModAssignment(void);
-
-	template <class Other>
-	ReflectionDefinition& opBitAndAssignment(void);
-
-	template <class Other>
-	ReflectionDefinition& opBitOrAssignment(void);
-
-	template <class Other>
-	ReflectionDefinition& opBitXorAssignment(void);
-
-	template <class Other>
-	ReflectionDefinition& opBitShiftLeftAssignment(void);
-
-	template <class Other>
-	ReflectionDefinition& opBitShiftRightAssignment(void);
-
-
-	// apply() is not called on these functions.
-	template <class... Attrs>
-	ReflectionDefinition& classAttrs(const Attrs&... attributes);
-
-	ReflectionDefinition& version(uint32_t version);
-
-	ReflectionDefinition& serialize(LoadFunc serialize_load, SaveFunc serialize_save = nullptr);
-
-	void finish(void);
-
 private:
-	template <class Base>
-	class BaseVarPtr final : public IVar<T>
-	{
-	public:
-		BaseVarPtr(IVar<Base>* base_var);
-
-		const IReflection& getReflectionKey(void) const override;
-		const IReflection& getReflection(void) const override;
-
-		const void* getData(const void* object) const override;
-		void* getData(void* object) override;
-		void setData(void* object, const void* data) override;
-		void setDataMove(void* object, void* data) override;
-
-		bool isFixedArray(void) const override;
-		bool isVector(void) const override;
-		bool isFlags(void) const override;
-		bool isMap(void) const override;
-		int32_t size(const void*) const override;
-
-		int32_t getMapEntryIndex(const void* object, const void* key) override;
-		const void* getMapEntry(const void* object, const void* key) const override;
-		void* getMapEntry(void* object, const void* key) override;
-
-		void* addMapEntry(void* object, const void* key, const void* value) override;
-		void* addMapEntryMove(void* object, void* key, void* value) override;
-		void* addMapEntry(void* object, const void* key) override;
-		void* addMapEntryMove(void* object, void* key) override;
-
-		const void* getElement(const void* object, int32_t index) const override;
-		void* getElement(void* object, int32_t index) override;
-		void setElement(void* object, int32_t index, const void* data) override;
-		void setElementMove(void* object, int32_t index, void* data) override;
-		void swap(void* object, int32_t index_a, int32_t index_b) override;
-		void resize(void* object, size_t new_size) override;
-		void remove(void* object, int32_t index) override;
-
-		void setFlagValue(void* object, int32_t flag_index, bool value) override;
-		bool getFlagValue(const void* object, int32_t flag_index) const override;
-
-		bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
-		void save(Shibboleth::ISerializeWriter& writer, const void* object) override;
-		bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
-		void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
-
-	private:
-		IVar<Base>* _base_var;
-	};
-
-
-	using IRefStaticFuncPtr = Shibboleth::UniquePtr<IReflectionStaticFunctionBase>;
-	using IRefFuncPtr = Shibboleth::UniquePtr<IReflectionFunctionBase>;
-
-	template <bool is_const, class Ret, class... Args>
-	class ReflectionExtensionFunction final : public IReflectionFunction<Ret, Args...>
-	{
-	public:
-		ReflectionExtensionFunction(ExtensionFuncType<is_const, T, Ret, Args...> func)
-		{
-			_func = func;
-		}
-
-		Ret call(const void* object, Args&&... args) const override
-		{
-			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
-			return call(const_cast<void*>(object), std::forward<Args>(args)...);
-		}
-
-		Ret call(void* object, Args&&... args) const override
-		{
-			return _func(*reinterpret_cast<T*>(object), std::forward<Args>(args)...);
-		}
-
-		bool isConst(void) const override { return is_const; }
-		const IReflectionDefinition& getBaseRefDef(void) const override { return Reflection<T>::GetReflectionDefinition(); }
-
-		const void* getFunctionPointer(void) const override { return &_func; }
-		size_t getFunctionPointerSize(void) const override { return sizeof(ExtensionFuncType<is_const, T, Ret, Args...>); }
-
-		bool isExtensionFunction(void) const override { return true; }
-
-	private:
-		ExtensionFuncType<is_const, T, Ret, Args...> _func;
-	};
-
-	template <bool is_const, class Ret, class... Args>
-	class ReflectionFunction final : public IReflectionFunction<Ret, Args...>
-	{
-	public:
-		ReflectionFunction(MemFuncType<is_const, T, Ret, Args...> func)
-		{
-			_func = func;
-		}
-
-		Ret call(const void* object, Args&&... args) const override
-		{
-			GAFF_ASSERT_MSG(is_const, "Reflected function is non-const.");
-			return call(const_cast<void*>(object), std::forward<Args>(args)...);
-		}
-
-		Ret call(void* object, Args&&... args) const override
-		{
-			return (reinterpret_cast<T*>(object)->*_func)(std::forward<Args>(args)...);
-		}
-
-		bool isConst(void) const override { return is_const; }
-		const IReflectionDefinition& getBaseRefDef(void) const override { return Reflection<T>::GetReflectionDefinition(); }
-
-		const void* getFunctionPointer(void) const override { return &_func; }
-		size_t getFunctionPointerSize(void) const override { return sizeof(MemFuncType<is_const, T, Ret, Args...>); }
-
-	private:
-		MemFuncType<is_const, T, Ret, Args...> _func;
-	};
-
-	class ReflectionBaseFunction final : public IReflectionFunctionBase
-	{
-	public:
-		ReflectionBaseFunction(const IReflectionDefinition& base_ref_def, const IReflectionFunctionBase* ref_func):
-			_base_ref_def(base_ref_def), _func(ref_func)
-		{
-		}
-
-		int32_t numArgs(void) const override { return _func->numArgs(); }
-		bool isConst(void) const override { return _func->isConst(); }
-		bool isBase(void) const override { return true; }
-		const IReflectionDefinition& getBaseRefDef(void) const override { return _base_ref_def; }
-
-		template <class Ret, class... Args>
-		Ret call(const void* obj, Args&&... args) const
-		{
-			GAFF_ASSERT(isConst());
-
-			const auto& ref_def = Reflection<T>::GetReflectionDefinition();
-			const void* const object = ref_def.getInterface(_func->getBaseRefDef().getReflectionInstance().getNameHash(), obj);
-
-			if (_func->isBase()) {
-				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, std::forward<Args>(args)...);
-			} else {
-				return reinterpret_cast<const ReflectionFunction<true, Ret, Args...>*>(_func)->call(object, std::forward<Args>(args)...);
-			}
-		}
-
-		template <class Ret, class... Args>
-		Ret call(void* obj, Args&&... args) const
-		{
-			if (isConst()) {
-				return const_cast<const ReflectionBaseFunction*>(this)->call(obj, std::forward<Args>(args)...);
-			}
-
-			const auto& ref_def = Reflection<T>::GetReflectionDefinition();
-			void* const object = ref_def.getInterface(_func->getBaseRefDef().getReflectionInstance().getNameHash(), obj);
-
-			if (_func->isBase()) {
-				return reinterpret_cast<const ReflectionBaseFunction*>(_func)->call<Ret, Args...>(object, std::forward<Args>(args)...);
-			} else {
-				return reinterpret_cast< const ReflectionFunction<false, Ret, Args...>* >(_func)->call(object, std::forward<Args>(args)...);
-			}
-		}
-
-		const void* getFunctionPointer(void) const override { return _func->getFunctionPointer(); }
-		size_t getFunctionPointerSize(void) const override { return _func->getFunctionPointerSize(); }
-
-		FunctionSignature getSignature(void) const override { return _func->getSignature(); }
-
-	private:
-		const IReflectionDefinition& _base_ref_def;
-		const IReflectionFunctionBase* const _func;
-	};
-
-	using IVarPtr = Shibboleth::UniquePtr< IVar<T> >;
-
-	struct FuncData final
-	{
-		FuncData(void) = default;
-
-		FuncData(const FuncData& rhs)
-		{
-			*this = rhs;
-		}
-
-		FuncData& operator=(const FuncData& rhs)
-		{
-			FuncData& rhs_cast = const_cast<FuncData&>(rhs);
-
-			for (int32_t i = 0; i < k_num_overloads; ++i) {
-				func[i] = std::move(rhs_cast.func[i]);
-			}
-
-			memcpy(hash, rhs.hash, sizeof(hash));
-			return *this;
-		}
-
-		constexpr static int32_t k_num_overloads = 8;
-		Gaff::Hash64 hash[k_num_overloads] =
-		{
-			Gaff::Hash64(0), Gaff::Hash64(0), Gaff::Hash64(0), Gaff::Hash64(0),
-			Gaff::Hash64(0), Gaff::Hash64(0), Gaff::Hash64(0), Gaff::Hash64(0)
-		};
-
-		IRefFuncPtr func[k_num_overloads];
-	};
-
-	struct StaticFuncData
-	{
-		StaticFuncData(void) = default;
-
-		StaticFuncData(const StaticFuncData& rhs)
-		{
-			*this = rhs;
-		}
-
-		StaticFuncData& operator=(const StaticFuncData& rhs)
-		{
-			StaticFuncData& rhs_cast = const_cast<StaticFuncData&>(rhs);
-
-			for (int32_t i = 0; i < k_num_overloads; ++i) {
-				func[i] = std::move(rhs_cast.func[i]);
-			}
-
-			memcpy(hash, rhs.hash, sizeof(hash));
-			return *this;
-		}
-
-		constexpr static int32_t k_num_overloads = 8;
-		Gaff::Hash64 hash[k_num_overloads] =
-		{
-			Gaff::Hash64(0), Gaff::Hash64(0), Gaff::Hash64(0), Gaff::Hash64(0),
-			Gaff::Hash64(0), Gaff::Hash64(0), Gaff::Hash64(0), Gaff::Hash64(0)
-		};
-
-		IRefStaticFuncPtr func[k_num_overloads];
-	};
-
-	Shibboleth::VectorMap<Shibboleth::HashString64<>, ptrdiff_t> _base_class_offsets{ Shibboleth::ProxyAllocator("Reflection") };
-	Shibboleth::VectorMap<Shibboleth::HashString32<>, IVarPtr> _vars{ Shibboleth::ProxyAllocator("Reflection") };
-	Shibboleth::VectorMap<Shibboleth::HashString32<>, FuncData> _funcs{ Shibboleth::ProxyAllocator("Reflection") };
-	Shibboleth::VectorMap<Shibboleth::HashString32<>, StaticFuncData> _static_funcs{ Shibboleth::ProxyAllocator("Reflection") };
-	Shibboleth::VectorMap<Gaff::Hash64, VoidFunc> _factories{ Shibboleth::ProxyAllocator("Reflection") };
-	Shibboleth::VectorMap<Gaff::Hash64, IRefStaticFuncPtr> _ctors{ Shibboleth::ProxyAllocator("Reflection") };
-	Shibboleth::VectorMap<Gaff::Hash64, const IReflectionDefinition*> _base_classes{ Shibboleth::ProxyAllocator("Reflection") };
-
-	using AttributeList = Shibboleth::Vector<IAttributePtr>;
-
-	Shibboleth::VectorMap<Gaff::Hash32, AttributeList> _var_attrs{ Shibboleth::ProxyAllocator("Reflection") };
-	Shibboleth::VectorMap<Gaff::Hash64, AttributeList> _func_attrs{ Shibboleth::ProxyAllocator("Reflection") };
-	Shibboleth::VectorMap<Gaff::Hash64, AttributeList> _static_func_attrs{ Shibboleth::ProxyAllocator("Reflection") };
-	AttributeList _class_attrs{ Shibboleth::ProxyAllocator("Reflection") };
-
-	InstanceHashFunc _instance_hash = nullptr;
-	LoadFunc _serialize_load = nullptr;
-	SaveFunc _serialize_save = nullptr;
-
-	int32_t _dependents_remaining = 0;
-	int32_t _num_vars = 0;
-
-	template <class Base>
-	static void RegisterBaseVariables(void);
-
-	// Variables
-	template <class Var, class First, class... Rest>
-	ReflectionDefinition& addAttributes(IReflectionVar& ref_var, Var T::*var, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
-	template <class Var, class Ret, class First, class... Rest>
-	ReflectionDefinition& addAttributes(IReflectionVar& ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
-
-	// Functions
-	template <class Ret, class... Args, class First, class... Rest>
-	ReflectionDefinition& addAttributes(IReflectionFunction<Ret, Args...>& ref_func, Ret (T::*func)(Args...) const, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
-	template <class Ret, class... Args, class First, class... Rest>
-	ReflectionDefinition& addAttributes(IReflectionFunction<Ret, Args...>& ref_func, Ret (T::*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
-
-	// Static Functions
-	template <class Ret, class... Args, class First, class... Rest>
-	ReflectionDefinition& addAttributes(IReflectionStaticFunction<Ret, Args...>& ref_func, Ret (*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
-
-	// Non-apply() call version.
-	template <class First, class... Rest>
-	ReflectionDefinition& addAttributes(Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
+	ReflectionData<T> _data;
 
 	ptrdiff_t getBasePointerOffset(Gaff::Hash64 interface_name) const override;
 	void instantiated(void* object) const override;
 
 	const IAttribute* getAttribute(const AttributeList& attributes, Gaff::Hash64 attr_name) const;
 
+	ReflectionBuilder<T, T> getInitialBuilder(void);
 
 	template <class RefT>
-	friend class ReflectionDefinition;
-
-	template <bool is_const, class Ret, class... Args>
-	friend class ReflectionFunction;
+	friend class Reflection;
 };
 
 
-template <class T, class... Args>
-void ConstructFuncImpl(T* obj, Args&&... args);
-
-template <class T, class... Args>
-T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 
 #define REF_DEF_BUILTIN(class_type, serialize_type) \
 	template <> \
@@ -689,11 +174,9 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		int32_t getNumFuncs(void) const override { return 0; } \
 		int32_t getNumFuncOverrides(int32_t) const override { return 0; } \
 		Shibboleth::HashStringView32<> getFuncName(int32_t) const override { return Shibboleth::HashStringView32<>(); } \
-		int32_t getFuncIndex(Gaff::Hash32) const override { return -1; } \
 		int32_t getNumStaticFuncs(void) const override { return 0; } \
 		Shibboleth::HashStringView32<> getStaticFuncName(int32_t) const override { return Shibboleth::HashStringView32<>(); } \
 		int32_t getNumStaticFuncOverrides(int32_t) const override { return 0; } \
-		int32_t getStaticFuncIndex(Gaff::Hash32) const override { return -1; } \
 		int32_t getNumClassAttrs(void) const override { return 0; } \
 		const IAttribute* getClassAttr(Gaff::Hash64) const override { return nullptr; } \
 		const IAttribute* getClassAttr(int32_t) const override { return nullptr; } \
@@ -703,13 +186,13 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		const IAttribute* getVarAttr(Gaff::Hash32, Gaff::Hash64) const override { return nullptr; } \
 		const IAttribute* getVarAttr(Gaff::Hash32, int32_t) const override { return nullptr; } \
 		bool hasVarAttr(Gaff::Hash64) const override { return false; } \
-		int32_t getNumFuncAttrs(Gaff::Hash64) const override { return 0; } \
-		const IAttribute* getFuncAttr(Gaff::Hash64, Gaff::Hash64) const override { return nullptr; } \
-		const IAttribute* getFuncAttr(Gaff::Hash64, int32_t) const override { return nullptr; } \
+		int32_t getNumFuncAttrs(Gaff::Hash32, Gaff::Hash64) const override { return 0; } \
+		const IAttribute* getFuncAttr(Gaff::Hash32, Gaff::Hash64, Gaff::Hash64) const override { return nullptr; } \
+		const IAttribute* getFuncAttr(Gaff::Hash32, Gaff::Hash64, int32_t) const override { return nullptr; } \
 		bool hasFuncAttr(Gaff::Hash64) const override { return false; } \
-		int32_t getNumStaticFuncAttrs(Gaff::Hash64) const override { return 0; } \
-		const IAttribute* getStaticFuncAttr(Gaff::Hash64, Gaff::Hash64) const override { return nullptr; } \
-		const IAttribute* getStaticFuncAttr(Gaff::Hash64, int32_t) const override { return nullptr; } \
+		int32_t getNumStaticFuncAttrs(Gaff::Hash32, Gaff::Hash64) const override { return 0; } \
+		const IAttribute* getStaticFuncAttr(Gaff::Hash32, Gaff::Hash64, Gaff::Hash64) const override { return nullptr; } \
+		const IAttribute* getStaticFuncAttr(Gaff::Hash32, Gaff::Hash64, int32_t) const override { return nullptr; } \
 		bool hasStaticFuncAttr(Gaff::Hash64) const override { return false; } \
 		int32_t getNumConstructors(void) const override { return 0; } \
 		IReflectionStaticFunctionBase* getConstructor(int32_t) const override { return nullptr; } \
@@ -745,6 +228,7 @@ T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args);
 		bool isCopyAssignable(void) const override { return std::is_copy_assignable_v<class_type> && !std::is_trivially_copy_assignable_v<class_type>; } \
 		bool isConstructible(void) const override { return std::is_default_constructible_v<class_type> && !std::is_trivially_default_constructible_v<class_type>; } \
 		bool isDestructible(void) const override { return std::is_destructible_v<class_type> && !std::is_trivially_destructible_v<class_type>; } \
+		ReflectionDefinition& getInitialBuilder(void) { return *this; } \
 		void finish(void) {} \
 	private: \
 		ptrdiff_t getBasePointerOffset(Gaff::Hash64) const override { return 0; } \

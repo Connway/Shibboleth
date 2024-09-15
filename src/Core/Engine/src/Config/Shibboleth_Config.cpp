@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Log/Shibboleth_LogManager.h"
 #include "Shibboleth_SerializeReader.h"
 #include "Shibboleth_EngineDefines.h"
+#include <Gaff_JSON.h>
 #include <cctype>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GlobalConfigAttribute)

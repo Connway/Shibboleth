@@ -102,6 +102,11 @@ private:
 
 	template <class First, class... Rest>
 	EnumReflectionDefinition& addAttributes(Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest);
+
+	EnumReflectionDefinition& getInitialBuilder(void);
+
+	template <class RefT>
+	friend class Reflection;
 };
 
 NS_END

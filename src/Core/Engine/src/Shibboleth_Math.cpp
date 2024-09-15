@@ -57,7 +57,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Quat)
 	.template opMul<Gleam::Vec4>()
 	.template opMul<Gleam::Vec3>()
 
-	.template opIndex<glm::length_t>()
+	.template opIndex<const float&, glm::length_t>()
+	.template opIndex<float&, glm::length_t>()
 
 	.opAdd()
 	.opSub()
@@ -89,7 +90,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec4)
 	.template opMul<float>()
 	.template opDiv<float>()
 
-	.template opIndex<glm::length_t>()
+	.template opIndex<const float&, glm::length_t>()
+	.template opIndex<float&, glm::length_t>()
 
 	.opAdd()
 	.opSub()
@@ -131,7 +133,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec3)
 	.template opMul<float>()
 	.template opDiv<float>()
 
-	.template opIndex<glm::length_t>()
+	.template opIndex<const float&, glm::length_t>()
+	.template opIndex<float&, glm::length_t>()
 
 	.opAdd()
 	.opSub()
@@ -169,7 +172,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::Vec2)
 	.template opMul<float>()
 	.template opDiv<float>()
 
-	.template opIndex<glm::length_t>()
+	.template opIndex<const float&, glm::length_t>()
+	.template opIndex<float&, glm::length_t>()
 
 	.opAdd()
 	.opSub()
@@ -206,7 +210,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::IVec4)
 	.template opMul<int32_t>()
 	.template opDiv<int32_t>()
 
-	.template opIndex<glm::length_t>()
+	.template opIndex<const int32_t&, glm::length_t>()
+	.template opIndex<int32_t&, glm::length_t>()
 
 	.opAdd()
 	.opSub()
@@ -248,7 +253,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::IVec3)
 	.template opMul<int32_t>()
 	.template opDiv<int32_t>()
 
-	.template opIndex<glm::length_t>()
+	.template opIndex<const int32_t&, glm::length_t>()
+	.template opIndex<int32_t&, glm::length_t>()
 
 	.opAdd()
 	.opSub()
@@ -286,7 +292,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Gleam::IVec2)
 	.template opMul<int32_t>()
 	.template opDiv<int32_t>()
 
-	.template opIndex<glm::length_t>()
+	.template opIndex<const int32_t&, glm::length_t>()
+	.template opIndex<int32_t&, glm::length_t>()
 
 	.opAdd()
 	.opSub()

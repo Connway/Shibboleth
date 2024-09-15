@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ReflectionVar.h"
 #include "Containers/Shibboleth_VectorMap.h"
+#include <Gaff_Math.h>
 
 NS_REFLECTION
 

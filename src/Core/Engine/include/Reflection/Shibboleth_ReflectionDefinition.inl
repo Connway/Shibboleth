@@ -24,345 +24,6 @@ THE SOFTWARE.
 
 NS_REFLECTION
 
-template <class T, class... Args>
-void ConstructFuncImpl(T* obj, Args&&... args)
-{
-	Gaff::Construct(obj, std::forward<Args>(args)...);
-}
-
-template <class T, class... Args>
-T* FactoryFuncImpl(Gaff::IAllocator& allocator, Args&&... args)
-{
-	return SHIB_ALLOCT(T, allocator, std::forward<Args>(args)...);
-}
-
-
-
-// BaseVarPtr
-template <class T>
-template <class Base>
-ReflectionDefinition<T>::BaseVarPtr<Base>::BaseVarPtr(IVar<Base>* base_var):
-	_base_var(base_var)
-{
-	if (const int32_t offset = _base_var->getOffset(); offset >= 0) {
-		IVar<T>::setOffset(static_cast<int32_t>(Gaff::OffsetOfClass<Base, T>()) + offset);
-	}
-}
-
-template <class T>
-template <class Base>
-const IReflection& ReflectionDefinition<T>::BaseVarPtr<Base>::getReflectionKey(void) const
-{
-	return _base_var->getReflectionKey();
-}
-
-template <class T>
-template <class Base>
-const IReflection& ReflectionDefinition<T>::BaseVarPtr<Base>::getReflection(void) const
-{
-	return _base_var->getReflection();
-}
-
-template <class T>
-template <class Base>
-const void* ReflectionDefinition<T>::BaseVarPtr<Base>::getData(const void* object) const
-{
-	GAFF_ASSERT(object);
-	const Base* const obj = reinterpret_cast<const T*>(object);
-	return _base_var->getData(obj);
-}
-
-template <class T>
-template <class Base>
-void* ReflectionDefinition<T>::BaseVarPtr<Base>::getData(void* object)
-{
-	GAFF_ASSERT(object);
-	Base* const obj = reinterpret_cast<T*>(object);
-	return _base_var->getData(obj);
-}
-
-template <class T>
-template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::setData(void* object, const void* data)
-{
-	GAFF_ASSERT(object);
-	GAFF_ASSERT(data);
-
-	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	Base* const obj = reinterpret_cast<T*>(object);
-	_base_var->setData(obj, data);
-}
-
-template <class T>
-template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::setDataMove(void* object, void* data)
-{
-	GAFF_ASSERT(object);
-	GAFF_ASSERT(data);
-
-	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	Base* const obj = reinterpret_cast<T*>(object);
-	_base_var->setData(obj, data);
-}
-
-template <class T>
-template <class Base>
-bool ReflectionDefinition<T>::BaseVarPtr<Base>::isFixedArray(void) const
-{
-	return _base_var->isFixedArray();
-}
-
-template <class T>
-template <class Base>
-bool ReflectionDefinition<T>::BaseVarPtr<Base>::isVector(void) const
-{
-	return _base_var->isVector();
-}
-
-template <class T>
-template <class Base>
-bool ReflectionDefinition<T>::BaseVarPtr<Base>::isFlags(void) const
-{
-	return _base_var->isFlags();
-}
-
-template <class T>
-template <class Base>
-bool ReflectionDefinition<T>::BaseVarPtr<Base>::isMap(void) const
-{
-	return _base_var->isMap();
-}
-
-template <class T>
-template <class Base>
-int32_t ReflectionDefinition<T>::BaseVarPtr<Base>::size(const void* object) const
-{
-	GAFF_ASSERT(object);
-	const Base* const obj = reinterpret_cast<const T*>(object);
-	return _base_var->size(obj);
-}
-
-template <class T>
-template <class Base>
-int32_t ReflectionDefinition<T>::BaseVarPtr<Base>::getMapEntryIndex(const void* object, const void* key)
-{
-	const Base* const obj = reinterpret_cast<const T*>(object);
-	return _base_var->getMapEntryIndex(obj, key);
-}
-
-template <class T>
-template <class Base>
-const void* ReflectionDefinition<T>::BaseVarPtr<Base>::getMapEntry(const void* object, const void* key) const
-{
-	const Base* const obj = reinterpret_cast<const T*>(object);
-	return _base_var->getMapEntry(obj, key);
-}
-
-template <class T>
-template <class Base>
-void* ReflectionDefinition<T>::BaseVarPtr<Base>::getMapEntry(void* object, const void* key)
-{
-	Base* const obj = reinterpret_cast<T*>(object);
-	return _base_var->getMapEntry(obj, key);
-}
-
-template <class T>
-template <class Base>
-void* ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntry(void* object, const void* key, const void* value)
-{
-	Base* const obj = reinterpret_cast<T*>(object);
-	return _base_var->addMapEntry(obj, key, value);
-}
-
-template <class T>
-template <class Base>
-void* ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntryMove(void* object, void* key, void* value)
-{
-	Base* const obj = reinterpret_cast<T*>(object);
-	return _base_var->addMapEntryMove(obj, key, value);
-}
-
-template <class T>
-template <class Base>
-void* ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntry(void* object, const void* key)
-{
-	Base* const obj = reinterpret_cast<T*>(object);
-	return _base_var->addMapEntry(obj, key);
-}
-
-template <class T>
-template <class Base>
-void* ReflectionDefinition<T>::BaseVarPtr<Base>::addMapEntryMove(void* object, void* key)
-{
-	Base* const obj = reinterpret_cast<T*>(object);
-	return _base_var->addMapEntryMove(obj, key);
-}
-
-template <class T>
-template <class Base>
-const void* ReflectionDefinition<T>::BaseVarPtr<Base>::getElement(const void* object, int32_t index) const
-{
-	GAFF_ASSERT(index < size(object));
-	GAFF_ASSERT(object);
-	const Base* const obj = reinterpret_cast<const T*>(object);
-	return _base_var->getElement(obj, index);
-}
-
-template <class T>
-template <class Base>
-void* ReflectionDefinition<T>::BaseVarPtr<Base>::getElement(void* object, int32_t index)
-{
-	GAFF_ASSERT(index < size(object));
-	GAFF_ASSERT(object);
-	Base* const obj = reinterpret_cast<T*>(object);
-	return _base_var->getElement(obj, index);
-}
-
-template <class T>
-template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::setElement(void* object, int32_t index, const void* data)
-{
-	GAFF_ASSERT(index < size(object));
-	GAFF_ASSERT(object);
-	GAFF_ASSERT(data);
-
-	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	Base* const obj = reinterpret_cast<T*>(object);
-	_base_var->setElement(obj, index, data);
-}
-
-template <class T>
-template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::setElementMove(void* object, int32_t index, void* data)
-{
-	GAFF_ASSERT(index < size(object));
-	GAFF_ASSERT(object);
-	GAFF_ASSERT(data);
-
-	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	Base* const obj = reinterpret_cast<T*>(object);
-	_base_var->setElementMove(obj, index, data);
-}
-
-template <class T>
-template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::swap(void* object, int32_t index_a, int32_t index_b)
-{
-	GAFF_ASSERT(index_a < size(object));
-	GAFF_ASSERT(index_b < size(object));
-	GAFF_ASSERT(object);
-
-	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	Base* const obj = reinterpret_cast<T*>(object);
-	_base_var->swap(obj, index_a, index_b);
-}
-
-template <class T>
-template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::resize(void* object, size_t new_size)
-{
-	GAFF_ASSERT(object);
-
-	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	Base* const obj = reinterpret_cast<T*>(object);
-	_base_var->resize(obj, new_size);
-}
-
-template <class T>
-template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::remove(void* object, int32_t index)
-{
-	GAFF_ASSERT(object);
-
-	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	Base* const obj = reinterpret_cast<T*>(object);
-	_base_var->remove(obj, index);
-}
-
-template <class T>
-template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::setFlagValue(void* object, int32_t flag_index, bool value)
-{
-	GAFF_ASSERT(object);
-
-	if (IReflectionVar::isReadOnly() || _base_var->isReadOnly()) {
-		// $TODO: Log error.
-		return;
-	}
-
-	Base* const obj = reinterpret_cast<T*>(object);
-	_base_var->setFlagValue(obj, flag_index, value);
-}
-
-template <class T>
-template <class Base>
-bool ReflectionDefinition<T>::BaseVarPtr<Base>::getFlagValue(const void* object, int32_t flag_index) const
-{
-	GAFF_ASSERT(object);
-
-	const Base* const obj = reinterpret_cast<const T*>(object);
-	return _base_var->getFlagValue(obj, flag_index);
-}
-
-template <class T>
-template <class Base>
-bool ReflectionDefinition<T>::BaseVarPtr<Base>::load(const Shibboleth::ISerializeReader& reader, void* object)
-{
-	return _base_var->load(reader, object);
-}
-
-template <class T>
-template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::save(Shibboleth::ISerializeWriter& writer, const void* object)
-{
-	_base_var->save(writer, object);
-}
-
-template <class T>
-template <class Base>
-bool ReflectionDefinition<T>::BaseVarPtr<Base>::load(const Shibboleth::ISerializeReader& reader, T& object)
-{
-	return _base_var->load(reader, object);
-}
-
-template <class T>
-template <class Base>
-void ReflectionDefinition<T>::BaseVarPtr<Base>::save(Shibboleth::ISerializeWriter& writer, const T& object)
-{
-	_base_var->save(writer, object);
-}
-
-
-
-// ReflectionDefinition
 template <class T>
 bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, void* object, Gaff::Flags<LoadFlags> flags) const
 {
@@ -378,17 +39,17 @@ void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const v
 template <class T>
 bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, T& object, Gaff::Flags<LoadFlags> flags) const
 {
-	if (_serialize_load && !flags.testAny(LoadFlags::ReflectionLoad)) {
-		return _serialize_load(reader, object);
+	if (_data.serialize_load && !flags.testAny(LoadFlags::ReflectionLoad)) {
+		return _data.serialize_load(reader, object);
 
 	} else {
-		for (auto& entry : _vars) {
-			if (entry.second->canSerialize()) {
+		for (auto& entry : _data.vars) {
+			if (entry.second.var->canSerialize()) {
 				const char8_t* const name = entry.first.getBuffer();
 
 				if (!reader.exists(name)) {
 					// Skip over optional variables.
-					if (entry.second->isOptional()) {
+					if (entry.second.var->isOptional()) {
 						continue;
 
 					} else {
@@ -398,7 +59,7 @@ bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, T
 				}
 
 				Shibboleth::ScopeGuard scope = reader.enterElementGuard(name);
-				entry.second->load(reader, object);
+				entry.second.var->load(reader, object);
 			}
 		}
 	}
@@ -409,15 +70,15 @@ bool ReflectionDefinition<T>::load(const Shibboleth::ISerializeReader& reader, T
 template <class T>
 void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const T& object, Gaff::Flags<SaveFlags> flags) const
 {
-	if (_serialize_save && !flags.testAny(SaveFlags::ReflectionSave)) {
-		_serialize_save(writer, object);
+	if (_data.serialize_save && !flags.testAny(SaveFlags::ReflectionSave)) {
+		_data.serialize_save(writer, object);
 
 	} else {
 		uint32_t writable_vars = 0;
 
 		// Count how many vars we're actually writing to the object.
-		for (auto& entry : _vars) {
-			if (entry.second->canSerialize()) {
+		for (auto& entry : _data.vars) {
+			if (entry.second.var->canSerialize()) {
 				++writable_vars;
 			}
 		}
@@ -427,14 +88,14 @@ void ReflectionDefinition<T>::save(Shibboleth::ISerializeWriter& writer, const T
 
 		writer.writeUInt64(u8"version", getReflectionInstance().getVersion().getHash());
 
-		for (auto& entry : _vars) {
-			if (entry.second->canSerialize()) {
+		for (auto& entry : _data.vars) {
+			if (entry.second.var->canSerialize()) {
 				writer.writeKey(entry.first.getBuffer());
 
-				if (entry.second->isSerializingDefaultValue()) {
+				if (entry.second.var->isSerializingDefaultValue()) {
 					writer.writeNull();
 				} else {
-					entry.second->save(writer, object);
+					entry.second.var->save(writer, object);
 				}
 			}
 		}
@@ -452,14 +113,7 @@ Gaff::Hash64 ReflectionDefinition<T>::getInstanceHash(const void* object, Gaff::
 template <class T>
 Gaff::Hash64 ReflectionDefinition<T>::getInstanceHash(const T& object, Gaff::Hash64 init) const
 {
-	return (_instance_hash) ? _instance_hash(object, init) : Gaff::FNV1aHash64T(object, init);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::setInstanceHash(InstanceHashFunc hash_func)
-{
-	_instance_hash = hash_func;
-	return *this;
+	return (_data.instance_hash) ? _data.instance_hash(object, init) : Gaff::FNV1aHash64T(object, init);
 }
 
 template <class T>
@@ -469,13 +123,13 @@ const void* ReflectionDefinition<T>::getInterface(Gaff::Hash64 class_hash, const
 		return object;
 	}
 
-	auto it = _base_class_offsets.find(class_hash);
+	const auto it = _data.base_classes.find(class_hash);
 
-	if (it == _base_class_offsets.end()) {
+	if (it == _data.base_classes.end()) {
 		return nullptr;
 	}
 
-	return reinterpret_cast<const int8_t*>(object) + it->second;
+	return reinterpret_cast<const int8_t*>(object) + it->second.offset;
 }
 
 template <class T>
@@ -503,8 +157,8 @@ bool ReflectionDefinition<T>::hasInterface(Gaff::Hash64 class_hash) const
 		return true;
 	}
 
-	auto it = _base_class_offsets.find(class_hash);
-	return it != _base_class_offsets.end();
+	const auto it = _data.base_classes.find(class_hash);
+	return it != _data.base_classes.end();
 }
 
 template <class T>
@@ -534,37 +188,20 @@ bool ReflectionDefinition<T>::isBuiltIn(void) const
 template <class T>
 int32_t ReflectionDefinition<T>::getNumVars(void) const
 {
-	return _num_vars;
+	return static_cast<int32_t>(_data.vars.size());
 }
 
 template <class T>
 Shibboleth::HashStringView32<> ReflectionDefinition<T>::getVarName(int32_t index) const
 {
-	GAFF_ASSERT(index >= 0 && index < _num_vars);
-
-	int32_t index_begin = 0;
-
-	for (const auto& entry : _vars) {
-		const auto& sub_vars = entry.second->getSubVars();
-		const int32_t index_end = index_begin + 1 + static_cast<int32_t>(sub_vars.size());
-
-		if (Gaff::Between(index, index_begin, index_end - 1)) {
-			if (index == index_begin) {
-				return Shibboleth::HashStringView32<>(entry.first);
-			} else {
-				return sub_vars[index - index_begin + 1].first;
-			}
-		}
-	}
-
-	GAFF_ASSERT(false);
-	return Shibboleth::HashStringView32<>();
+	GAFF_ASSERT(index >= 0 && index < getNumVars());
+	return Shibboleth::HashStringView32<>{ _data.vars.at(index).first };
 }
 
 template <class T>
 IReflectionVar* ReflectionDefinition<T>::getVar(int32_t index) const
 {
-	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_vars.size()));
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_data.vars.size()));
 	return getVarT(index);
 }
 
@@ -577,96 +214,60 @@ IReflectionVar* ReflectionDefinition<T>::getVar(Gaff::Hash32 name) const
 template <class T>
 int32_t ReflectionDefinition<T>::getNumFuncs(void) const
 {
-	return static_cast<int32_t>(_funcs.size());
+	return static_cast<int32_t>(_data.funcs.size());
 }
 
 template <class T>
 int32_t ReflectionDefinition<T>::getNumFuncOverrides(int32_t index) const
 {
-	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_funcs.size()));
-
-	int32_t count = 0;
-
-	for (const IRefFuncPtr& func : (_funcs.begin() + index)->second.func) {
-		if (!func) {
-			break;
-		}
-
-		++count;
-	}
-
-	return count;
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_data.funcs.size()));
+	return static_cast<int32_t>(_data.funcs.at(index).second.overrides.size());
 }
 
 template <class T>
 Shibboleth::HashStringView32<> ReflectionDefinition<T>::getFuncName(int32_t index) const
 {
-	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_funcs.size()));
-	return Shibboleth::HashStringView32<>((_funcs.begin() + index)->first);
-}
-
-template <class T>
-int32_t ReflectionDefinition<T>::getFuncIndex(Gaff::Hash32 name) const
-{
-	const auto it = _funcs.find(name);
-	return (it == _funcs.end()) ? -1 : static_cast<int32_t>(eastl::distance(_funcs.begin(), it));
+	GAFF_ASSERT(index >= 0 && index < getNumFuncs());
+	return Shibboleth::HashStringView32<>{ _data.funcs.at(index).first };
 }
 
 template <class T>
 int32_t ReflectionDefinition<T>::getNumStaticFuncs(void) const
 {
-	return static_cast<int32_t>(_static_funcs.size());
+	return static_cast<int32_t>(_data.static_funcs.size());
 }
 
 template <class T>
 int32_t ReflectionDefinition<T>::getNumStaticFuncOverrides(int32_t index) const
 {
-	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_static_funcs.size()));
-
-	int32_t count = 0;
-
-	for (const IRefStaticFuncPtr& func : (_static_funcs.begin() + index)->second.func) {
-		if (!func) {
-			break;
-		}
-
-		++count;
-	}
-
-	return count;
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_data.static_funcs.size()));
+	return static_cast<int32_t>(_data.static_funcs.at(index).second.overrides.size());
 }
 
 template <class T>
 Shibboleth::HashStringView32<> ReflectionDefinition<T>::getStaticFuncName(int32_t index) const
 {
-	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_static_funcs.size()));
-	return Shibboleth::HashStringView32<>((_static_funcs.begin() + index)->first);
-}
-
-template <class T>
-int32_t ReflectionDefinition<T>::getStaticFuncIndex(Gaff::Hash32 name) const
-{
-	const auto it = _static_funcs.find(name);
-	return (it == _static_funcs.end()) ? -1 : static_cast<int32_t>(eastl::distance(_static_funcs.begin(), it));
+	GAFF_ASSERT(index >= 0 && index < getNumStaticFuncs());
+	return Shibboleth::HashStringView32<>{ _data.static_funcs.at(index).first };
 }
 
 template <class T>
 int32_t ReflectionDefinition<T>::getNumClassAttrs(void) const
 {
-	return static_cast<int32_t>(_class_attrs.size());
+	return static_cast<int32_t>(_data.class_attrs.size());
 }
 
 template <class T>
 const IAttribute* ReflectionDefinition<T>::getClassAttr(Gaff::Hash64 attr_name) const
 {
-	return getAttribute(_class_attrs, attr_name);
+	return getAttribute(_data.class_attrs, attr_name);
 }
 
 template <class T>
 const IAttribute* ReflectionDefinition<T>::getClassAttr(int32_t index) const
 {
 	GAFF_ASSERT(index < getNumClassAttrs());
-	return _class_attrs[index].get();
+	return _data.class_attrs[index].get();
 }
 
 template <class T>
@@ -678,39 +279,44 @@ bool ReflectionDefinition<T>::hasClassAttr(Gaff::Hash64 attr_name) const
 template <class T>
 void ReflectionDefinition<T>::addClassAttr(IAttribute& attribute)
 {
-	addAttributes(_class_attrs, attribute);
+	ReflectionBuilder<T, T> builder{ _data, *this };
+	builder.classAttrs(attribute);
 }
 
 template <class T>
 int32_t ReflectionDefinition<T>::getNumVarAttrs(Gaff::Hash32 name) const
 {
-	const auto it = _var_attrs.find(name);
-	return (it != _var_attrs.end()) ? static_cast<int32_t>(it->second.size()) : 0;
+	const auto it = _data.vars.find(name);
+	GAFF_ASSERT(it != _data.vars.end());
+
+	return static_cast<int32_t>(it->second.attrs.size());
 }
 
 template <class T>
 const IAttribute* ReflectionDefinition<T>::getVarAttr(Gaff::Hash32 name, Gaff::Hash64 attr_name) const
 {
-	const auto it = _var_attrs.find(name);
-	GAFF_ASSERT(it != _var_attrs.end());
+	const auto it = _data.vars.find(name);
+	GAFF_ASSERT(it != _data.vars.end());
 
-	return getAttribute(it->second, attr_name);
+	return getAttribute(it->second.attrs, attr_name);
 }
 
 template <class T>
 const IAttribute* ReflectionDefinition<T>::getVarAttr(Gaff::Hash32 name, int32_t index) const
 {
-	const auto it = _var_attrs.find(name);
-	GAFF_ASSERT(it != _var_attrs.end());
-	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(it->second.size()));
-	return it->second[index].get();
+	const auto it = _data.vars.find(name);
+
+	GAFF_ASSERT(it != _data.vars.end());
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(it->second.attrs.size()));
+
+	return it->second.attrs[index].get();
 }
 
 template <class T>
 bool ReflectionDefinition<T>::hasVarAttr(Gaff::Hash64 attr_name) const
 {
-	for (const auto& attrs : _var_attrs) {
-		if (getAttribute(attrs.second, attr_name) != nullptr) {
+	for (const auto& entry : _data.vars) {
+		if (getAttribute(entry.second.attrs, attr_name)) {
 			return true;
 		}
 	}
@@ -719,64 +325,50 @@ bool ReflectionDefinition<T>::hasVarAttr(Gaff::Hash64 attr_name) const
 }
 
 template <class T>
-int32_t ReflectionDefinition<T>::getNumFuncAttrs(Gaff::Hash64 name_arg_hash) const
+int32_t ReflectionDefinition<T>::getNumFuncAttrs(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash) const
 {
-	const auto it = _func_attrs.find(name_arg_hash);
+	const auto it = _data.funcs.find(name_hash);
+	GAFF_ASSERT(it != _data.funcs.end());
 
-	if (it == _func_attrs.end()) {
-		for (auto it_base = _base_classes.begin(); it_base != _base_classes.end(); ++it_base) {
-			const int32_t num = it_base->second->getNumFuncAttrs(name_arg_hash);
+	const auto it_override = it->second.overrides.find(args_hash);
+	GAFF_ASSERT(it_override != it->second.overrides.end());
 
-			if (num > 0) {
-				return num;
-			}
-		}
-
-	} else {
-		return static_cast<int32_t>(it->second.size());
-	}
-
-	return 0;
+	return static_cast<int32_t>(it_override->second.attrs.size());
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getFuncAttr(Gaff::Hash64 name_arg_hash, Gaff::Hash64 attr_name) const
+const IAttribute* ReflectionDefinition<T>::getFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const
 {
-	const auto it = _func_attrs.find(name_arg_hash);
-	GAFF_ASSERT(it != _func_attrs.end());
+	const auto it = _data.funcs.find(name_hash);
+	GAFF_ASSERT(it != _data.funcs.end());
 
-	return getAttribute(it->second, attr_name);
+	const auto it_override = it->second.overrides.find(args_hash);
+	GAFF_ASSERT(it_override != it->second.overrides.end());
+
+	return getAttribute(it_override->second.attrs, attr_name);
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getFuncAttr(Gaff::Hash64 name_arg_hash, int32_t index) const
+const IAttribute* ReflectionDefinition<T>::getFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, int32_t index) const
 {
-	const auto it = _func_attrs.find(name_arg_hash);
+	const auto it = _data.funcs.find(name_hash);
+	GAFF_ASSERT(it != _data.funcs.end());
 
-	if (it == _func_attrs.end()) {
-		for (auto it_base = _base_classes.begin(); it_base != _base_classes.end(); ++it_base) {
-			const int32_t num = it_base->second->getNumFuncAttrs(name_arg_hash);
+	const auto it_override = it->second.overrides.find(args_hash);
+	GAFF_ASSERT(it_override != it->second.overrides.end());
 
-			if (num > 0) {
-				GAFF_ASSERT(index < num);
-				return it_base->second->getFuncAttr(name_arg_hash, index);
-			}
-		}
-
-	} else {
-		GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(it->second.size()));
-		return it->second[index].get();
-	}
-
-	return nullptr;
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(it_override->second.attrs.size()));
+	return it_override->second.attrs[index].get();
 }
 
 template <class T>
 bool ReflectionDefinition<T>::hasFuncAttr(Gaff::Hash64 attr_name) const
 {
-	for (const auto& attrs : _func_attrs) {
-		if (getFuncAttr(attrs.first, attr_name) != nullptr) {
-			return true;
+	for (const auto& entry : _data.funcs) {
+		for (const auto& override : entry.second.overrides) {
+			if (getAttribute(override.second.attrs, attr_name)) {
+				return true;
+			}
 		}
 	}
 
@@ -784,36 +376,50 @@ bool ReflectionDefinition<T>::hasFuncAttr(Gaff::Hash64 attr_name) const
 }
 
 template <class T>
-int32_t ReflectionDefinition<T>::getNumStaticFuncAttrs(Gaff::Hash64 name_arg_hash) const
+int32_t ReflectionDefinition<T>::getNumStaticFuncAttrs(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash) const
 {
-	const auto it = _static_func_attrs.find(name_arg_hash);
-	return (it != _static_func_attrs.end()) ? static_cast<int32_t>(it->second.size()) : 0;
+	const auto it = _data.static_funcs.find(name_hash);
+	GAFF_ASSERT(it != _data.static_funcs.end());
+
+	const auto it_override = it->second.overrides.find(args_hash);
+	GAFF_ASSERT(it_override != it->second.overrides.end());
+
+	return static_cast<int32_t>(it_override->second.attrs.size());
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(Gaff::Hash64 name_arg_hash, Gaff::Hash64 attr_name) const
+const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const
 {
-	const auto it = _static_func_attrs.find(name_arg_hash);
-	GAFF_ASSERT(it != _static_func_attrs.end());
+	const auto it = _data.static_funcs.find(name_hash);
+	GAFF_ASSERT(it != _data.static_funcs.end());
 
-	return getAttribute(it->second, attr_name);
+	const auto it_override = it->second.overrides.find(args_hash);
+	GAFF_ASSERT(it_override != it->second.overrides.end());
+
+	return getAttribute(it_override->second.attrs, attr_name);
 }
 
 template <class T>
-const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(Gaff::Hash64 name_arg_hash, int32_t index) const
+const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, int32_t index) const
 {
-	const auto it = _static_func_attrs.find(name_arg_hash);
-	GAFF_ASSERT(it != _static_func_attrs.end());
-	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(it->second.size()));
-	return it->second[index].get();
+	const auto it = _data.static_funcs.find(name_hash);
+	GAFF_ASSERT(it != _data.static_funcs.end());
+
+	const auto it_override = it->second.overrides.find(args_hash);
+	GAFF_ASSERT(it_override != it->second.overrides.end());
+
+	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(it_override->second.attrs.size()));
+	return it_override->second.attrs[index].get();
 }
 
 template <class T>
 bool ReflectionDefinition<T>::hasStaticFuncAttr(Gaff::Hash64 attr_name) const
 {
-	for (const auto& attrs : _static_func_attrs) {
-		if (getStaticFuncAttr(attrs.first, attr_name) != nullptr) {
-			return true;
+	for (const auto& entry : _data.static_funcs) {
+		for (const auto& override : entry.second.overrides) {
+			if (getAttribute(override.second.attrs, attr_name)) {
+				return true;
+			}
 		}
 	}
 
@@ -823,50 +429,51 @@ bool ReflectionDefinition<T>::hasStaticFuncAttr(Gaff::Hash64 attr_name) const
 template <class T>
 int32_t ReflectionDefinition<T>::getNumConstructors(void) const
 {
-	return static_cast<int32_t>(_ctors.size());
+	return static_cast<int32_t>(_data.factories.size());
 }
 
 template <class T>
 IReflectionStaticFunctionBase* ReflectionDefinition<T>::getConstructor(int32_t index) const
 {
-	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_ctors.size()));
-	return ((_ctors.begin()) + index)->second.get();
+	GAFF_ASSERT(index >= 0 && index < getNumConstructors());
+	return _data.factories.at(static_cast<size_t>(index)).second.ctor.get();
 }
 
 template <class T>
-IReflectionDefinition::VoidFunc ReflectionDefinition<T>::getConstructor(Gaff::Hash64 ctor_hash) const
+VoidFunc ReflectionDefinition<T>::getConstructor(Gaff::Hash64 ctor_hash) const
 {
-	const auto it = _ctors.find(ctor_hash);
-	return it == _ctors.end() ? nullptr : it->second->getFunc();
+	const auto it = _data.factories.find(ctor_hash);
+	return (it == _data.factories.end()) ? nullptr : it->second.ctor->getFunc();
 }
 
 template <class T>
-IReflectionDefinition::VoidFunc ReflectionDefinition<T>::getFactory(Gaff::Hash64 ctor_hash) const
+VoidFunc ReflectionDefinition<T>::getFactory(Gaff::Hash64 ctor_hash) const
 {
-	const auto it = _factories.find(ctor_hash);
-	return it == _factories.end() ? nullptr : it->second;
+	const auto it = _data.factories.find(ctor_hash);
+	return (it == _data.factories.end()) ? nullptr : it->second.factory;
 }
 
 template <class T>
 IReflectionStaticFunctionBase* ReflectionDefinition<T>::getStaticFunc(int32_t name_index, int32_t override_index) const
 {
-	GAFF_ASSERT(name_index >= 0 && name_index < static_cast<int32_t>(_static_funcs.size()));
-	GAFF_ASSERT(override_index < StaticFuncData::k_num_overloads);
+	GAFF_ASSERT(name_index >= 0 && name_index < getNumStaticFuncs());
 
-	return (_static_funcs.begin() + name_index)->second.func[override_index].get();
+	const auto& static_func_entry = _data.static_funcs.at(name_index);
+
+	GAFF_ASSERT(override_index >= 0 && override_index < static_cast<int32_t>(static_func_entry.second.overrides.size()));
+
+	const auto& override_entry = static_func_entry.second.overrides.at(override_index);
+	return override_entry.second.func.get();
 }
 
 template <class T>
 IReflectionStaticFunctionBase* ReflectionDefinition<T>::getStaticFunc(Gaff::Hash32 name, Gaff::Hash64 args) const
 {
-	const auto it = _static_funcs.find(name);
+	const auto it_static_funcs = _data.static_funcs.find(name);
 
-	if (it != _static_funcs.end()) {
-		for (int32_t i = 0; i < StaticFuncData::k_num_overloads; ++i) {
-			if (it->second.hash[i] == args) {
-				return it->second.func[i].get();
-			}
-		}
+	if (it_static_funcs != _data.static_funcs.end()) {
+		const auto it_override = it_static_funcs->second.overrides.find(args);
+		return (it_override == it_static_funcs->second.overrides.end()) ? nullptr : it_override->second.func.get();
 	}
 
 	return nullptr;
@@ -875,23 +482,24 @@ IReflectionStaticFunctionBase* ReflectionDefinition<T>::getStaticFunc(Gaff::Hash
 template <class T>
 IReflectionFunctionBase* ReflectionDefinition<T>::getFunc(int32_t name_index, int32_t override_index) const
 {
-	GAFF_ASSERT(name_index >= 0 && name_index < static_cast<int32_t>(_funcs.size()));
-	GAFF_ASSERT(override_index < FuncData::k_num_overloads);
+	GAFF_ASSERT(name_index >= 0 && name_index < getNumFuncs());
 
-	return (_funcs.begin() + name_index)->second.func[override_index].get();
+	const auto& func_entry = _data.funcs.at(name_index);
+
+	GAFF_ASSERT(override_index >= 0 && override_index < static_cast<int32_t>(func_entry.second.overrides.size()));
+
+	const auto& override_entry = func_entry.second.overrides.at(override_index);
+	return override_entry.second.func.get();
 }
 
 template <class T>
 IReflectionFunctionBase* ReflectionDefinition<T>::getFunc(Gaff::Hash32 name, Gaff::Hash64 args) const
 {
-	const auto it = _funcs.find(name);
+	const auto it_funcs = _data.funcs.find(name);
 
-	if (it != _funcs.end()) {
-		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
-			if (it->second.hash[i] == args) {
-				return it->second.func[i].get();
-			}
-		}
+	if (it_funcs != _data.funcs.end()) {
+		const auto it_override = it_funcs->second.overrides.find(args);
+		return (it_override == it_funcs->second.overrides.end()) ? nullptr : it_override->second.func.get();
 	}
 
 	return nullptr;
@@ -964,1254 +572,50 @@ bool ReflectionDefinition<T>::isDestructible(void) const
 template <class T>
 IVar<T>* ReflectionDefinition<T>::getVarT(int32_t index) const
 {
-	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_vars.size()));
-	return (_vars.begin() + index)->second.get();
+	GAFF_ASSERT(index >= 0 && index < getNumVars());
+	return _data.vars.at(index).second.var.get();
 }
 
 template <class T>
 IVar<T>* ReflectionDefinition<T>::getVarT(Gaff::Hash32 name) const
 {
-	const auto it = _vars.find(name);
-	return (it == _vars.end()) ? nullptr : it->second.get();
-}
-
-template <class T>
-template <class Base>
-ReflectionDefinition<T>& ReflectionDefinition<T>::base(const char8_t* name)
-{
-	static_assert(std::is_base_of_v<Base, T>, "Class is not a base class of T.");
-
-	const ptrdiff_t offset = Gaff::OffsetOfClass<Base, T>();
-	auto pair = eastl::make_pair(
-		Shibboleth::HashString64<>(name, REFLECTION_ALLOCATOR),
-		offset
-	);
-
-	GAFF_ASSERT(_base_class_offsets.find(pair.first) == _base_class_offsets.end());
-	_base_class_offsets.insert(std::move(pair));
-
-	return *this;
-}
-
-template <class T>
-template <class Base>
-ReflectionDefinition<T>& ReflectionDefinition<T>::base(void)
-{
-	static_assert(Reflection<Base>::HasReflection || Hash::ClassHashable<Base>::k_is_hashable, "Base class has no reflection and is not hashable.");
-	static_assert(std::is_base_of_v<Base, T>, "Class is not a base class of T.");
-
-	if constexpr (Reflection<Base>::HasReflection) {
-		// So that hasInterface() calls will properly report inheritance if the base class hasn't been defined yet.
-		if (_base_class_offsets.find(Reflection<Base>::GetNameHash()) == _base_class_offsets.end()) {
-			base<Base>(Reflection<Base>::GetName());
-		}
-
-		// Add vars, funcs, and static funcs and attrs from base class.
-		if (Reflection<Base>::GetInstance().isDefined()) {
-			const ReflectionDefinition<Base>& base_ref_def = Reflection<Base>::GetReflectionDefinition();
-
-			// For calling base class functions.
-			_base_classes.emplace(
-				Reflection<Base>::GetNameHash(),
-				&base_ref_def
-			);
-
-			// Base class vars
-			for (auto& it : base_ref_def._vars) {
-				GAFF_ASSERT(_vars.find(it.first) == _vars.end());
-
-				eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
-					it.first,
-					IVarPtr(SHIB_ALLOCT(BaseVarPtr<Base> , REFLECTION_ALLOCATOR, it.second.get()))
-				);
-
-				pair.second->setNoSerialize(!it.second->canSerialize());
-				pair.second->setReadOnly(it.second->isReadOnly());
-
-				_vars.insert(std::move(pair));
-
-				// Base class var attrs
-				const auto attr_it = base_ref_def._var_attrs.find(pair.first.getHash());
-
-				// Copy attributes
-				if (attr_it != base_ref_def._var_attrs.end()) {
-					auto& attrs = _var_attrs[pair.first.getHash()];
-					attrs.set_allocator(REFLECTION_ALLOCATOR);
-
-					for (const IAttributePtr& attr : attr_it->second) {
-						if (attr->canInherit()) {
-							attrs.emplace_back(attr->clone());
-						}
-					}
-				}
-			}
-
-			// Base class funcs
-			for (auto& it : base_ref_def._funcs) {
-				FuncData& func_data = _funcs[it.first];
-
-				for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
-					if (!it.second.func[i]) {
-						break;
-					}
-
-					int32_t index = -1;
-
-					for (int32_t j = 0; j < FuncData::k_num_overloads; ++j) {
-						if (!func_data.func[j]) {
-							index = j;
-							break;
-						}
-
-						if (it.second.hash[i] == func_data.hash[j]) {
-							break;
-						}
-
-						--index;
-					}
-
-					if (index < 0) {
-						GAFF_ASSERT_MSG(index > -(FuncData::k_num_overloads + 1), "Function overloading only supports %i overloads per function name!", FuncData::k_num_overloads);
-						continue;
-					}
-
-					ReflectionBaseFunction* const ref_func = SHIB_ALLOCT(
-						ReflectionBaseFunction,
-						REFLECTION_ALLOCATOR,
-						it.second.func[i]->getBaseRefDef(),
-						it.second.func[i].get()
-					);
-
-					func_data.hash[index] = it.second.hash[i];
-					func_data.func[index].reset(ref_func);
-
-					// Copy attributes.
-					const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(func_data.hash[i], Gaff::FNV1aHash64T(Gaff::FNV1aHash32T(it.first.getHash())));
-					const auto attr_it = base_ref_def._func_attrs.find(attr_hash);
-
-					if (attr_it != base_ref_def._func_attrs.end()) {
-						auto& attrs = _func_attrs[attr_hash];
-						attrs.set_allocator(REFLECTION_ALLOCATOR);
-
-						for (const IAttributePtr& attr : attr_it->second) {
-							if (attr->canInherit()) {
-								attrs.emplace_back(attr->clone());
-							}
-						}
-					}
-				}
-			}
-
-			// Base class static funcs
-			for (auto& it : base_ref_def._static_funcs) {
-				StaticFuncData& static_func_data = _static_funcs[it.first];
-
-				for (int32_t i = 0; i < StaticFuncData::k_num_overloads; ++i) {
-					if (!it.second.func[i]) {
-						break;
-					}
-
-					int32_t index = -1;
-
-					for (int32_t j = 0; j < StaticFuncData::k_num_overloads; ++j) {
-						if (!static_func_data.func[j]) {
-							index = j;
-							break;
-						}
-
-						if (it.second.hash[i] == static_func_data.hash[j]) {
-							break;
-						}
-					}
-
-					if (index < 0) {
-						GAFF_ASSERT_MSG(index > -(StaticFuncData::k_num_overloads + 1), "Function overloading only supports %i overloads per function name!", StaticFuncData::k_num_overloads);
-						continue;
-					}
-
-					static_func_data.hash[index] = it.second.hash[i];
-					static_func_data.func[index].reset(it.second.func[i]->clone());
-
-					// Copy attributes.
-					const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(static_func_data.hash[i], Gaff::FNV1aHash64T(Gaff::FNV1aHash32T(it.first.getHash())));
-					const auto attr_it = base_ref_def._static_func_attrs.find(attr_hash);
-
-					if (attr_it != base_ref_def._static_func_attrs.end()) {
-						auto& attrs = _static_func_attrs[attr_hash];
-						attrs.set_allocator(REFLECTION_ALLOCATOR);
-
-						for (const IAttributePtr& attr : attr_it->second) {
-							if (attr->canInherit()) {
-								attrs.emplace_back(attr->clone());
-							}
-						}
-					}
-				}
-			}
-
-			// Base class class attrs
-			for (const IAttributePtr& attr : base_ref_def._class_attrs) {
-				if (attr->canInherit()) {
-					_class_attrs.emplace_back(attr->clone());
-				}
-			}
-
-			// Register for callback if base class hasn't been defined yet.
-		} else {
-			++_dependents_remaining;
-
-			eastl::function<void (void)> cb(&RegisterBaseVariables < Base >);
-			Reflection<Base>::GetInstance().registerOnDefinedCallback(std::move(cb));
-		}
-
-		return *this;
-
-	} else {
-		return base<Base>(Hash::ClassHashable<Base>::GetName().data.data());
-	}
-}
-
-template <class T>
-template <class... Args>
-ReflectionDefinition<T>& ReflectionDefinition<T>::ctor(Gaff::Hash64 factory_hash)
-{
-	GAFF_ASSERT(!getFactory(factory_hash));
-
-	ConstructFuncT<T, Args...> construct_func = ConstructFuncImpl<T, Args...>;
-	FactoryFuncT<T, Args...> factory_func = FactoryFuncImpl<T, Args...>;
-
-	using ConstructorFunction = ReflectionStaticFunction<void, T*, Args&&...>;
-
-	_ctors[factory_hash].reset(SHIB_ALLOCT(ConstructorFunction, REFLECTION_ALLOCATOR, construct_func));
-	_factories.emplace(factory_hash, reinterpret_cast<VoidFunc>(factory_func));
-
-	return *this;
-}
-
-template <class T>
-template <class... Args>
-ReflectionDefinition<T>& ReflectionDefinition<T>::ctor(void)
-{
-	constexpr Gaff::Hash64 hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
-	return ctor<Args...>(hash);
-}
-
-template <class T>
-template <class Var, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
-{
-	static_assert(name_size > 0, "Name cannot be an empty string.");
-
-	using RefVarType = VarTypeHelper<T, Var>::Type;
-
-	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
-		Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
-		IVarPtr(SHIB_ALLOCT(RefVarType, REFLECTION_ALLOCATOR, ptr))
-	);
-
-	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
-
-	const Gaff::Hash32 hash_name = Gaff::FNV1aHash32Const(name);
-
-	pair.second->setName(hash_name);
-
-	auto& attrs = _var_attrs[hash_name];
-	attrs.set_allocator(REFLECTION_ALLOCATOR);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(*pair.second, ptr, attrs, attributes...);
-	}
-
-	pair.second->setSubVarBaseName(name);
-	_num_vars += 1 + static_cast<int32_t>(pair.second->getSubVars().size());
-
-	_vars.insert(std::move(pair));
-
-	return *this;
-}
-
-template <class T>
-template <class Var, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Var T::*ptr, const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return var(temp_name, ptr, attributes...);
-}
-
-template <class T>
-template <class Ret, class Var, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char8_t (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
-{
-	static_assert(name_size > 0, "Name cannot be an empty string.");
-
-	using GetFunc = decltype(getter);
-	using SetFunc = decltype(setter);
-	using FuncStorage = GetterSetterFuncs<GetFunc, SetFunc>;
-	using RefVarType = VarTypeHelper<T, FuncStorage>::Type;
-
-	eastl::pair<Shibboleth::HashString32<>, IVarPtr> pair(
-		Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
-		IVarPtr(SHIB_ALLOCT(RefVarType, REFLECTION_ALLOCATOR, FuncStorage(getter, setter)))
-	);
-
-	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
-
-	const Gaff::Hash32 hash_name = Gaff::FNV1aHash32Const(name);
-
-	pair.second->setName(hash_name);
-
-	auto& attrs = _var_attrs[hash_name];
-	attrs.set_allocator(REFLECTION_ALLOCATOR);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(*pair.second, getter, setter, attrs, attributes...);
-	}
-
-	pair.second->setSubVarBaseName(name);
-	_num_vars += 1 + static_cast<int32_t>(pair.second->getSubVars().size());
-
-	_vars.insert(std::move(pair));
-
-	return *this;
-}
-
-template <class T>
-template <class Ret, class Var, size_t name_size, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return var(temp_name, getter, setter, attributes...);
-}
-
-template <class T>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
-{
-	static_assert(name_size > 0, "Name cannot be an empty string.");
-
-	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
-	auto it = _funcs.find(Gaff::FNV1aHash32Const(name));
-
-	ReflectionFunction<true, Ret, Args...>* ref_func = nullptr;
-
-	if (it == _funcs.end()) {
-		ref_func = SHIB_ALLOCT(
-			GAFF_SINGLE_ARG(ReflectionFunction<true, Ret, Args...>),
-			REFLECTION_ALLOCATOR,
-			ptr
-		);
-
-		eastl::pair<Shibboleth::HashString32<>, FuncData> pair(
-			Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
-			FuncData()
-		);
-
-		it = _funcs.insert(std::move(pair)).first;
-		it->second.func[0].reset(ref_func);
-		it->second.hash[0] = arg_hash;
-
-	} else {
-		FuncData& func_data = it->second;
-
-		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
-			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
-
-			if (!func_data.func[i] || func_data.func[i]->isBase()) {
-				ref_func = SHIB_ALLOCT(
-					GAFF_SINGLE_ARG(ReflectionFunction<true, Ret, Args...>),
-					REFLECTION_ALLOCATOR,
-					ptr
-				);
-
-				func_data.func[i].reset(ref_func);
-				func_data.hash[i] = arg_hash;
-				break;
-			}
-		}
-
-		GAFF_ASSERT_MSG(ref_func, "Function overloading only supports 8 overloads per function name!");
-	}
-
-	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
-	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
-
-	auto& attrs = _func_attrs[attr_hash];
-	attrs.set_allocator(REFLECTION_ALLOCATOR);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(*ref_func, ptr, attrs, attributes...);
-	}
-
-	return *this;
-}
-
-template <class T>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return func(temp_name, ptr, attributes...);
-}
-
-template <class T>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
-{
-	static_assert(name_size > 0, "Name cannot be an empty string.");
-
-	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
-	auto it = _funcs.find(Gaff::FNV1aHash32Const(name));
-
-	ReflectionFunction<false, Ret, Args...>* ref_func = nullptr;
-
-	if (it == _funcs.end()) {
-		ref_func = SHIB_ALLOCT(
-			GAFF_SINGLE_ARG(ReflectionFunction<false, Ret, Args...>),
-			REFLECTION_ALLOCATOR,
-			ptr
-		);
-
-		it = _funcs.emplace(
-			Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
-			FuncData()
-		).first;
-
-		it->second.func[0].reset(ref_func);
-		it->second.hash[0] = arg_hash;
-
-	} else {
-		FuncData& func_data = it->second;
-
-		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
-			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
-
-			if (!func_data.func[i] || func_data.func[i]->isBase()) {
-				ref_func = SHIB_ALLOCT(
-					GAFF_SINGLE_ARG(ReflectionFunction<false, Ret, Args...>),
-					REFLECTION_ALLOCATOR,
-					ptr
-				);
-
-				func_data.func[i].reset(ref_func);
-				func_data.hash[i] = arg_hash;
-				break;
-			}
-		}
-
-		GAFF_ASSERT_MSG(ref_func, "Function overloading only supports 8 overloads per function name!");
-	}
-
-	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
-	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
-
-	auto& attrs = _func_attrs[attr_hash];
-	attrs.set_allocator(REFLECTION_ALLOCATOR);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(*ref_func, ptr, attrs, attributes...);
-	}
-
-	return *this;
-}
-
-template <class T>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return func(temp_name, ptr, attributes...);
-}
-
-template <class T>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes)
-{
-	static_assert(name_size > 0, "Name cannot be an empty string.");
-
-	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
-	auto it = _funcs.find(Gaff::FNV1aHash32Const(name));
-
-	ReflectionExtensionFunction<true, Ret, Args...>* ref_func = nullptr;
-
-	if (it == _funcs.end()) {
-		ref_func = SHIB_ALLOCT(
-			GAFF_SINGLE_ARG(ReflectionExtensionFunction<true, Ret, Args...>),
-			REFLECTION_ALLOCATOR,
-			ptr
-		);
-
-		it = _funcs.emplace(
-			Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
-			FuncData()
-		).first;
-
-		it->second.func[0].reset(ref_func);
-		it->second.hash[0] = arg_hash;
-
-	} else {
-		FuncData& func_data = it->second;
-
-		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
-			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
-
-			if (!func_data.func[i] || func_data.func[i]->isBase()) {
-				ref_func = SHIB_ALLOCT(
-					GAFF_SINGLE_ARG(ReflectionExtensionFunction<true, Ret, Args...>),
-					REFLECTION_ALLOCATOR,
-					ptr
-				);
-
-				func_data.func[i].reset(ref_func);
-				func_data.hash[i] = arg_hash;
-				break;
-			}
-		}
-
-		GAFF_ASSERT_MSG(ref_func, "Function overloading only supports 8 overloads per function name!");
-	}
-
-	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
-	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
-
-	auto& attrs = _func_attrs[attr_hash];
-	attrs.set_allocator(REFLECTION_ALLOCATOR);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(*ref_func, ptr, attrs, attributes...);
-	}
-
-	return *this;
-}
-
-template <class T>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return func(temp_name, ptr, attributes...);
-}
-
-template <class T>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char8_t (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes)
-{
-	static_assert(name_size > 0, "Name cannot be an empty string.");
-
-	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
-	auto it = _funcs.find(Gaff::FNV1aHash32Const(name));
-
-	ReflectionExtensionFunction<false, Ret, Args...>* ref_func = nullptr;
-
-	if (it == _funcs.end()) {
-		ref_func = SHIB_ALLOCT(
-			GAFF_SINGLE_ARG(ReflectionExtensionFunction<false, Ret, Args...>),
-			REFLECTION_ALLOCATOR,
-			ptr
-		);
-
-		it = _funcs.emplace(
-			Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
-			FuncData()
-		).first;
-
-		it->second.func[0].reset(ref_func);
-		it->second.hash[0] = arg_hash;
-
-	} else {
-		FuncData& func_data = it->second;
-
-		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
-			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
-
-			if (!func_data.func[i] || func_data.func[i]->isBase()) {
-				ref_func = SHIB_ALLOCT(
-					GAFF_SINGLE_ARG(ReflectionExtensionFunction<false, Ret, Args...>),
-					REFLECTION_ALLOCATOR,
-					ptr
-				);
-
-				func_data.func[i].reset(ref_func);
-				func_data.hash[i] = arg_hash;
-				break;
-			}
-		}
-
-		GAFF_ASSERT_MSG(ref_func, "Function overloading only supports 8 overloads per function name!");
-	}
-
-	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
-	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
-
-	auto& attrs = _func_attrs[attr_hash];
-	attrs.set_allocator(REFLECTION_ALLOCATOR);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(*ref_func, ptr, attrs, attributes...);
-	}
-
-	return *this;
-}
-
-template <class T>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::func(const char (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return func(temp_name, ptr, attributes...);
-}
-
-template <class T>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char8_t (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes)
-{
-	static_assert(name_size > 0, "Name cannot be an empty string.");
-
-	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
-	auto it = _static_funcs.find(Gaff::FNV1aHash32Const(name));
-
-	using StaticFuncType = ReflectionStaticFunction<Ret, Args...>;
-	StaticFuncType* ref_func = nullptr;
-
-	if (it == _static_funcs.end()) {
-		it = _static_funcs.emplace(
-			Shibboleth::HashString32<>(name, name_size - 1, REFLECTION_ALLOCATOR),
-			StaticFuncData{}
-		).first;
-
-		ref_func = SHIB_ALLOCT(StaticFuncType, REFLECTION_ALLOCATOR, func);
-		it->second.func[0].reset(ref_func);
-		it->second.hash[0] = arg_hash;
-
-	} else {
-		StaticFuncData& func_data = it->second;
-
-		for (int32_t i = 0; i < FuncData::k_num_overloads; ++i) {
-			// Replace an open slot or replace an already existing overload.
-			if (func_data.func[i] && func_data.hash[i] != arg_hash) {
-				continue;
-			}
-
-			ref_func = SHIB_ALLOCT(StaticFuncType, REFLECTION_ALLOCATOR, func);
-			func_data.func[i].reset(ref_func);
-			func_data.hash[i] = arg_hash;
-			break;
-		}
-
-		GAFF_ASSERT_MSG(ref_func, "Function overloading only supports 8 overloads per function name!");
-	}
-
-	const Gaff::Hash32 name_hash = Gaff::FNV1aHash32Const(name);
-	const Gaff::Hash64 attr_hash = Gaff::FNV1aHash64T(arg_hash, Gaff::FNV1aHash64T(name_hash));
-
-	auto& attrs = _static_func_attrs[attr_hash];
-	attrs.set_allocator(REFLECTION_ALLOCATOR);
-
-	if constexpr (sizeof...(Attrs) > 0) {
-		addAttributes(*ref_func, func, attrs, attributes...);
-	}
-
-	return *this;
-}
-
-template <class T>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::staticFunc(const char (&name)[name_size], Ret (*func)(Args...), const Attrs&... attributes)
-{
-	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return staticFunc(temp_name, func, attributes...);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opAdd(void)
-{
-	staticFunc(OP_ADD_NAME, Gaff::Add<T, Other>);
-	return staticFunc(OP_ADD_NAME, Gaff::Add<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opSub(void)
-{
-	staticFunc(OP_SUB_NAME, Gaff::Sub<T, Other>);
-	return staticFunc(OP_SUB_NAME, Gaff::Sub<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opMul(void)
-{
-	staticFunc(OP_MUL_NAME, Gaff::Mul<T, Other>);
-	return staticFunc(OP_MUL_NAME, Gaff::Mul<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opDiv(void)
-{
-	staticFunc(OP_DIV_NAME, Gaff::Div<T, Other>);
-	return staticFunc(OP_DIV_NAME, Gaff::Div<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opMod(void)
-{
-	staticFunc(OP_MOD_NAME, Gaff::Mod<T, Other>);
-	return staticFunc(OP_MOD_NAME, Gaff::Mod<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitAnd(void)
-{
-	staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<T, Other>);
-	return staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitOr(void)
-{
-	staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<T, Other>);
-	return staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitXor(void)
-{
-	staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<T, Other>);
-	return staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftLeft(void)
-{
-	staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<T, Other>);
-	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftRight(void)
-{
-	staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<T, Other>);
-	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opAnd(void)
-{
-	staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<T, Other>);
-	return staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opOr(void)
-{
-	staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<T, Other>);
-	return staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opEqual(void)
-{
-	staticFunc(OP_EQUAL_NAME, Gaff::Equal<T, Other>);
-	return staticFunc(OP_EQUAL_NAME, Gaff::Equal<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opLessThan(void)
-{
-	staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<T, Other>);
-	return staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opGreaterThan(void)
-{
-	staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<T, Other>);
-	return staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opLessThanOrEqual(void)
-{
-	staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<T, Other>);
-	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<Other, T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opGreaterThanOrEqual(void)
-{
-	staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<T, Other>);
-	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<Other, T>);
-}
-
-template <class T>
-template <class... Args>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opCall(void)
-{
-	return staticFunc(OP_CALL_NAME, Gaff::Call<T, Args...>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opIndex(void)
-{
-	return staticFunc(OP_INDEX_NAME, Gaff::Index<T, Other>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opAdd(void)
-{
-	return staticFunc(OP_ADD_NAME, Gaff::Add<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opSub(void)
-{
-	return staticFunc(OP_SUB_NAME, Gaff::Sub<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opMul(void)
-{
-	return staticFunc(OP_MUL_NAME, Gaff::Mul<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opDiv(void)
-{
-	return staticFunc(OP_DIV_NAME, Gaff::Div<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opMod(void)
-{
-	return staticFunc(OP_MOD_NAME, Gaff::Mod<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitAnd(void)
-{
-	return staticFunc(OP_BIT_AND_NAME, Gaff::BitAnd<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitOr(void)
-{
-	return staticFunc(OP_BIT_OR_NAME, Gaff::BitOr<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitXor(void)
-{
-	return staticFunc(OP_BIT_XOR_NAME, Gaff::BitXor<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitNot(void)
-{
-	return staticFunc(OP_BIT_NOT_NAME, Gaff::BitNot<T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftLeft(void)
-{
-	return staticFunc(OP_BIT_SHIFT_LEFT_NAME, Gaff::BitShiftLeft<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftRight(void)
-{
-	return staticFunc(OP_BIT_SHIFT_RIGHT_NAME, Gaff::BitShiftRight<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opAnd(void)
-{
-	return staticFunc(OP_LOGIC_AND_NAME, Gaff::LogicAnd<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opOr(void)
-{
-	return staticFunc(OP_LOGIC_OR_NAME, Gaff::LogicOr<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opEqual(void)
-{
-	return staticFunc(OP_EQUAL_NAME, Gaff::Equal<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opLessThan(void)
-{
-	return staticFunc(OP_LESS_THAN_NAME, Gaff::LessThan<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opGreaterThan(void)
-{
-	return staticFunc(OP_GREATER_THAN_NAME, Gaff::GreaterThan<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opLessThanOrEqual(void)
-{
-	return staticFunc(OP_LESS_THAN_OR_EQUAL_NAME, Gaff::LessThanOrEqual<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opGreaterThanOrEqual(void)
-{
-	return staticFunc(OP_GREATER_THAN_OR_EQUAL_NAME, Gaff::GreaterThanOrEqual<T, T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opNegate(void)
-{
-	return opMinus();
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opMinus(void)
-{
-	return staticFunc(OP_MINUS_NAME, Gaff::Minus<T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opPlus(void)
-{
-	return staticFunc(OP_PLUS_NAME, Gaff::Plus<T>);
-}
-
-template <class T>
-template <int32_t (*to_string_func)(const T&, char8_t*, int32_t)>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opToString()
-{
-	staticFunc(OP_TO_STRING_NAME, Gaff::ToStringHelper<T, to_string_func>);
-	return staticFunc(OP_TO_STRING_NAME, to_string_func);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opComparison(void)
-{
-	return staticFunc(OP_COMP_NAME, Gaff::Comparison<T, Other>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opPreIncrement(void)
-{
-	return staticFunc(OP_PRE_INC_NAME, Gaff::PreIncrement<T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opPostIncrement(void)
-{
-	return staticFunc(OP_POST_INC_NAME, Gaff::PostIncrement<T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opPreDecrement(void)
-{
-	return staticFunc(OP_PRE_DEC_NAME, Gaff::PreDecrement<T>);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opPostDecrement(void)
-{
-	return staticFunc(OP_POST_DEC_NAME, Gaff::PostDecrement<T>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opAssignment(void)
-{
-	return staticFunc(OP_ASSIGN_NAME, Gaff::Assignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opAddAssignment(void)
-{
-	return staticFunc(OP_ADD_ASSIGN_NAME, Gaff::AddAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opSubAssignment(void)
-{
-	return staticFunc(OP_SUB_ASSIGN_NAME, Gaff::SubAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opMulAssignment(void)
-{
-	return staticFunc(OP_MOD_ASSIGN_NAME, Gaff::ModAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opDivAssignment(void)
-{
-	return staticFunc(OP_DIV_ASSIGN_NAME, Gaff::DivAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opModAssignment(void)
-{
-	return staticFunc(OP_MOD_ASSIGN_NAME, Gaff::ModAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitAndAssignment(void)
-{
-	return staticFunc(OP_BIT_AND_ASSIGN_NAME, Gaff::BitAndAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitOrAssignment(void)
-{
-	return staticFunc(OP_BIT_OR_ASSIGN_NAME, Gaff::BitOrAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitXorAssignment(void)
-{
-	return staticFunc(OP_BIT_XOR_ASSIGN_NAME, Gaff::BitXorAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftLeftAssignment(void)
-{
-	return staticFunc(OP_BIT_SHIFT_LEFT_ASSIGN_NAME, Gaff::BitLeftShiftAssignment<T, Other>);
-}
-
-template <class T>
-template <class Other>
-ReflectionDefinition<T>& ReflectionDefinition<T>::opBitShiftRightAssignment(void)
-{
-	return staticFunc(OP_BIT_SHIFT_RIGHT_ASSIGN_NAME, Gaff::BitRightShiftAssignment<T, Other>);
-}
-
-template <class T>
-template <class... Attrs>
-ReflectionDefinition<T>& ReflectionDefinition<T>::classAttrs(const Attrs&... attributes)
-{
-	return addAttributes(_class_attrs, attributes...);
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::version(uint32_t /*version*/)
-{
-	return *this;
-}
-
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::serialize(LoadFunc serialize_load, SaveFunc serialize_save)
-{
-	_serialize_load = serialize_load;
-	_serialize_save = serialize_save;
-	return *this;
-}
-
-template <class T>
-void ReflectionDefinition<T>::finish(void)
-{
-	if (!_dependents_remaining) {
-		// Call finish() on attributes first.
-		for (IAttributePtr& attr : _class_attrs) {
-			attr->finish(*this);
-		}
-
-		for (auto& it : _var_attrs) {
-			for (IAttributePtr& attr : it.second) {
-				attr->finish(*this);
-			}
-		}
-
-		for (auto& it : _func_attrs) {
-			for (IAttributePtr& attr : it.second) {
-				attr->finish(*this);
-			}
-		}
-
-		for (auto& it : _static_func_attrs) {
-			for (IAttributePtr& attr : it.second) {
-				attr->finish(*this);
-			}
-		}
-	}
-}
-
-template <class T>
-template <class Base>
-void ReflectionDefinition<T>::RegisterBaseVariables(void)
-{
-	ReflectionDefinition<T>& ref_def = const_cast<ReflectionDefinition<T>&>(
-		Reflection<T>::GetReflectionDefinition()
-	);
-
-	--ref_def._dependents_remaining;
-	GAFF_ASSERT(ref_def._dependents_remaining >= 0);
-
-	ref_def.template base<Base>();
-
-	if (ref_def._dependents_remaining == 0) {
-		ref_def.finish();
-	}
-}
-
-
-
-// Variables
-template <class T>
-template <class Var, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar& ref_var, Var T::*var, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
-{
-	First* const clone = reinterpret_cast<First*>(first.clone());
-	attrs.emplace_back(IAttributePtr(clone));
-
-	clone->apply(ref_var, var);
-
-	if constexpr (sizeof...(Rest) > 0) {
-		return addAttributes(ref_var, var, attrs, rest...);
-	} else {
-		return *this;
-	}
-}
-
-template <class T>
-template <class Var, class Ret, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionVar& ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
-{
-	First* const clone = reinterpret_cast<First*>(first.clone());
-	attrs.emplace_back(IAttributePtr(clone));
-
-	clone->apply(ref_var, getter, setter);
-
-	if constexpr (sizeof...(Rest) > 0) {
-		return addAttributes(ref_var, getter, setter, attrs, rest...);
-	} else {
-		return *this;
-	}
-}
-
-// Functions
-template <class T>
-template <class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionFunction<Ret, Args...>& ref_func, Ret (T::*func)(Args...) const, Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
-{
-	First* const clone = reinterpret_cast<First*>(first.clone());
-	attrs.emplace_back(IAttributePtr(clone));
-
-	clone->apply(ref_func, func);
-
-	if constexpr (sizeof...(Rest) > 0) {
-		return addAttributes(ref_func, func, attrs, rest...);
-	} else {
-		return *this;
-	}
-}
-
-template <class T>
-template <class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionFunction<Ret, Args...>& ref_func, Ret (T::*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
-{
-	First* const clone = reinterpret_cast<First*>(first.clone());
-	attrs.emplace_back(IAttributePtr(clone));
-
-	clone->apply(ref_func, func);
-
-	if constexpr (sizeof...(Rest) > 0) {
-		return addAttributes(ref_func, func, attrs, rest...);
-	} else {
-		return *this;
-	}
-}
-
-// Static Functions
-template <class T>
-template <class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(IReflectionStaticFunction<Ret, Args...>& ref_func, Ret (*func)(Args...), Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
-{
-	First* const clone = reinterpret_cast<First*>(first.clone());
-	attrs.emplace_back(IAttributePtr(clone));
-
-	clone->apply(ref_func, func);
-
-	if constexpr (sizeof...(Rest) > 0) {
-		return addAttributes(ref_func, func, attrs, rest...);
-	} else {
-		return *this;
-	}
-}
-
-// Class
-template <class T>
-template <class First, class... Rest>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addAttributes(Shibboleth::Vector<IAttributePtr>& attrs, const First& first, const Rest&... rest)
-{
-	First* const clone = reinterpret_cast<First*>(first.clone());
-	attrs.emplace_back(IAttributePtr(clone));
-
-	clone->apply(*this);
-
-	if constexpr (sizeof...(Rest) > 0) {
-		return addAttributes(attrs, rest...);
-	} else {
-		return *this;
-	}
+	const auto it = _data.vars.find(name);
+	return (it == _data.vars.end()) ? nullptr : it->second.var.get();
 }
 
 template <class T>
 ptrdiff_t ReflectionDefinition<T>::getBasePointerOffset(Gaff::Hash64 interface_name) const
 {
-	const auto it = _base_class_offsets.find(interface_name);
-	return (it != _base_class_offsets.end()) ? it->second : -1;
+	const auto it = _data.base_classes.find(interface_name);
+	return (it != _data.base_classes.end()) ? it->second.offset : -1;
 }
 
 template <class T>
 void ReflectionDefinition<T>::instantiated(void* object) const
 {
-	for (const IAttributePtr& attr : _class_attrs) {
+	for (auto& attr : _data.class_attrs) {
 		attr->instantiated(object, *this);
 	}
 
-	for (auto& it : _var_attrs) {
-		for (const IAttributePtr& attr : it.second) {
+	for (auto& var_entry : _data.vars) {
+		for (auto& attr : var_entry.second.attrs) {
 			attr->instantiated(object, *this);
 		}
 	}
 
-	for (auto& it : _func_attrs) {
-		for (const IAttributePtr& attr : it.second) {
-			attr->instantiated(object, *this);
+	for (auto& func_entry : _data.funcs) {
+		for (auto& override_entry : func_entry.second.overrides) {
+			for (auto& attr : override_entry.second.attrs) {
+				attr->instantiated(object, *this);
+			}
 		}
 	}
 
-	for (auto& it : _static_func_attrs) {
-		for (const IAttributePtr& attr : it.second) {
-			attr->instantiated(object, *this);
+	for (auto& static_func_entry : _data.funcs) {
+		for (auto& override_entry : static_func_entry.second.overrides) {
+			for (auto& attr : override_entry.second.attrs) {
+				attr->instantiated(object, *this);
+			}
 		}
 	}
 }
@@ -2226,6 +630,12 @@ const IAttribute* ReflectionDefinition<T>::getAttribute(const AttributeList& att
 	}
 
 	return nullptr;
+}
+
+template <class T>
+ReflectionBuilder<T, T> ReflectionDefinition<T>::getInitialBuilder(void)
+{
+	return ReflectionBuilder<T, T>{ _data, *this };
 }
 
 REF_DEF_BUILTIN(int8_t, Int8);
