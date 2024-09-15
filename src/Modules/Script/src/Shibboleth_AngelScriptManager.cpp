@@ -54,6 +54,7 @@ namespace
 		nullptr, // OP_LOGIC_AND_NAME
 		nullptr, // OP_LOGIC_OR_NAME
 		u8"opEquals",
+		nullptr, // OP_NOT_EQUALS_NAME
 		nullptr, // OP_LESS_THAN_NAME
 		nullptr, // OP_GREATER_THAN_NAME
 		nullptr, // OP_LESS_THAN_OR_EQUAL_NAME
@@ -258,9 +259,7 @@ namespace
 
 			// Is an operator function
 			if (Gaff::Find(func_name.getBuffer(), u8"__") == 0) {
-				// $TODO: Register operator function.
-				const Gaff::Hash32 op_hash = Gaff::FNV1aHash32String(func_name.getBuffer());
-				const int32_t index = Gaff::IndexOfArray(Gaff::k_op_hashes, op_hash);
+				const int32_t index = Gaff::IndexOfArray(Gaff::k_op_hashes, func_name.getHash());
 
 				if (index == -1) {
 					continue;
@@ -292,17 +291,34 @@ namespace
 
 
 
-		// Register regular functions.
+		// Register regular functions and operators.
 		const int32_t num_funcs = ref_def.getNumFuncs();
 
 		for (int32_t i = 0; i < num_funcs; ++i) {
 			const Shibboleth::HashStringView32<> func_name = ref_def.getFuncName(i);
+			const char8_t* raw_name = func_name.getBuffer();
+
+			// Is an operator function
+			if (Gaff::Find(func_name.getBuffer(), u8"__") == 0) {
+				const int32_t index = Gaff::IndexOfArray(Gaff::k_op_hashes, func_name.getHash());
+
+				if (index == -1) {
+					continue;
+				}
+
+				if (!k_op_names[index]) {
+					continue;
+				}
+
+				raw_name = k_op_names[index];
+			}
+
 			const int32_t num_overrides = ref_def.getNumFuncOverrides(i);
 
 			for (int32_t j = 0; j < num_overrides; ++j) {
 				const Refl::IReflectionFunctionBase* const func = ref_def.getFunc(i, j);
 				const Refl::FunctionSignature sig = func->getSignature();
-				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, func_name.getBuffer());
+				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
 
 				if (func->isExtensionFunction()) {
 					result = engine.RegisterObjectMethod(
