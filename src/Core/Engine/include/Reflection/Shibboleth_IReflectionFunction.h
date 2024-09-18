@@ -57,14 +57,6 @@ using VoidFunc = void (*)(void);
 class IEnumReflectionDefinition;
 class IReflectionDefinition;
 
-class IFunctionStackAllocator : public Gaff::IAllocator
-{
-public:
-	using IAllocator::alloc;
-
-	virtual void* alloc(const IReflectionDefinition& ref_def) = 0;
-};
-
 struct FunctionArg final
 {
 	enum class Flag

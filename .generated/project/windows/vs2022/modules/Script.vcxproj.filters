@@ -12,6 +12,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptArray.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -21,19 +24,7 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptString.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_CommonHelpers.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_IncludeAngelScript.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaHelpers.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaResource.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_ScriptConfig.h">
@@ -47,6 +38,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptArray.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -54,18 +48,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptString.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_CommonHelpers.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_LuaHelpers.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_LuaManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_LuaResource.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_ScriptConfig.cpp">

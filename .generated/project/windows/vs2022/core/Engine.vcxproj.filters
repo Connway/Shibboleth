@@ -147,6 +147,12 @@
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionBase.inl">
       <Filter>include\Reflection</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionBuilder.h">
+      <Filter>include\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionBuilder.inl">
+      <Filter>include\Reflection</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionDefines.h">
       <Filter>include\Reflection</Filter>
     </ClInclude>
@@ -154,9 +160,6 @@
       <Filter>include\Reflection</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionDefinition.inl">
-      <Filter>include\Reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionDefinitionFunction.inl">
       <Filter>include\Reflection</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionDefinitionVariable.h">

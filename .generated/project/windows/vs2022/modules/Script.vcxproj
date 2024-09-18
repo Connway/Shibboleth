@@ -237,26 +237,20 @@ CodeGenerator64od module_header --module Script</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Gen_ReflectionInit.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptArray.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptMath.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptString.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_CommonHelpers.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_IncludeAngelScript.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaHelpers.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaManager.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_LuaResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_ScriptConfig.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_ScriptDefines.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_ScriptLogging.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptArray.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptMath.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptString.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_CommonHelpers.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_LuaHelpers.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_LuaManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_LuaResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_ScriptConfig.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_ScriptModule.cpp" />
   </ItemGroup>

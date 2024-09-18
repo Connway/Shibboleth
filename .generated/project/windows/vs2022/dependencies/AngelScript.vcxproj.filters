@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="add_on">
+      <UniqueIdentifier>{EA746DF1-D616-98C7-BFD1-AB1BAB121F18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="add_on\scriptarray">
+      <UniqueIdentifier>{CD321B19-B916-DC6E-2277-D6C10E7AC6F0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="angelscript">
       <UniqueIdentifier>{41F231D1-ADA7-AAC6-369C-A49DA250A1CA}</UniqueIdentifier>
     </Filter>
@@ -12,6 +18,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\angelscript\add_on\scriptarray\scriptarray.h">
+      <Filter>add_on\scriptarray</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\angelscript\angelscript\include\angelscript.h">
       <Filter>angelscript\include</Filter>
     </ClInclude>
@@ -128,6 +137,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\angelscript\add_on\scriptarray\scriptarray.cpp">
+      <Filter>add_on\scriptarray</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\angelscript\angelscript\source\as_atomic.cpp">
       <Filter>angelscript\source</Filter>
     </ClCompile>

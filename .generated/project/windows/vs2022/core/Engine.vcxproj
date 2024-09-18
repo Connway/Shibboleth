@@ -270,10 +270,11 @@ CodeGenerator64od static_header</Command>
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_Reflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionBase.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionBase.inl" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionBuilder.h" />
+    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionBuilder.inl" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionDefines.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionDefinition.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionDefinition.inl" />
-    <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionDefinitionFunction.inl" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionDefinitionVariable.h" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionDefinitionVariable.inl" />
     <ClInclude Include="..\..\..\..\..\src\Core\Engine\include\Reflection\Shibboleth_ReflectionMacros.h" />

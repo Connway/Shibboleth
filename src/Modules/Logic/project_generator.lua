@@ -48,8 +48,7 @@ local GenerateProject = function()
 			"Script",
 			"Entity",
 
-			"AngelScript",
-			"Lua"
+			"AngelScript"
 		}
 
 		dependson(deps)
@@ -72,7 +71,6 @@ local LinkDependencies = function()
 	table.insert(deps, "Script")
 	table.insert(deps, "Entity")
 	table.insert(deps, "AngelScript")
-	table.insert(deps, "Lua")
 
 	dependson(deps)
 	links(deps)

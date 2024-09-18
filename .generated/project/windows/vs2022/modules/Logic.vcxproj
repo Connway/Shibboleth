@@ -237,7 +237,6 @@ CodeGenerator64od module_header --module Logic</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Gen_ReflectionInit.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_LuaProcess.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineComponent.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineReflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineResource.h" />
@@ -245,7 +244,6 @@ CodeGenerator64od module_header --module Logic</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_LogicModule.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_LuaProcess.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_StateMachineComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_StateMachineReflection.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_StateMachineResource.cpp" />

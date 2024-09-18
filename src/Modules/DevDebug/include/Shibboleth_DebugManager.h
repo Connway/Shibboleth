@@ -195,7 +195,7 @@ private:
 
 		union
 		{
-			Refl::IReflectionStaticFunction<void>* static_func = nullptr;
+			Refl::ReflectionStaticFunction<void>* static_func = nullptr;
 			Refl::IReflectionFunction<void>* func;
 			Refl::IReflectionVar* var;
 		};

@@ -41,7 +41,6 @@ local GenerateProject = function()
 			"Resource",
 
 			"AngelScript",
-			"Lua",
 
 			"Gleam",
 		}
@@ -63,8 +62,6 @@ local LinkDependencies = function()
 	table.insert(deps, "DevDebug")
 	table.insert(deps, "MainLoop")
 	table.insert(deps, "Resource")
-
-	table.insert(deps, "Lua")
 
 	table.insert(deps, "Gleam")
 

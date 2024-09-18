@@ -40,7 +40,7 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfigWindow)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)
 	.classAttrs(
-		Shibboleth::ConfigFileAttribute{ u8"graphics/graphics" },s
+		Shibboleth::ConfigFileAttribute{ u8"graphics/graphics" },
 		Shibboleth::GlobalConfigAttribute{}
 	)
 

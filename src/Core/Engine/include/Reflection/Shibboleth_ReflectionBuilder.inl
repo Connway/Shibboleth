@@ -79,11 +79,11 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::base(void)
 		ReflectionBuilder<T, Base> builder{ _data, _ref_def };
 		Reflection<Base>::template BuildReflection<T>(builder);
 
+		return *this;
+
 	} else {
 		return base<Base>(Hash::ClassHashable<Base>::GetName().data.data());
 	}
-
-	return *this;
 }
 
 template <class T, class BaseType>
