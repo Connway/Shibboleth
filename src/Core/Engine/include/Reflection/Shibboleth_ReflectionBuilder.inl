@@ -118,9 +118,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::ctor(void)
 }
 
 template <class T, class BaseType>
-template <class Var, size_t name_size, class... Attrs>
-ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char8_t (&name)[name_size], Var T::* ptr, const Attrs&... attributes)
+template <class Type, class Var, size_t name_size, class... Attrs>
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char8_t (&name)[name_size], Var Type::* ptr, const Attrs&... attributes)
 {
+	static_assert(std::is_same_v<Type, T> || std::is_same_v<Type, BaseType>, "Type is not of type T or BaseType.");
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	using RefVarType = VarTypeHelper<T, Var>::Type;
@@ -141,8 +142,8 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char8_
 }
 
 template <class T, class BaseType>
-template <class Var, size_t name_size, class... Attrs>
-ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char (&name)[name_size], Var T::* ptr, const Attrs&... attributes)
+template <class Type, class Var, size_t name_size, class... Attrs>
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char (&name)[name_size], Var Type::* ptr, const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return var(temp_name, ptr, attributes...);
@@ -152,6 +153,7 @@ template <class T, class BaseType>
 template <class Type, class Ret, class Var, size_t name_size, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::varFunc(const char8_t (&name)[name_size], Ret (Type::*getter)(void) const, void (Type::*setter)(Var), const Attrs&... attributes)
 {
+	static_assert(std::is_same_v<Type, T> || std::is_same_v<Type, BaseType>, "Type is not of type T or BaseType.");
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	using GetFunc = decltype(getter);
@@ -186,6 +188,7 @@ template <class T, class BaseType>
 template <class Type, size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8_t (&name)[name_size], Ret (Type::*ptr)(Args...) const, const Attrs&... attributes)
 {
+	static_assert(std::is_same_v<Type, T> || std::is_same_v<Type, BaseType>, "Type is not of type T or BaseType.");
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
@@ -229,6 +232,7 @@ template <class T, class BaseType>
 template <class Type, size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8_t (&name)[name_size], Ret (Type::*ptr)(Args...), const Attrs&... attributes)
 {
+	static_assert(std::is_same_v<Type, T> || std::is_same_v<Type, BaseType>, "Type is not of type T or BaseType.");
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
@@ -269,9 +273,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char 
 }
 
 template <class T, class BaseType>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8_t (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes)
+template <class Type, size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8_t (&name)[name_size], Ret (*ptr)(const Type&, Args...), const Attrs&... attributes)
 {
+	static_assert(std::is_same_v<Type, T> || std::is_same_v<Type, BaseType>, "Type is not of type T or BaseType.");
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
@@ -304,17 +309,18 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8
 }
 
 template <class T, class BaseType>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char (&name)[name_size], Ret (*ptr)(const T&, Args...), const Attrs&... attributes)
+template <class Type, size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char (&name)[name_size], Ret (*ptr)(const Type&, Args...), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return func(temp_name, ptr, attributes...);
 }
 
 template <class T, class BaseType>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8_t (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes)
+template <class Type, size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8_t (&name)[name_size], Ret (*ptr)(Type&, Args...), const Attrs&... attributes)
 {
+	static_assert(std::is_same_v<Type, T> || std::is_same_v<Type, BaseType>, "Type is not of type T or BaseType.");
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
@@ -347,8 +353,8 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8
 }
 
 template <class T, class BaseType>
-template <size_t name_size, class Ret, class... Args, class... Attrs>
-ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char (&name)[name_size], Ret (*ptr)(T&, Args...), const Attrs&... attributes)
+template <class Type, size_t name_size, class Ret, class... Args, class... Attrs>
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char (&name)[name_size], Ret (*ptr)(Type&, Args...), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return func(temp_name, ptr, attributes...);
