@@ -131,3 +131,22 @@ NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::ResourceState)
 SHIB_REFLECTION_DECLARE(Shibboleth::IResource)
+
+#ifdef SHIB_REFL_IMPL
+	#include <Attributes/Shibboleth_EngineAttributesCommon.h>
+
+	SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IResource)
+		.classAttrs(
+			Shibboleth::ClassBucketAttribute{}
+		)
+
+		.func("requestLoad", &Type::requestLoad)
+		.func("getFilePath", &Type::getFilePath)
+
+		.func("getState", &Type::getState)
+		.func("isDeferred", &Type::isDeferred)
+		.func("hasFailed", &Type::hasFailed)
+		.func("isPending", &Type::isPending)
+		.func("isLoaded", &Type::isLoaded)
+	SHIB_REFLECTION_DEFINE_END(Shibboleth::IResource)
+#endif

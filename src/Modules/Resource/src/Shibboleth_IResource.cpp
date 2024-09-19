@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_IResource.h"
 #include "Shibboleth_ResourceAttributesCommon.h"
 #include "Shibboleth_ResourceLogging.h"
@@ -39,22 +40,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceState)
 	.entry("Loaded", Shibboleth::ResourceState::Loaded)
 	.entry("Deferred", Shibboleth::ResourceState::Deferred)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ResourceState)
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IResource)
-	.classAttrs(
-		Shibboleth::ClassBucketAttribute()
-	)
-
-	.func("requestLoad", &Type::requestLoad)
-	.func("getFilePath", &Type::getFilePath)
-
-	.func("getState", &Type::getState)
-	.func("isDeferred", &Type::isDeferred)
-	.func("hasFailed", &Type::hasFailed)
-	.func("isPending", &Type::isPending)
-	.func("isLoaded", &Type::isLoaded)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::IResource)
-
 
 NS_SHIBBOLETH
 

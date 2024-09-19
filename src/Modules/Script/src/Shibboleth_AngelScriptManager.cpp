@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_AngelScriptManager.h"
 #include "Shibboleth_AngelScriptString.h"
 #include "Shibboleth_AngelScriptArray.h"
@@ -30,12 +31,10 @@ THE SOFTWARE.
 #include <Gaff_ContainerAlgorithm.h>
 #include "Shibboleth_IncludeAngelScript.h"
 
-#define CHECK_RESULT(r) if (r < 0) { return false; }
-
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptManager)
-	.template base<Shibboleth::IManager>()
-	.template ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::AngelScriptManager)
+// SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptManager)
+// 	.template base<Shibboleth::IManager>()
+// 	.template ctor<>()
+// SHIB_REFLECTION_DEFINE_END(Shibboleth::AngelScriptManager)
 
 namespace
 {
@@ -127,22 +126,38 @@ namespace
 		return decl;
 	}
 
-	static bool RegisterEnum(asIScriptEngine& engine, const Refl::IEnumReflectionDefinition& enum_ref_def)
+	static void GetNamespaceAndName(Shibboleth::U8String& name_space, Shibboleth::U8String& type_name)
 	{
-		const Shibboleth::U8String name = enum_ref_def.getReflectionInstance().getName();
-		const size_t last_scope_delimeter = name.rfind(u8"::");
-		int result = 0;
+		// Treat default templated types as just a normal type.
+		if (Gaff::EndsWith(name_space.data(), u8"<>")) {
+			name_space.erase(name_space.size() - 2);
+		}
 
+		const size_t last_scope_delimeter = name_space.rfind(u8"::");
 		GAFF_ASSERT(last_scope_delimeter != Shibboleth::U8String::npos);
 
-		result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name.data() + last_scope_delimeter));
+		type_name = name_space.data() + last_scope_delimeter + 2;
+		name_space = name_space.substr(0, last_scope_delimeter);
+	}
+
+	static bool RegisterEnum(asIScriptEngine& engine, const Refl::IEnumReflectionDefinition& enum_ref_def)
+	{
+		const Shibboleth::ScriptFlagsAttribute* const script_flags = enum_ref_def.template getEnumAttr<Shibboleth::ScriptFlagsAttribute>();
+
+		if (script_flags && !script_flags->canRegister()) {
+			return true;
+		}
+
+		Shibboleth::U8String name_space{ enum_ref_def.getReflectionInstance().getName(), SCRIPT_ALLOCATOR };
+		Shibboleth::U8String enum_name{ SCRIPT_ALLOCATOR };
+		GetNamespaceAndName(name_space, enum_name);
+
+		int result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_space.data()));
 
 		if (result < 0) {
 			// $TODO: Log error.
 			return false;
 		}
-
-		const Gaff::U8StringView enum_name(name.data() + last_scope_delimeter + 2);
 
 		result = engine.RegisterEnum(reinterpret_cast<const char*>(enum_name.data()));
 
@@ -172,6 +187,59 @@ namespace
 		return true;
 	}
 
+	static bool RegisterInterface(asIScriptEngine& engine, const Refl::IReflectionDefinition& ref_def)
+	{
+		Shibboleth::U8String name_space{ ref_def.getReflectionInstance().getName(), SCRIPT_ALLOCATOR };
+		Shibboleth::U8String class_name{ SCRIPT_ALLOCATOR };
+		GetNamespaceAndName(name_space, class_name);
+
+		int result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_space.data()));
+
+		if (result < 0) {
+			// $TODO: Log error.
+			return false;
+		}
+
+		result = engine.RegisterInterface(reinterpret_cast<const char*>(class_name.data()));
+
+		if (result < 0) {
+			// $TODO: Log error.
+			return false;
+		}
+
+		const int32_t num_funcs = ref_def.getNumFuncs();
+
+		for (int32_t i = 0; i < num_funcs; ++i) {
+			const Shibboleth::HashStringView32<> func_name = ref_def.getFuncName(i);
+			const char8_t* raw_name = func_name.getBuffer();
+
+			// Is an operator function. Not supporting on interfaces.
+			if (Gaff::Find(func_name.getBuffer(), u8"__") == 0) {
+				continue;
+			}
+
+			const int32_t num_overrides = ref_def.getNumFuncOverrides(i);
+
+			for (int32_t j = 0; j < num_overrides; ++j) {
+				const Refl::IReflectionFunctionBase* const func = ref_def.getFunc(i, j);
+				const Refl::FunctionSignature sig = func->getSignature();
+				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
+
+				result = engine.RegisterInterfaceMethod(
+					reinterpret_cast<const char*>(class_name.data()),
+					reinterpret_cast<const char*>(decl.data())
+				);
+
+				if (result < 0) {
+					// $TODO: Log error.
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
 	static bool RegisterType(asIScriptEngine& engine, const Refl::IReflectionDefinition& ref_def)
 	{
 		// We do not need to register attributes or built-in types.
@@ -179,27 +247,23 @@ namespace
 			return true;
 		}
 
-		const Shibboleth::ScriptFlagsAttribute* const script_flags = ref_def.getClassAttr<Shibboleth::ScriptFlagsAttribute>();
+		const Shibboleth::ScriptFlagsAttribute* const script_flags = ref_def.template getClassAttr<Shibboleth::ScriptFlagsAttribute>();
 
-		if (script_flags && !script_flags->canRegister()) {
-			return true;
+		if (script_flags) {
+			if (!script_flags->canRegister()) {
+				return true;
+			}
+
+			if (script_flags->isInterface()) {
+				return RegisterInterface(engine, ref_def);
+			}
 		}
 
-		Shibboleth::U8String class_name = ref_def.getReflectionInstance().getName();
+		Shibboleth::U8String name_space{ ref_def.getReflectionInstance().getName(), SCRIPT_ALLOCATOR };
+		Shibboleth::U8String class_name{ SCRIPT_ALLOCATOR };
+		GetNamespaceAndName(name_space, class_name);
 
-		// Treat default templated types as just a normal type.
-		if (Gaff::EndsWith(class_name.data(), u8"<>")) {
-			class_name.erase(class_name.size() - 2);
-		}
-
-		const size_t last_scope_delimeter = class_name.rfind(u8"::");
-		int result = 0;
-
-		GAFF_ASSERT(last_scope_delimeter != Shibboleth::U8String::npos);
-
-		const Gaff::U8StringView class_name_view(class_name.data() + last_scope_delimeter + 2);
-
-		result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(class_name.substr(0, last_scope_delimeter).data()));
+		int result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_space.data()));
 
 		if (result < 0) {
 			// $TODO: Log error.
@@ -240,7 +304,7 @@ namespace
 			flags |= asOBJ_REF | asOBJ_NOCOUNT;
 		}
 
-		result = engine.RegisterObjectType(reinterpret_cast<const char*>(class_name_view.data()), ref_def.size(), flags);
+		result = engine.RegisterObjectType(reinterpret_cast<const char*>(class_name.data()), ref_def.size(), flags);
 
 		if (result < 0) {
 			// $TODO: Log error.
@@ -281,7 +345,7 @@ namespace
 				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
 
 				result = engine.RegisterObjectMethod(
-					reinterpret_cast<const char*>(class_name_view.data()),
+					reinterpret_cast<const char*>(class_name.data()),
 					reinterpret_cast<const char*>(decl.data()),
 					asFunctionPtr(func->getFunc()),
 					call_conv
@@ -322,7 +386,7 @@ namespace
 
 				if (func->isExtensionFunction()) {
 					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(class_name_view.data()),
+						reinterpret_cast<const char*>(class_name.data()),
 						reinterpret_cast<const char*>(decl.data()),
 						asFunctionPtr(*reinterpret_cast<const Refl::IReflectionStaticFunctionBase::VoidFunc*>(func->getFunctionPointer())),
 						asCALL_CDECL_OBJFIRST
@@ -341,7 +405,7 @@ namespace
 					func_ptr.CopyMethodPtr(func->getFunctionPointer(), func_ptr_size);
 
 					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(class_name_view.data()),
+						reinterpret_cast<const char*>(class_name.data()),
 						reinterpret_cast<const char*>(decl.data()),
 						func_ptr,
 						asCALL_THISCALL
@@ -369,7 +433,7 @@ namespace
 				decl += Shibboleth::U8String{ u8' ' } + var_name.getBuffer();
 
 				result = engine.RegisterObjectProperty(
-					reinterpret_cast<const char*>(class_name_view.data()),
+					reinterpret_cast<const char*>(class_name.data()),
 					reinterpret_cast<const char*>(decl.data()),
 					offset
 				);
@@ -398,7 +462,7 @@ namespace
 					func_ptr.CopyMethodPtr(getter_function, func_ptr_size);
 
 					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(class_name_view.data()),
+						reinterpret_cast<const char*>(class_name.data()),
 						reinterpret_cast<const char*>(decl.data()),
 						func_ptr,
 						asCALL_THISCALL
@@ -422,7 +486,7 @@ namespace
 					func_ptr.CopyMethodPtr(setter_function, func_ptr_size);
 
 					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(class_name_view.data()),
+						reinterpret_cast<const char*>(class_name.data()),
 						reinterpret_cast<const char*>(decl.data()),
 						func_ptr,
 						asCALL_THISCALL
@@ -484,17 +548,33 @@ bool AngelScriptManager::init(void)
 	}
 
 	int result = _engine->SetMessageCallback(asMETHOD(AngelScriptManager, messageCallback), this, asCALL_THISCALL);
-	CHECK_RESULT(result)
+
+	if (result < 0) {
+		// $TODO: Log error.
+		return false;
+	}
 
 	result = _engine->SetEngineProperty(asEP_ALLOW_MULTILINE_STRINGS, true);
-	CHECK_RESULT(result)
+
+	if (result < 0) {
+		// $TODO: Log error.
+		return false;
+	}
 
 	result = _engine->SetEngineProperty(asEP_USE_CHARACTER_LITERALS, true);
-	CHECK_RESULT(result)
+
+	if (result < 0) {
+		// $TODO: Log error.
+		return false;
+	}
 
 	// Treat warnings as errors.
 	result = _engine->SetEngineProperty(asEP_COMPILER_WARNINGS, 2);
-	CHECK_RESULT(result)
+
+	if (result < 0) {
+		// $TODO: Log error.
+		return false;
+	}
 
 	if (!RegisterScriptMath_Native(_engine)) {
 		// $TODO: Log error.
@@ -532,6 +612,13 @@ bool AngelScriptManager::init(void)
 				success = false;
 			}
 		}
+	}
+
+	result = _engine->SetDefaultNamespace("Shibboleth");
+
+	if (result < 0) {
+		// $TODO: Log error.
+		return false;
 	}
 
 	return success;

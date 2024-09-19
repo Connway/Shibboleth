@@ -54,3 +54,10 @@ private:
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::AngelScriptManager)
+
+#ifdef SHIB_REFL_IMPL
+	SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptManager)
+		.template base<Shibboleth::IManager>()
+		.template ctor<>()
+	SHIB_REFLECTION_DEFINE_END(Shibboleth::AngelScriptManager)
+#endif
