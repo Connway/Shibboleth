@@ -46,3 +46,13 @@ public:
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::IManager)
+
+#ifdef SHIB_REFL_IMPL
+	#include "Attributes/Shibboleth_EngineAttributesCommon.h"
+
+	SHIB_REFLECTION_BUILD_BEGIN(Shibboleth::IManager)
+		.classAttrs(
+			Shibboleth::ClassBucketAttribute()
+		)
+	SHIB_REFLECTION_BUILD_END(Shibboleth::IManager)
+#endif

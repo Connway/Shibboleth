@@ -31,10 +31,10 @@ THE SOFTWARE.
 #include <Gaff_ContainerAlgorithm.h>
 #include "Shibboleth_IncludeAngelScript.h"
 
-// SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptManager)
-// 	.template base<Shibboleth::IManager>()
-// 	.template ctor<>()
-// SHIB_REFLECTION_DEFINE_END(Shibboleth::AngelScriptManager)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptManager)
+	.template base<Shibboleth::IManager>()
+	.template ctor<>()
+SHIB_REFLECTION_DEFINE_END(Shibboleth::AngelScriptManager)
 
 namespace
 {

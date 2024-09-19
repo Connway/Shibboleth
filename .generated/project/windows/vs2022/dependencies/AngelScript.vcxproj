@@ -202,6 +202,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\angelscript\add_on\scriptarray\scriptarray.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder\scriptbuilder.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\angelscript\angelscript\include\angelscript.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\angelscript\angelscript\source\as_array.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\angelscript\angelscript\source\as_atomic.h" />
@@ -245,6 +246,7 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\angelscript\add_on\scriptarray\scriptarray.cpp">
       <PreprocessorDefinitions>AS_USE_STLNAMES=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder\scriptbuilder.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\angelscript\angelscript\source\as_atomic.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\angelscript\angelscript\source\as_builder.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\angelscript\angelscript\source\as_bytecode.cpp" />

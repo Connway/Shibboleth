@@ -135,7 +135,7 @@ SHIB_REFLECTION_DECLARE(Shibboleth::IResource)
 #ifdef SHIB_REFL_IMPL
 	#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
-	SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IResource)
+	SHIB_REFLECTION_BUILD_BEGIN(Shibboleth::IResource)
 		.classAttrs(
 			Shibboleth::ClassBucketAttribute{}
 		)
@@ -148,5 +148,5 @@ SHIB_REFLECTION_DECLARE(Shibboleth::IResource)
 		.func("hasFailed", &Type::hasFailed)
 		.func("isPending", &Type::isPending)
 		.func("isLoaded", &Type::isLoaded)
-	SHIB_REFLECTION_DEFINE_END(Shibboleth::IResource)
+	SHIB_REFLECTION_BUILD_END(Shibboleth::IResource)
 #endif

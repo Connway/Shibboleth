@@ -240,6 +240,7 @@ CodeGenerator64od module_header --module Script</Command>
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptArray.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptManager.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptMath.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_AngelScriptString.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_IncludeAngelScript.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Script\include\Shibboleth_ScriptConfig.h" />
@@ -250,6 +251,7 @@ CodeGenerator64od module_header --module Script</Command>
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptArray.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptManager.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptMath.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptResource.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_AngelScriptString.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_ScriptConfig.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Script\src\Shibboleth_ScriptModule.cpp" />

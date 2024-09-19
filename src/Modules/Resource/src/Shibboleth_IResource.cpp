@@ -41,6 +41,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ResourceState)
 	.entry("Deferred", Shibboleth::ResourceState::Deferred)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ResourceState)
 
+SHIB_REFLECTION_IMPL(Shibboleth::IResource)
+
 NS_SHIBBOLETH
 
 void IResourceTracker::addIncomingReference(IResourceTracker& tracker)

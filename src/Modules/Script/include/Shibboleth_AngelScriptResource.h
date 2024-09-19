@@ -36,10 +36,3 @@ public:
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::AngelScriptResource)
-
-#ifdef SHIB_REFL_IMPL
-	SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptResource)
-		.template base<Shibboleth::IResource>()
-		.template ctor<>()
-	SHIB_REFLECTION_DEFINE_END(Shibboleth::AngelScriptResource)
-#endif

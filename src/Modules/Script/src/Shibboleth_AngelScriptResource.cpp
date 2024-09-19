@@ -20,6 +20,11 @@ THE SOFTWARE.
 #define SHIB_REFL_IMPL
 #include "Shibboleth_AngelScriptResource.h"
 
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptResource)
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
+SHIB_REFLECTION_DEFINE_END(Shibboleth::AngelScriptResource)
+
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(AngelScriptResource)

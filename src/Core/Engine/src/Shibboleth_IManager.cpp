@@ -20,14 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_IManager.h"
-#include "Attributes/Shibboleth_EngineAttributesCommon.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IManager)
-	.classAttrs(
-		Shibboleth::ClassBucketAttribute()
-	)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::IManager)
+SHIB_REFLECTION_IMPL(Shibboleth::IManager)
 
 NS_SHIBBOLETH
 

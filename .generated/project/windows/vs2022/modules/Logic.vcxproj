@@ -237,12 +237,14 @@ CodeGenerator64od module_header --module Logic</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Gen_ReflectionInit.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_AngelScriptProcess.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineComponent.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineReflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_StateMachineResource.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\Logic\include\Shibboleth_VariableSet.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_AngelScriptProcess.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_LogicModule.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_StateMachineComponent.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\Logic\src\Shibboleth_StateMachineReflection.cpp" />

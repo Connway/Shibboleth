@@ -121,7 +121,7 @@ NS_END
 	NS_END \
 	SHIB_REFLECTION_DECLARE_NO_HASHABLE(type)
 
-#define SHIB_REFLECTION_DEFINE_BEGIN(type) \
+#define SHIB_REFLECTION_IMPL(type) \
 	NS_REFLECTION \
 		Reflection<type> Reflection<type>::g_instance; \
 		void Reflection<type>::Init(void) \
@@ -155,18 +155,28 @@ NS_END
 			} \
 			g_instance._defined = true; \
 		} \
+	NS_END
+
+#define SHIB_REFLECTION_BUILD_BEGIN(type) \
+	NS_REFLECTION \
 		template <class Type, class ReflectionBuilder> \
 		void Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
 		{ \
 			GCC_DISABLE_WARNING_PUSH("-Wunused-value") \
 			builder
 
-#define SHIB_REFLECTION_DEFINE_END(type) \
+#define SHIB_REFLECTION_BUILD_END(type) \
 			; \
 			builder.finish(); \
 			GCC_DISABLE_WARNING_POP() \
 		} \
 	NS_END
+
+#define SHIB_REFLECTION_DEFINE_BEGIN(type) \
+	SHIB_REFLECTION_IMPL(type) \
+	SHIB_REFLECTION_BUILD_BEGIN(type) \
+
+#define SHIB_REFLECTION_DEFINE_END(type) SHIB_REFLECTION_BUILD_END(type)
 
 #define SHIB_REFLECTION_DEFINE(type) \
 	SHIB_REFLECTION_DEFINE_BEGIN(type) \

@@ -155,7 +155,7 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Debug\ScriptModule\$(Targ
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Memory\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL\EASTL64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff\Gaff64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack\mpack64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevDebug\DevDebug64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\MainLoop\MainLoop64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Resource\Resource64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Script\Script64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\AngelScript\AngelScript64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam\Gleam64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\..\build\windows\vs2022\output\x64\Release\Memory\Memory64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\EASTL\EASTL64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gaff\Gaff64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\mpack\mpack64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Script\Script64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\DevDebug\DevDebug64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\MainLoop\MainLoop64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Resource\Resource64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\AngelScript\AngelScript64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Gleam\Gleam64.lib;..\..\..\..\build\windows\vs2022\output\x64\Release\Engine\Engine64.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\..\build\windows\vs2022\output\x64\Release\ScriptModule\ScriptModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
@@ -261,6 +261,9 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\ScriptMod
     <ProjectReference Include="..\dependencies\mpack.vcxproj">
       <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
     </ProjectReference>
+    <ProjectReference Include="Script.vcxproj">
+      <Project>{9AFBBAD0-869D-E5A6-6F58-F9FA5B996CF7}</Project>
+    </ProjectReference>
     <ProjectReference Include="DevDebug.vcxproj">
       <Project>{0B1D32B4-F7E9-8CBF-2003-7B670C2FC24D}</Project>
     </ProjectReference>
@@ -269,9 +272,6 @@ copy /B /Y ..\..\..\..\build\windows\vs2022\output\x64\Optimized_Debug\ScriptMod
     </ProjectReference>
     <ProjectReference Include="Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Script.vcxproj">
-      <Project>{9AFBBAD0-869D-E5A6-6F58-F9FA5B996CF7}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\AngelScript.vcxproj">
       <Project>{0136F6DA-6DEB-6ED0-F6DF-68A7629465D4}</Project>
