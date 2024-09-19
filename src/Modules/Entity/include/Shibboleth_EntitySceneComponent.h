@@ -86,3 +86,30 @@ private:
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::EntitySceneComponent)
+
+#ifdef SHIB_REFL_IMPL
+	#include <Attributes/Shibboleth_EngineAttributesCommon.h>
+	#include <Shibboleth_Math.h>
+
+	SHIB_REFLECTION_BUILD_BEGIN(Shibboleth::EntitySceneComponent)
+		// $TODO: Custom serialization for saving scene component hierarchy.
+
+		.template base<Shibboleth::EntityComponent>()
+
+		.varFunc(
+			"transformRelative",
+			&Type::getTransformRelative,
+			&Type::setTransformRelative,
+			Shibboleth::OptionalAttribute{}
+		)
+
+		.varFunc(
+			"transformWorld",
+			&Type::getTransformWorld,
+			&Type::setTransformWorld,
+			Shibboleth::NoSerializeAttribute{},
+			Shibboleth::ReadOnlyAttribute{},
+			Shibboleth::NoCopyAttribute{}
+		)
+	SHIB_REFLECTION_BUILD_END(Shibboleth::EntitySceneComponent)
+#endif

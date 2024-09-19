@@ -150,7 +150,7 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char (
 
 template <class T, class BaseType>
 template <class Type, class Ret, class Var, size_t name_size, class... Attrs>
-ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char8_t (&name)[name_size], Ret (Type::*getter)(void) const, void (Type::*setter)(Var), const Attrs&... attributes)
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::varFunc(const char8_t (&name)[name_size], Ret (Type::*getter)(void) const, void (Type::*setter)(Var), const Attrs&... attributes)
 {
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
@@ -176,10 +176,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char8_
 
 template <class T, class BaseType>
 template <class Type, class Ret, class Var, size_t name_size, class... Attrs>
-ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char (&name)[name_size], Ret (Type::*getter)(void) const, void (Type::*setter)(Var), const Attrs&... attributes)
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::varFunc(const char (&name)[name_size], Ret (Type::*getter)(void) const, void (Type::*setter)(Var), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
-	return var(temp_name, getter, setter, attributes...);
+	return varFunc(temp_name, getter, setter, attributes...);
 }
 
 template <class T, class BaseType>

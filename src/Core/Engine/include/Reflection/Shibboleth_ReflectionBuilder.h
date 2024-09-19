@@ -156,10 +156,10 @@ public:
 	ReflectionBuilder& var(const char (&name)[name_size], Var T::* ptr, const Attrs&... attributes);
 
 	template <class Type, class Ret, class Var, size_t name_size, class... Attrs>
-	ReflectionBuilder& var(const char8_t (&name)[name_size], Ret (Type::*getter)(void) const, void (Type::*setter)(Var), const Attrs&... attributes);
+	ReflectionBuilder& varFunc(const char8_t (&name)[name_size], Ret (Type::*getter)(void) const, void (Type::*setter)(Var), const Attrs&... attributes);
 
 	template <class Type, class Ret, class Var, size_t name_size, class... Attrs>
-	ReflectionBuilder& var(const char (&name)[name_size], Ret (Type::*getter)(void) const, void (Type::*setter)(Var), const Attrs&... attributes);
+	ReflectionBuilder& varFunc(const char (&name)[name_size], Ret (Type::*getter)(void) const, void (Type::*setter)(Var), const Attrs&... attributes);
 
 	template <class Type, size_t name_size, class Ret, class... Args, class... Attrs>
 	ReflectionBuilder& func(const char8_t (&name)[name_size], Ret (Type::*ptr)(Args...) const, const Attrs&... attributes);
