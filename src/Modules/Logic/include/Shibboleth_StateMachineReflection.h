@@ -38,4 +38,29 @@ SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition::Operation)
 SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition)
 
 SHIB_REFLECTION_DECLARE(Esprit::StateMachine)
+SHIB_REFLECTION_DECLARE(Esprit::ICondition)
 SHIB_REFLECTION_DECLARE(Esprit::IProcess)
+
+#ifdef SHIB_REFL_IMPL
+	#include <Attributes/Shibboleth_EngineAttributesCommon.h>
+
+	SHIB_REFLECTION_BUILD_BEGIN(Esprit::ICondition)
+		.classAttrs(
+			Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::Interface },
+			Shibboleth::ClassBucketAttribute{}
+		)
+
+		.func("init", &Type::init)
+		.func("evaluate", &Type::evaluate)
+	SHIB_REFLECTION_BUILD_END(Esprit::ICondition)
+
+	SHIB_REFLECTION_BUILD_BEGIN(Esprit::IProcess)
+		.classAttrs(
+			Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::Interface },
+			Shibboleth::ClassBucketAttribute{}
+		)
+
+		.func("init", &Type::init)
+		.func("update", &Type::update)
+	SHIB_REFLECTION_BUILD_END(Esprit::IProcess)
+#endif

@@ -17,10 +17,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_AngelScriptProcess.h"
+#include "Shibboleth_StateMachineReflection.h"
+#include "Shibboleth_VariableSet.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptProcess)
-	.BASE(Esprit::IProcess)
+	.template base<Esprit::IProcess>()
 	.template ctor<>()
 
 	.var("script", &Type::_script)

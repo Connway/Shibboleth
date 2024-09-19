@@ -20,12 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_GameTimeSystem.h"
 #include "Shibboleth_GameTime.h"
 #include <Shibboleth_AppUtils.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GameTimeSystem)
-	.BASE(Shibboleth::ISystem)
+	.template base<Shibboleth::ISystem>()
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GameTimeSystem)
 

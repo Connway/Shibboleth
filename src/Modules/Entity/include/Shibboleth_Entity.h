@@ -180,3 +180,17 @@ private:
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::Entity)
+
+#ifdef SHIB_REFL_IMPL
+	#include <Attributes/Shibboleth_EngineAttributesCommon.h>
+
+	SHIB_REFLECTION_BUILD_BEGIN(Shibboleth::Entity)
+		// $TODO: Custom serialization for setting up scene component hierarchy.
+
+		.template ctor<>()
+
+		.var("root_scene_component", &Type::_root_scene_comp, Shibboleth::ReadOnlyAttribute{})
+		.var("components", &Type::_components, Shibboleth::OptionalAttribute{})
+	SHIB_REFLECTION_BUILD_END(Shibboleth::Entity)
+
+#endif

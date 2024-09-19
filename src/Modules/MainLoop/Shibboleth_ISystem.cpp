@@ -20,15 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_ISystem.h"
-#include "Attributes/Shibboleth_EngineAttributesCommon.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ISystem)
-	.classAttrs(
-		// Do not allow scripts to create systems.
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
-	)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::ISystem)
+SHIB_REFLECTION_IMPL(Shibboleth::ISystem)
 
 NS_SHIBBOLETH
 

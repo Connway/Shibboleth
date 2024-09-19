@@ -44,9 +44,6 @@ SHIB_DEFINE_MODULE_BEGIN(Logic)
 				return false;
 			}
 
-			app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::ICondition));
-			app.getReflectionManager().registerTypeBucket(CLASS_HASH(Esprit::IProcess));
-
 			Esprit::SetAllocator(&s_logic_allocator);
 
 			return true;

@@ -20,21 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_Entity.h"
 #include "Shibboleth_EntitySceneComponent.h"
 #include "Shibboleth_EntityManager.h"
 #include "Shibboleth_EntityDefines.h"
-#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::Entity)
-	// $TODO: Custom serialization for setting up scene component hierarchy.
-
-	.template ctor<>()
-
-	.var("root_scene_component", &Type::_root_scene_comp, Shibboleth::ReadOnlyAttribute{})
-	.var("components", &Type::_components, Shibboleth::OptionalAttribute{})
-SHIB_REFLECTION_DEFINE_END(Shibboleth::Entity)
-
+SHIB_REFLECTION_IMPL(Shibboleth::Entity)
 
 namespace
 {

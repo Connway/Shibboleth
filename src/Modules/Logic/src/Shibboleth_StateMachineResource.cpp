@@ -20,7 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_StateMachineResource.h"
+#include "Shibboleth_StateMachineReflection.h"
 #include <FileSystem/Shibboleth_IFileSystem.h>
 #include <Shibboleth_ResourceAttributesCommon.h>
 #include <Shibboleth_SerializeReaderWrapper.h>
@@ -117,7 +119,7 @@ void StateMachineResource::load(const ISerializeReader& reader, uintptr_t /*thre
 			// $TODO: Log error.
 
 		} else {
-			const auto* const process_bucket = refl_mgr.getTypeBucket(CLASS_HASH(Esprit::IProcess));
+			const auto* const process_bucket = refl_mgr.template getTypeBucket<Esprit::IProcess>();
 
 			if (!process_bucket) {
 				// $TODO: Log error.
@@ -210,7 +212,7 @@ void StateMachineResource::load(const ISerializeReader& reader, uintptr_t /*thre
 			// $TODO: Log error.
 
 		} else {
-			const auto* const cond_bucket = refl_mgr.getTypeBucket(CLASS_HASH(Esprit::ICondition));
+			const auto* const cond_bucket = refl_mgr.template getTypeBucket<Esprit::ICondition>();
 
 			if (!cond_bucket) {
 				// $TODO: Log error.
@@ -292,7 +294,7 @@ void StateMachineResource::load(const ISerializeReader& reader, uintptr_t /*thre
 										return false;
 									}
 
-									Esprit::ICondition* const condition = ref_def->createT<Esprit::ICondition>(CLASS_HASH(Esprit::ICondition), allocator);
+									Esprit::ICondition* const condition = ref_def->createT<Esprit::ICondition>(allocator);
 
 									if (condition) {
 										if (ref_def->load(reader, ref_def->getBasePointer(CLASS_HASH(Esprit::ICondition), condition))) {

@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_GameTime.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_Utilities.h>

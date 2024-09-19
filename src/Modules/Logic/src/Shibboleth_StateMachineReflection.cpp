@@ -20,9 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_StateMachineReflection.h"
 #include "Shibboleth_VariableSet.h"
-#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
 #ifdef LoadString
 	#undef LoadString
@@ -105,11 +105,5 @@ SHIB_REFLECTION_DEFINE_BEGIN(Esprit::StateMachine)
 	.func("getVariables", static_cast<const Esprit::VariableSet& (Esprit::StateMachine::*)(void) const>(&Esprit::StateMachine::getVariables))
 SHIB_REFLECTION_DEFINE_END(Esprit::StateMachine)
 
-SHIB_REFLECTION_DEFINE_BEGIN(Esprit::IProcess)
-	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::Interface }
-	)
-
-	.func("init", &Esprit::IProcess::init)
-	.func("update", &Esprit::IProcess::update)
-SHIB_REFLECTION_DEFINE_END(Esprit::IProcess)
+SHIB_REFLECTION_IMPL(Esprit::ICondition)
+SHIB_REFLECTION_IMPL(Esprit::IProcess)

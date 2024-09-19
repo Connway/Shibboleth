@@ -20,19 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_EntityComponent.h"
 #include "Shibboleth_EntityManager.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponentFlag)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponentFlag)
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EntityComponent)
-	.template ctor<>()
-
-	.var("flags", &Type::_flags)
-	.var("name", &Type::_name)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::EntityComponent)
-
+SHIB_REFLECTION_IMPL(Shibboleth::EntityComponent)
 
 namespace
 {

@@ -38,3 +38,13 @@ public:
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::ISystem)
+
+#ifdef SHIB_REFL_IMPL
+	#include "Attributes/Shibboleth_EngineAttributesCommon.h"
+
+	SHIB_REFLECTION_BUILD_BEGIN(Shibboleth::ISystem)
+		.classAttrs(
+			Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
+		)
+	SHIB_REFLECTION_BUILD_END(Shibboleth::ISystem)
+#endif

@@ -75,3 +75,12 @@ NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::EntityComponentFlag)
 SHIB_REFLECTION_DECLARE(Shibboleth::EntityComponent)
+
+#ifdef SHIB_REFL_IMPL
+	SHIB_REFLECTION_BUILD_BEGIN(Shibboleth::EntityComponent)
+		.template ctor<>()
+
+		.var("flags", &Type::_flags)
+		.var("name", &Type::_name)
+	SHIB_REFLECTION_BUILD_END(Shibboleth::EntityComponent)
+#endif
