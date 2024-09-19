@@ -149,8 +149,8 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char (
 }
 
 template <class T, class BaseType>
-template <class Ret, class Var, size_t name_size, class... Attrs>
-ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char8_t (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
+template <class Type, class Ret, class Var, size_t name_size, class... Attrs>
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char8_t (&name)[name_size], Ret (Type::*getter)(void) const, void (Type::*setter)(Var), const Attrs&... attributes)
 {
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
@@ -175,8 +175,8 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char8_
 }
 
 template <class T, class BaseType>
-template <class Ret, class Var, size_t name_size, class... Attrs>
-ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char (&name)[name_size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
+template <class Type, class Ret, class Var, size_t name_size, class... Attrs>
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char (&name)[name_size], Ret (Type::*getter)(void) const, void (Type::*setter)(Var), const Attrs&... attributes)
 {
 	CONVERT_STRING_ARRAY(char8_t, temp_name, name);
 	return var(temp_name, getter, setter, attributes...);
@@ -186,7 +186,6 @@ template <class T, class BaseType>
 template <class Type, size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8_t (&name)[name_size], Ret (Type::*ptr)(Args...) const, const Attrs&... attributes)
 {
-	static_assert(std::is_same_v<Type, T> || std::is_base_of_v<Type, T>, "Type is not a base class of T.");
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
@@ -230,7 +229,6 @@ template <class T, class BaseType>
 template <class Type, size_t name_size, class Ret, class... Args, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8_t (&name)[name_size], Ret (Type::*ptr)(Args...), const Attrs&... attributes)
 {
-	static_assert(std::is_same_v<Type, T> || std::is_base_of_v<Type, T>, "Type is not a base class of T.");
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
