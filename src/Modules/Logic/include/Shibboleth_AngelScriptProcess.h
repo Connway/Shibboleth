@@ -1,16 +1,13 @@
 /************************************************************************************
 Copyright (C) 2024 by Nicholas LaCroix
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,20 +19,24 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Reflection/Shibboleth_Reflection.h>
-#include <Esprit_StateMachineCommonConditions.h>
-#include <Esprit_StateMachine.h>
+#include <Shibboleth_AngelScriptResource.h>
+#include <Shibboleth_ResourcePtr.h>
 #include <Esprit_IProcess.h>
 
-SHIB_REFLECTION_DECLARE(Esprit::U8String)
-SHIB_REFLECTION_DECLARE(Esprit::HashString32<>)
-SHIB_REFLECTION_DECLARE(Esprit::HashString64<>)
-SHIB_REFLECTION_DECLARE(Esprit::HashStringNoString32<>)
-SHIB_REFLECTION_DECLARE(Esprit::HashStringNoString64<>)
+NS_SHIBBOLETH
 
-SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition::Operation)
+class AngelScriptProcess final : public Esprit::IProcess, public Refl::IReflectionObject
+{
+public:
+	bool init(const Esprit::StateMachine& owner) override;
+	void update(const Esprit::StateMachine& owner, Esprit::VariableSet::Instance& variables) override;
 
-SHIB_REFLECTION_DECLARE(Esprit::CheckVariableCondition)
+private:
+	ResourcePtr<AngelScriptResource> _script;
 
-SHIB_REFLECTION_DECLARE(Esprit::StateMachine)
-SHIB_REFLECTION_DECLARE(Esprit::IProcess)
+	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptProcess);
+};
+
+NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::AngelScriptProcess)

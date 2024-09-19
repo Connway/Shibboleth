@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "Shibboleth_ReflectionBase.h"
 #include "Shibboleth_ReflectionUtils.h"
 #include "Shibboleth_IApp.h"
+#include <span>
 
 NS_SHIBBOLETH
 
@@ -169,11 +170,15 @@ static void SaveString(Shibboleth::ISerializeWriter& writer, const Gaff::U8Strin
 	writer.writeString(value.data());
 }
 
+template <class T>
+using Span = std::span<T>;
+
 NS_END
 
 NS_HASHABLE
 	GAFF_CLASS_HASHABLE(Shibboleth::ISerializeReader);
 	GAFF_CLASS_HASHABLE(Shibboleth::ISerializeWriter);
+	GAFF_TEMPLATE_CLASS_HASHABLE(Shibboleth::Span, T);
 NS_END
 
 

@@ -166,6 +166,18 @@ int32_t EnumReflectionDefinition<Enum>::getNumEnumAttrs(void) const
 }
 
 template <class Enum>
+const IAttribute* EnumReflectionDefinition<Enum>::getEnumAttr(Gaff::Hash64 attr_name) const
+{
+	for (const auto& attr : _enum_attrs) {
+		if (attr->getReflectionDefinition().hasInterface(attr_name)) {
+			return attr.get();
+		}
+	}
+
+	return nullptr;
+}
+
+template <class Enum>
 const IAttribute* EnumReflectionDefinition<Enum>::getEnumAttr(int32_t index) const
 {
 	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(_enum_attrs.size()));

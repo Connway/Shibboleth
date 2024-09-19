@@ -18,7 +18,8 @@ DependencyProject "AngelScript"
 	{
 		"angelscript/**.h",
 		"angelscript/**.cpp",
-		"**/scriptarray.*"
+		"**/scriptarray.*",
+		"**/scriptbuilder.*"
 	}
 
 	includedirs
@@ -29,7 +30,7 @@ DependencyProject "AngelScript"
 	AngelScriptDefines()
 
 	filter { "system:macosx", "platforms:arm64" }
-		files { "angelscript/source/as_callfunc_arm64_xcode.asm"}
+		files { "angelscript/source/as_callfunc_arm64_xcode.S"}
 
 	filter { "system:windows", "action:vs*", "platforms:arm64" }
 		files { "angelscript/source/as_callfunc_arm64_msvc.asm"}

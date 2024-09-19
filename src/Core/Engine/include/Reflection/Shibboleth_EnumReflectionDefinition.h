@@ -79,6 +79,7 @@ public:
 	bool entryExists(Gaff::Hash32 name) const;
 
 	int32_t getNumEnumAttrs(void) const override;
+	const IAttribute* getEnumAttr(Gaff::Hash64 attr_name) const override;
 	const IAttribute* getEnumAttr(int32_t index) const override;
 
 	void setAllocator(const Shibboleth::ProxyAllocator& allocator);

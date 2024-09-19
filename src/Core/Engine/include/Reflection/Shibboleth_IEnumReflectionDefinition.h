@@ -39,6 +39,20 @@ class IAttribute;
 class IEnumReflectionDefinition
 {
 public:
+	template <class T>
+	const T* getEnumAttr(Gaff::Hash64 attr_name) const
+	{
+		const auto* const attr = getEnumAttr(attr_name);
+		return (attr) ? static_cast<const T*>(attr) : nullptr;
+	}
+
+	template <class T>
+	const T* getEnumAttr(void) const
+	{
+		return getEnumAttr<T>(Hash::template ClassHashable<T>::GetHash());
+	}
+
+
 	enum class LoadFlags
 	{
 		Count
@@ -67,6 +81,7 @@ public:
 	virtual int32_t getEntryValue(Gaff::Hash32 name) const = 0;
 
 	virtual int32_t getNumEnumAttrs(void) const = 0;
+	virtual const IAttribute* getEnumAttr(Gaff::Hash64 attr_name) const = 0;
 	virtual const IAttribute* getEnumAttr(int32_t index) const = 0;
 };
 

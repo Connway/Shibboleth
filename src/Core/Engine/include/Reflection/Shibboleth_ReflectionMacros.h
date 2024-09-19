@@ -73,7 +73,7 @@ THE SOFTWARE.
 	public: \
 		static constexpr bool HasReflection = true; \
 		static void Init(void); \
-		template <class Type = type, class ReflectionBuilder> \
+		template <class Type, class ReflectionBuilder> \
 		static void BuildReflection(ReflectionBuilder& builder); \
 		static Reflection<type>& GetInstance(void) \
 		{ \
@@ -130,7 +130,7 @@ NS_END
 				return; \
 			} \
 			GAFF_ASSERT(!g_instance._ref_def); \
-			BuildReflection(g_instance._version); \
+			BuildReflection<type>(g_instance._version); \
 			const RefDefInterface<type>* ref_def_interface = nullptr; \
 			Shibboleth::IApp& app = Shibboleth::GetApp(); \
 			if constexpr (std::is_enum_v<type>) { \
@@ -150,7 +150,7 @@ NS_END
 			} else { \
 				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(RefDefType<type>), REFLECTION_ALLOCATOR); \
 				decltype(g_instance._ref_def->getInitialBuilder()) builder = g_instance._ref_def->getInitialBuilder(); \
-				BuildReflection(builder); \
+				BuildReflection<type>(builder); \
 				app.getReflectionManager().registerReflection(g_instance._ref_def); \
 			} \
 			g_instance._defined = true; \
@@ -217,7 +217,7 @@ NS_END
 				return; \
 			} \
 			GAFF_ASSERT(!g_instance._ref_def); \
-			BuildReflection(g_instance._version); \
+			BuildReflection< type<__VA_ARGS__> >(g_instance._version); \
 			Shibboleth::IApp& app = Shibboleth::GetApp(); \
 			const IReflectionDefinition* ref_def_interface = app.getReflectionManager().getReflection(GetNameHash()); \
 			g_instance._ref_def = static_cast<ReflectionDefinition<type<__VA_ARGS__> >*>( \
@@ -232,7 +232,7 @@ NS_END
 			} else { \
 				g_instance._ref_def = SHIB_ALLOCT(GAFF_SINGLE_ARG(ReflectionDefinition< type<__VA_ARGS__> >), REFLECTION_ALLOCATOR); \
 				decltype(g_instance._ref_def->getInitialBuilder()) builder = g_instance._ref_def->getInitialBuilder(); \
-				BuildReflection(builder); \
+				BuildReflection< type<__VA_ARGS__> >(builder); \
 				app.getReflectionManager().registerReflection(g_instance._ref_def); \
 			} \
 			g_instance._defined = true; \

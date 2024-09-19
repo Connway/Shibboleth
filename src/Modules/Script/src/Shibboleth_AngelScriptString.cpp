@@ -280,11 +280,9 @@ NS_SHIBBOLETH
 
 bool RegisterScriptString_Native(asIScriptEngine* engine)
 {
-	int result = engine->RegisterObjectType("U8String", sizeof(U8String), asOBJ_VALUE | asGetTypeTraits<U8String>());
-	CHECK_RESULT(result)
+	int result = engine->RegisterObjectType("U8String", sizeof(U8String), asOBJ_VALUE | asGetTypeTraits<U8String>()); CHECK_RESULT(result)
 
-	result = engine->RegisterStringFactory("U8String", &s_factory);
-	CHECK_RESULT(result)
+	result = engine->RegisterStringFactory("U8String", &s_factory); CHECK_RESULT(result)
 
 	result = engine->RegisterObjectBehaviour("U8String", asBEHAVE_CONSTRUCT,  "void f()", asFUNCTION(Gaff::Construct<U8String>), asCALL_CDECL_OBJFIRST); CHECK_RESULT(result)
 	result = engine->RegisterObjectBehaviour("U8String", asBEHAVE_CONSTRUCT,  "void f(const U8String&in)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<U8String, const U8String&>)), asCALL_CDECL_OBJFIRST); CHECK_RESULT(result)
