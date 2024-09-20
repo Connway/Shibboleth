@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_AngelScriptString.h"
 #include "Shibboleth_AngelScriptArray.h"
 #include "Shibboleth_AngelScriptMath.h"
+#include "Shibboleth_ScriptLogging.h"
 #include "Shibboleth_ScriptDefines.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Ptrs/Shibboleth_ManagerRef.h>
@@ -155,14 +156,14 @@ namespace
 		int result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_space.data()));
 
 		if (result < 0) {
-			// $TODO: Log error.
+			LogErrorScript("RegisterEnum: Failed to set default namespace to '%s'.", reinterpret_cast<const char*>(name_space.data()));
 			return false;
 		}
 
 		result = engine.RegisterEnum(reinterpret_cast<const char*>(enum_name.data()));
 
 		if (result < 0) {
-			// $TODO: Log error.
+			LogErrorScript("RegisterEnum: Failed to register enum type '%s'.", reinterpret_cast<const char*>(enum_name.data()));
 			return false;
 		}
 
@@ -179,7 +180,7 @@ namespace
 			);
 
 			if (result < 0) {
-				// $TODO: Log error.
+				LogErrorScript("RegisterEnum: Failed to register enum value '%s::%s'.", reinterpret_cast<const char*>(enum_name.data()), reinterpret_cast<const char*>(entry_name.getBuffer()));
 				return false;
 			}
 		}
@@ -196,14 +197,14 @@ namespace
 		int result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_space.data()));
 
 		if (result < 0) {
-			// $TODO: Log error.
+			LogErrorScript("RegisterInterface: Failed to set default namespace to '%s'.", reinterpret_cast<const char*>(name_space.data()));
 			return false;
 		}
 
 		result = engine.RegisterInterface(reinterpret_cast<const char*>(class_name.data()));
 
 		if (result < 0) {
-			// $TODO: Log error.
+			LogErrorScript("RegisterInterface: Failed to interface '%s'.", reinterpret_cast<const char*>(class_name.data()));
 			return false;
 		}
 
@@ -211,7 +212,6 @@ namespace
 
 		for (int32_t i = 0; i < num_funcs; ++i) {
 			const Shibboleth::HashStringView32<> func_name = ref_def.getFuncName(i);
-			const char8_t* raw_name = func_name.getBuffer();
 
 			// Is an operator function. Not supporting on interfaces.
 			if (Gaff::Find(func_name.getBuffer(), u8"__") == 0) {
@@ -223,7 +223,7 @@ namespace
 			for (int32_t j = 0; j < num_overrides; ++j) {
 				const Refl::IReflectionFunctionBase* const func = ref_def.getFunc(i, j);
 				const Refl::FunctionSignature sig = func->getSignature();
-				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
+				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, func_name.getBuffer());
 
 				result = engine.RegisterInterfaceMethod(
 					reinterpret_cast<const char*>(class_name.data()),
@@ -231,7 +231,7 @@ namespace
 				);
 
 				if (result < 0) {
-					// $TODO: Log error.
+					LogErrorScript("RegisterInterface: Failed to register interface method '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(func_name.getBuffer()));
 					return false;
 				}
 			}
@@ -266,7 +266,7 @@ namespace
 		int result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_space.data()));
 
 		if (result < 0) {
-			// $TODO: Log error.
+			LogErrorScript("RegisterType: Failed to set default namespace to '%s'.", reinterpret_cast<const char*>(name_space.data()));
 			return false;
 		}
 
@@ -307,7 +307,7 @@ namespace
 		result = engine.RegisterObjectType(reinterpret_cast<const char*>(class_name.data()), ref_def.size(), flags);
 
 		if (result < 0) {
-			// $TODO: Log error.
+			LogErrorScript("RegisterType: Failed to register object type '%s'.", reinterpret_cast<const char*>(class_name.data()));
 			return false;
 		}
 
@@ -344,12 +344,29 @@ namespace
 				const Refl::FunctionSignature sig = func->getSignature();
 				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
 
-				result = engine.RegisterObjectMethod(
-					reinterpret_cast<const char*>(class_name.data()),
-					reinterpret_cast<const char*>(decl.data()),
-					asFunctionPtr(func->getFunc()),
-					call_conv
-				);
+				if (call_conv == asCALL_CDECL) {
+					// $TODO: Register static function.
+
+					// result = engine.RegisterObjectMethod(
+					// 	reinterpret_cast<const char*>(class_name.data()),
+					// 	reinterpret_cast<const char*>(decl.data()),
+					// 	asFunctionPtr(func->getFunc()),
+					// 	call_conv
+					// );
+
+				} else {
+					result = engine.RegisterObjectMethod(
+						reinterpret_cast<const char*>(class_name.data()),
+						reinterpret_cast<const char*>(decl.data()),
+						asFunctionPtr(func->getFunc()),
+						call_conv
+					);
+				}
+
+				if (result < 0) {
+					LogErrorScript("RegisterType: Failed to register static function '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(raw_name));
+					return false;
+				}
 			}
 		}
 
@@ -396,7 +413,7 @@ namespace
 					const size_t func_ptr_size = func->getFunctionPointerSize();
 
 					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
-						// $TODO: Log error.
+						LogErrorScript("RegisterType: Method pointer size is not a valid size for '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(raw_name));
 						return false;
 					}
 
@@ -413,7 +430,7 @@ namespace
 				}
 
 				if (result < 0) {
-					// $TODO: Log error.
+					LogErrorScript("RegisterType: Failed to register method '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(raw_name));
 					return false;
 				}
 			}
@@ -439,7 +456,7 @@ namespace
 				);
 
 				if (result < 0) {
-					// $TODO: Log error.
+					LogErrorScript("RegisterType: Failed to register property '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
 					return false;
 				}
 
@@ -450,7 +467,7 @@ namespace
 					const size_t func_ptr_size = var->getGetterFunctionPointerSize();
 
 					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
-						// $TODO: Log error.
+						LogErrorScript("RegisterType: Method pointer size is not a valid size for property getter '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
 						return false;
 					}
 
@@ -467,6 +484,11 @@ namespace
 						func_ptr,
 						asCALL_THISCALL
 					);
+
+					if (result < 0) {
+						LogErrorScript("RegisterType: Failed to register getter for property '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
+						return false;
+					}
 				}
 
 				// Setter
@@ -474,7 +496,7 @@ namespace
 					const size_t func_ptr_size = var->getSetterFunctionPointerSize();
 
 					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
-						// $TODO: Log error.
+						LogErrorScript("RegisterType: Method pointer size is not a valid size for property setter '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
 						return false;
 					}
 
@@ -491,6 +513,11 @@ namespace
 						func_ptr,
 						asCALL_THISCALL
 					);
+
+					if (result < 0) {
+						LogErrorScript("RegisterType: Failed to register setter for property '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
+						return false;
+					}
 				}
 			}
 		}
@@ -543,28 +570,28 @@ bool AngelScriptManager::init(void)
 	_engine = asCreateScriptEngine();
 
 	if (!_engine) {
-		// $TODO: Log error.
+		LogErrorScript("AngelScriptManager::init: Failed to create script engine.");
 		return false;
 	}
 
 	int result = _engine->SetMessageCallback(asMETHOD(AngelScriptManager, messageCallback), this, asCALL_THISCALL);
 
 	if (result < 0) {
-		// $TODO: Log error.
+		LogErrorScript("AngelScriptManager::init: Failed to set message callback.");
 		return false;
 	}
 
 	result = _engine->SetEngineProperty(asEP_ALLOW_MULTILINE_STRINGS, true);
 
 	if (result < 0) {
-		// $TODO: Log error.
+		LogErrorScript("AngelScriptManager::init: Failed to set engine property 'asEP_ALLOW_MULTILINE_STRINGS'.");
 		return false;
 	}
 
 	result = _engine->SetEngineProperty(asEP_USE_CHARACTER_LITERALS, true);
 
 	if (result < 0) {
-		// $TODO: Log error.
+		LogErrorScript("AngelScriptManager::init: Failed to set engine property 'asEP_USE_CHARACTER_LITERALS'.");
 		return false;
 	}
 
@@ -572,22 +599,22 @@ bool AngelScriptManager::init(void)
 	result = _engine->SetEngineProperty(asEP_COMPILER_WARNINGS, 2);
 
 	if (result < 0) {
-		// $TODO: Log error.
+		LogErrorScript("AngelScriptManager::init: Failed to set engine property 'asEP_COMPILER_WARNINGS'.");
 		return false;
 	}
 
 	if (!RegisterScriptMath_Native(_engine)) {
-		// $TODO: Log error.
+		LogErrorScript("AngelScriptManager::init: Failed to register math functions.");
 		return false;
 	}
 
 	if (!RegisterScriptString_Native(_engine)) {
-		// $TODO: Log error.
+		LogErrorScript("AngelScriptManager::init: Failed to register 'U8String'.");
 		return false;
 	}
 
 	if (!RegisterScriptArray_Native(_engine)) {
-		// $TODO: Log error.
+		LogErrorScript("AngelScriptManager::init: Failed to register 'array<T>'.");
 		return false;
 	}
 
@@ -617,7 +644,14 @@ bool AngelScriptManager::init(void)
 	result = _engine->SetDefaultNamespace("Shibboleth");
 
 	if (result < 0) {
-		// $TODO: Log error.
+		LogErrorScript("AngelScriptManager::init: Failed to set default namespace to 'Shibboleth'.");
+		return false;
+	}
+
+	_main_module = _engine->GetModule("main", asGM_CREATE_IF_NOT_EXISTS);
+
+	if (!_main_module) {
+		LogErrorScript("AngelScriptManager::init: Failed to create script module 'main'.");
 		return false;
 	}
 
@@ -630,17 +664,19 @@ void AngelScriptManager::initModuleThread(void)
 	asSetGlobalMemoryFunctions(ScriptAlloc, ScriptFree);
 }
 
-void AngelScriptManager::messageCallback(const asSMessageInfo* msg, void* param)
+void AngelScriptManager::messageCallback(const asSMessageInfo* msg, void* /*param*/)
 {
-	GAFF_REF(msg, param);
+	GAFF_REF(msg);
 
-/*	const char *type = "ERR ";
-	if( msg->type == asMSGTYPE_WARNING )
-		type = "WARN";
-	else if( msg->type == asMSGTYPE_INFORMATION )
-		type = "INFO";
+	LogType log_type = LogType::Error;
 
-	printf("%s (%d, %d) : %s : %s\n", msg->section, msg->row, msg->col, type, msg->message);*/
+	if (msg->type == asMSGTYPE_WARNING) {
+		log_type = LogType::Warning;
+	} else if (msg->type == asMSGTYPE_INFORMATION) {
+		log_type = LogType::Info;
+	}
+
+	LogWithApp(Shibboleth::GetApp(), log_type, Shibboleth::k_log_channel_script, "%s (%d, %d) : %s", msg->section, msg->row, msg->col, msg->message);
 }
 
 NS_END

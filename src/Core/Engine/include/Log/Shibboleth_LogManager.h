@@ -101,9 +101,9 @@ static constexpr Gaff::Hash32 k_log_channel_default = Gaff::FNV1aHash32StringCon
 
 NS_END
 
-#define LogWithApp(app, type, channel, message, ...) app.getLogManager().logMessage(type, channel, u8##message, ##__VA_ARGS__)
+#define LogWithApp(app, type, channel, message, ...) (app).getLogManager().logMessage(type, channel, u8##message, ##__VA_ARGS__)
 
-#define LogType(type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), type, channel, u8##message, ##__VA_ARGS__)
+#define LogType(type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::type, channel, u8##message, ##__VA_ARGS__)
 #define LogError(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, channel, "[ERROR] " u8##message, ##__VA_ARGS__)
 #define LogWarning(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Warning, channel, "[WARNING] " u8##message, ##__VA_ARGS__)
 #define LogInfo(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Info, channel, message, ##__VA_ARGS__)

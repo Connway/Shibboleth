@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 class asIThreadManager;
 class asIScriptEngine;
+class asIScriptModule;
 struct asSMessageInfo;
 
 NS_SHIBBOLETH
@@ -45,6 +46,7 @@ public:
 private:
 	asIThreadManager* _thread_mgr = nullptr;
 	asIScriptEngine* _engine = nullptr;
+	asIScriptModule* _main_module = nullptr;
 
 	void messageCallback(const asSMessageInfo* msg, void* param);
 
