@@ -30,6 +30,7 @@ public:
 
 	void load(const IFile& file, uintptr_t thread_id_int) override;
 
+private:
 	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptResource);
 };
 

@@ -22,11 +22,12 @@ THE SOFTWARE.
 
 #define SHIB_REFL_IMPL
 #include "Shibboleth_AngelScriptManager.h"
+#include "Shibboleth_AngelScriptResource.h"
 #include "Shibboleth_AngelScriptString.h"
 #include "Shibboleth_AngelScriptArray.h"
 #include "Shibboleth_AngelScriptMath.h"
 #include "Shibboleth_ScriptLogging.h"
-#include "Shibboleth_ScriptDefines.h"
+#include <FileSystem/Shibboleth_IFileSystem.h>
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Ptrs/Shibboleth_ManagerRef.h>
 #include <Gaff_ContainerAlgorithm.h>
@@ -662,6 +663,42 @@ void AngelScriptManager::initModuleThread(void)
 {
 	asPrepareMultithread(_thread_mgr);
 	asSetGlobalMemoryFunctions(ScriptAlloc, ScriptFree);
+}
+
+AngelScriptManager::CompileResult AngelScriptManager::compile(AngelScriptResource& resource, const IFile& file)
+{
+	U8String source{ SCRIPT_ALLOCATOR };
+	source = reinterpret_cast<const char8_t*>(file.getBuffer());
+
+	const char8_t* const section_name = resource.getFilePath().getBuffer();
+	const ScriptInfo script_info = modifySource(section_name, source);
+
+	const int result = _main_module->AddScriptSection(
+		reinterpret_cast<const char*>(section_name),
+		reinterpret_cast<const char*>(source.data()),
+		source.size()
+	);
+
+	if (result < 0) {
+		LogErrorScript("AngelScriptManager::compile: Failed to compile script '%s'.", reinterpret_cast<const char*>(section_name));
+		return CompileResult::Failed;
+	}
+
+	if (!script_info.includes.empty()) {
+		for (const U8String& include_file : script_info.includes) {
+		}
+
+		return CompileResult::Deferred;
+	}
+
+	return CompileResult::Success;
+}
+
+AngelScriptManager::ScriptInfo AngelScriptManager::modifySource(const char8_t* section_name, U8String& source)
+{
+	// $TODO: Parse file and modify source if necessary.
+	GAFF_REF(section_name, source);
+	return ScriptInfo{};
 }
 
 void AngelScriptManager::messageCallback(const asSMessageInfo* msg, void* /*param*/)

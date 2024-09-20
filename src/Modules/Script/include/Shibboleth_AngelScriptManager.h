@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ScriptDefines.h"
 #include <Shibboleth_IManager.h>
 
 class asIThreadManager;
@@ -31,9 +32,19 @@ struct asSMessageInfo;
 
 NS_SHIBBOLETH
 
+class AngelScriptResource;
+class IFile;
+
 class AngelScriptManager final : public IManager
 {
 public:
+	enum class CompileResult
+	{
+		Success,
+		Deferred,
+		Failed
+	};
+
 	static void InitModuleThread(void);
 
 	~AngelScriptManager(void);
@@ -43,10 +54,19 @@ public:
 
 	void initModuleThread(void);
 
+	CompileResult compile(AngelScriptResource& resource, const IFile& file);
+
 private:
+	struct ScriptInfo final
+	{
+		Vector<U8String> includes{ SCRIPT_ALLOCATOR };
+	};
+
 	asIThreadManager* _thread_mgr = nullptr;
 	asIScriptEngine* _engine = nullptr;
 	asIScriptModule* _main_module = nullptr;
+
+	ScriptInfo modifySource(const char8_t* section_name, U8String& source);
 
 	void messageCallback(const asSMessageInfo* msg, void* param);
 
