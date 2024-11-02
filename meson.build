@@ -3,13 +3,13 @@ project(
   'c', 'cpp',
   version: 'dev',
   meson_version: '1.6.0',
-  default_options: [
-    'warning_level=3',
-    'c_std=c18',
-    'cpp_std=c++20',
-    'cpp_eh=a',
-    'cpp_rtti=false',
-  ]
+  default_options: {
+    'warning_level': '3',
+    'c_std': 'c18',
+    'cpp_std': 'c++20',
+    'cpp_eh': 'a',
+    'cpp_rtti': false,
+  }
 )
 
 ###################
@@ -109,7 +109,9 @@ endif
 ############################
 
 # Dependency Folders
+subdir('src/Dependencies/Catch2')
 subdir('src/Dependencies/EASTL')
+subdir('src/Dependencies/JoltPhysics')
 
 # Frameworks
 subdir('src/Frameworks/Gaff')
