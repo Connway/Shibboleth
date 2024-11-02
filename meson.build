@@ -101,22 +101,12 @@ endif
 ##########################################
 # Grab all folders with meson.build files.
 ##########################################
-dependency_folders = run_command('python3', 'utils/find_projects.py', 'src/Dependencies', check: true).stdout().strip().split(',')
-framework_folders = run_command('python3', 'utils/find_projects.py', 'src/Frameworks', check: true).stdout().strip().split(',')
 module_folders = run_command('python3', 'utils/find_projects.py', 'src/Modules', check: true).stdout().strip().split(',')
 tool_folders = run_command('python3', 'utils/find_projects.py', 'src/Tools', check: true).stdout().strip().split(',')
 core_folders = run_command('python3', 'utils/find_projects.py', 'src/Core', check: true).stdout().strip().split(',')
 test_folders = run_command('python3', 'utils/find_projects.py', 'src/Test', check: true).stdout().strip().split(',')
 
 # If stdout is an empty string, split() will generate ['']. Convert those into empty arrays.
-if dependency_folders[0] == ''
-  dependency_folders = []
-endif
-
-if framework_folders[0] == ''
-  framework_folders = []
-endif
-
 if module_folders[0] == ''
   module_folders = []
 endif
@@ -140,14 +130,12 @@ endif
 ############################
 
 # Dependency Folders
-foreach build_subdir : dependency_folders
-  subdir(build_subdir)
-endforeach
+
 
 # Frameworks
 subdir('src/Frameworks/Gaff')
 subdir('src/Frameworks/Gleam')
-# subdir('src/Frameworks/Esprit')
+subdir('src/Frameworks/Esprit')
 
 # Core Folders
 foreach build_subdir : core_folders

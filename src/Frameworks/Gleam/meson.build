@@ -96,7 +96,7 @@ endif
 ##################
 # Gleam Variables.
 ##################
-gleam_windows_libs = ['d3d12', 'D3dcompiler', 'dxgi', 'dxguid']
+gleam_windows_libs = ['D3dcompiler', 'dxgi', 'dxguid']
 gleam_defines = []
 gleam_links = []
 
@@ -105,23 +105,29 @@ if is_windows
 
   if renderer == 'd3d11'
     gleam_defines = gleam_defines + ['-DGLEAM_USE_D3D11']
-  else if renderer == 'd3d12'
+    gleam_windows_libs = gleam_windows_libs + ['d3d11']
+  elif renderer == 'd3d12'
     gleam_defines = gleam_defines + ['-DGLEAM_USE_D3D12']
-  else if renderer == 'vulkan'
+    gleam_windows_libs = gleam_windows_libs + ['d3d12']
+  elif renderer == 'vulkan'
     gleam_defines = gleam_defines + ['-DGLEAM_USE_VULKAN']
+    gleam_links = gleam_links + [] # $TODO: Fill in Vulkan libraries to link against.
   endif
 
-else if is_linux
+elif is_linux
   gleam_defines = gleam_defines + ['-DGLEAM_USE_VULKAN']
+  gleam_links = gleam_links + [] # $TODO: Fill in Vulkan libraries to link against.
 
-else if is_mac
-  renderer = get_option('renderer')
+elif is_mac
+  # renderer = get_option('renderer')
 
-  if renderer == 'vulkan'
-    gleam_defines = gleam_defines + ['-DGLEAM_USE_VULKAN']
-  else
+  # if renderer == 'vulkan'
+  #   gleam_defines = gleam_defines + ['-DGLEAM_USE_VULKAN']
+  #    gleam_links = gleam_links + [] # $TODO: Fill in Vulkan libraries to link against.
+  # else
     gleam_defines = gleam_defines + ['-DGLEAM_USE_METAL']
-  endif
+    gleam_links = gleam_links + [] # $TODO: Fill in Metal libraries to link against.
+  # endif
 endif
 
 gleam = static_library(
@@ -129,6 +135,6 @@ gleam = static_library(
   header_files,
   source_files,
   include_directories: include_dirs,
-  cpp_args: default_cpp_args + build_args,
+  cpp_args: default_cpp_args + build_args + gleam_defines,
   # pic: true,
 )
