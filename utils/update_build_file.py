@@ -20,6 +20,12 @@ parser.add_argument(
     help="A list of file extensions to look for and add to the source_files array."
 )
 parser.add_argument(
+    "-efe", "--extra_files_extensions",
+    type=str,
+    nargs="*",
+    help="A list of file extensions to look for and add to the extra_files array."
+)
+parser.add_argument(
     "-rd", "--recursive_depth",
     default=-1,
     type=int,
@@ -27,6 +33,7 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
+
 
 def GetFiles(directory, extension, depth):
     if args.recursive_depth >= 0 and depth > args.recursive_depth:
@@ -66,6 +73,13 @@ def GetFilesString(list_name, extensions, ignore_recursion=False):
     return "{} = [\n{}".format(list_name, file_list)
 
 
+def ModifyBuildString(build_file_contents, files, var_string):
+    var_start = build_file_contents.index(var_string)
+    var_end = build_file_contents.index("]", var_start)
+
+    return build_file_contents[:var_start] + files + build_file_contents[var_end:]
+
+
 build_file = args.directory / "meson.build"
 
 if not build_file.exists():
@@ -78,20 +92,18 @@ if not build_file.is_file():
 
 header_extensions = ["h", "hpp"] + (args.header_extensions or [])
 source_extensions = ["cpp"] + (args.source_extensions or [])
+extra_files_extensions = ["inl", "natvis"] + (args.extra_files_extensions or [])
 
 header_files = GetFilesString("header_files", header_extensions, True)
 source_files = GetFilesString("source_files", source_extensions)
+extra_files = GetFilesString("extra_files", extra_files_extensions, True)
 
 build_file_contents = build_file.read_text()
 
-header_files_start = build_file_contents.index("header_files = [")
-header_files_end = build_file_contents.index("]", header_files_start)
+build_file_contents = ModifyBuildString(build_file_contents, header_files, "header_files = [")
+build_file_contents = ModifyBuildString(build_file_contents, source_files, "source_files = [")
 
-build_file_contents = build_file_contents[:header_files_start] + header_files + build_file_contents[header_files_end:]
-
-source_files_start = build_file_contents.index("source_files = [")
-source_files_end = build_file_contents.index("]", source_files_start)
-
-build_file_contents = build_file_contents[:source_files_start] + source_files + build_file_contents[source_files_end:]
+if len(extra_files) > 0:
+    build_file_contents = ModifyBuildString(build_file_contents, extra_files, "extra_files = [")
 
 build_file.write_text(build_file_contents)
