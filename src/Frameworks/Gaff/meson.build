@@ -90,7 +90,7 @@ build_args = [
 ]
 
 if is_msvc
-  build_args = build_args + ['-D_CRT_SECURE_NO_WARNINGS']
+  build_args += ['-D_CRT_SECURE_NO_WARNINGS']
 endif
 
 gaff = static_library(

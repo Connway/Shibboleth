@@ -56,13 +56,19 @@ add_project_arguments(
   language: ['c', 'cpp']
 )
 
-if is_msvc
-  default_cpp_args = default_cpp_args + ['/WX']
-
+if is_windows
   add_project_arguments(
     '-DWIN32',
     '-DWIN64',
     '-D_WINDOWS',
+    language: ['c', 'cpp']
+  )
+endif
+
+if is_msvc
+  default_cpp_args += ['/WX']
+
+  add_project_arguments(
     '/Zc:__cplusplus',
     '/permissive-',
     '/Zc:static_assert-',
@@ -73,7 +79,7 @@ if is_msvc
   )
 
 else
-  default_cpp_args = default_cpp_args + ['-Werror']
+  default_cpp_args += ['-Werror']
 
   add_project_arguments(
     '-fchar8_t',
@@ -130,7 +136,7 @@ endif
 ############################
 
 # Dependency Folders
-
+subdir('src/Dependencies/EASTL')
 
 # Frameworks
 subdir('src/Frameworks/Gaff')
