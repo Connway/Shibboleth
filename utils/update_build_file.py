@@ -5,7 +5,7 @@ import os
 
 def GetFilesString(dir_string, extension):
     glob_string = dir_string + "**/*." + extension
-    files = glob.glob(glob_string)
+    files = glob.glob(glob_string, recursive=True)
     file_list = ""
 
     for file in files:
