@@ -104,34 +104,7 @@ if is_x64
   )
 endif
 
-##########################################
-# Grab all folders with meson.build files.
-##########################################
-module_folders = run_command('python3', 'utils/find_projects.py', 'src/Modules', check: true).stdout().strip().split(',')
-tool_folders = run_command('python3', 'utils/find_projects.py', 'src/Tools', check: true).stdout().strip().split(',')
-core_folders = run_command('python3', 'utils/find_projects.py', 'src/Core', check: true).stdout().strip().split(',')
-test_folders = run_command('python3', 'utils/find_projects.py', 'src/Test', check: true).stdout().strip().split(',')
-
-# If stdout is an empty string, split() will generate ['']. Convert those into empty arrays.
-if module_folders[0] == ''
-  module_folders = []
-endif
-
-if tool_folders[0] == ''
-  tool_folders = []
-endif
-
-if core_folders[0] == ''
-  core_folders = []
-endif
-
-if test_folders[0] == ''
-  test_folders = []
-endif
-
-
-
-############################
+###########################
 # Run all meson.build files.
 ############################
 
@@ -144,22 +117,10 @@ subdir('src/Frameworks/Gleam')
 subdir('src/Frameworks/Esprit')
 
 # Core Folders
-foreach build_subdir : core_folders
-  subdir(build_subdir)
-endforeach
 
 # Module Folders
-foreach build_subdir : module_folders
-  subdir(build_subdir)
-endforeach
 
 # Tool Folders
-foreach build_subdir : tool_folders
-  subdir(build_subdir)
-endforeach
 
 # Test Folders
-foreach build_subdir : test_folders
-  subdir(build_subdir)
-endforeach
 
