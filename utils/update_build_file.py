@@ -1,70 +1,77 @@
-import glob
-import sys
-import os
+import argparse
+import pathlib
+
+parser = argparse.ArgumentParser(
+    prog="update_build_file",
+    description="Updates the meson.build file of a directory with an updated list of source files."
+)
+
+parser.add_argument("directory", type=pathlib.Path)
+parser.add_argument("-rd", "--recursive_depth", default=-1, type=int)
+args = parser.parse_args()
 
 
-def GetFilesString(dir_string, extension):
-    glob_string = dir_string + "**/*." + extension
-    files = glob.glob(glob_string, recursive=True)
+def GetFiles(directory, extension, depth):
+    if args.recursive_depth >= 0 and depth > args.recursive_depth:
+        return []
+
+    files = sorted(directory.glob("*." + extension))
+    paths = sorted(directory.glob("*"))
+
+    for path in paths:
+        if path.is_dir():
+            files.extend(GetFiles(path, extension, depth + 1))
+
+    return files
+
+
+def GetFilesString(list_name, extensions, ignore_recursion=False):
+    original_recursive_depth = args.recursive_depth
     file_list = ""
 
-    for file in files:
-        if len(file_list) > 0:
-            file_list = "{}  '{}',\n".format(file_list, file)
+    if ignore_recursion:
+        args.recursive_depth = -1
+
+    files = []
+
+    for ext in extensions:
+        if args.recursive_depth < 0:
+            files.extend(sorted(args.directory.glob("**/*." + ext)))
         else:
-            file_list = "\n  '{}',\n".format(file)
+            files.extend(GetFiles(args.directory, ext, 0))
 
-    file_list = file_list.replace(dir_string, "")
-    file_list = file_list.replace('\\', '/')
+    for file in files:
+        file_list = "{}  '{}',\n".format(file_list, file.as_posix().replace(args.directory.as_posix() + "/", ""))
 
-    return file_list
+    if ignore_recursion:
+        args.recursive_depth = original_recursive_depth
+
+    return "{} = [\n{}".format(list_name, file_list)
 
 
-if len(sys.argv) < 2:
-    print("No folder specified.")
+build_file = args.directory / "meson.build"
+
+if not build_file.exists():
+    print("No 'meson.build' file in '{}'.".format(args.directory.as_posix()))
     exit()
 
-
-dir_string = sys.argv[1].replace('\\', '/')
-
-if dir_string[-1] != '/':
-    dir_string = dir_string + '/'
-
-build_file = dir_string + "meson.build"
-
-if not os.path.isfile(build_file):
-    print("No 'meson.build' file in '{}'.".format(dir_string))
+if not build_file.is_file():
+    print("'meson.build' in '{}' is not a file.".format(args.directory.as_posix()))
     exit()
 
-header_files = GetFilesString(dir_string, "h")
-source_files = GetFilesString(dir_string, "cpp")
+header_files = GetFilesString("header_files", ["h"], True)
+source_files = GetFilesString("source_files", ["cpp"])
 
-file = open(build_file, "r")
+build_file_contents = build_file.read_text()
 
-if not file:
-    print("Failed to open '{}' for read.".format(build_file))
-    exit()
-
-build_file_contents = file.read()
-file.close()
-
-file = open(build_file, "w")
-
-if not file:
-    print("Failed to open '{}' for write.".format(build_file))
-    exit()
-
-header_files_var_string = "header_files = ["
-header_files_start = build_file_contents.index(header_files_var_string)
+header_files_start = build_file_contents.index("header_files = [")
 header_files_end = build_file_contents.index("]", header_files_start)
 
-build_file_contents = build_file_contents[:(header_files_start + len(header_files_var_string))] + header_files + build_file_contents[header_files_end:]
+build_file_contents = build_file_contents[:header_files_start] + header_files + build_file_contents[header_files_end:]
 
-source_files_var_string = "source_files = ["
-source_files_start = build_file_contents.index(source_files_var_string)
+source_files_start = build_file_contents.index("source_files = [")
 source_files_end = build_file_contents.index("]", source_files_start)
 
-build_file_contents = build_file_contents[:(source_files_start + len(source_files_var_string))] + source_files + build_file_contents[source_files_end:]
+build_file_contents = build_file_contents[:source_files_start] + source_files + build_file_contents[source_files_end:]
 
-file.write(build_file_contents)
-file.close()
+build_file.write_text(build_file_contents)
