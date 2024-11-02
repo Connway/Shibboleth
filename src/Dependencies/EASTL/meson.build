@@ -398,6 +398,12 @@ source_files = [
   'source/EAThread/version.cpp',
 ]
 
+extra_files = [
+  'include/EAStdC/Win32/EAMathHelpWin32.inl',
+  'include/EAStdC/internal/EAMemory.inl',
+  'doc/EASTL.natvis',
+]
+
 include_dirs = [
   'include',
 ]
@@ -415,6 +421,5 @@ eastl = static_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: build_args,
-  # pic: true,
 )
 

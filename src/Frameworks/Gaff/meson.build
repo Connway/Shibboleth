@@ -79,6 +79,17 @@ source_files = [
   'src/Gaff_Utils_Windows.cpp',
 ]
 
+extra_files = [
+  'include/Gaff_Curve.inl',
+  'include/Gaff_DynamicLoader.inl',
+  'include/Gaff_FileWatcher.inl',
+  'include/Gaff_Flags.inl',
+  'include/Gaff_HashString.inl',
+  'include/Gaff_JobPool.inl',
+  'include/Gaff_SparseStack.inl',
+  'include/Gaff_Utils_Common.inl',
+]
+
 include_dirs = [
   'include',
   '../../Dependencies/EASTL/include',
@@ -99,5 +110,4 @@ gaff = static_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args,
-  # pic: true,
 )

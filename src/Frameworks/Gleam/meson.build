@@ -110,6 +110,9 @@ source_files = [
   'src/Gleam_Window.cpp',
 ]
 
+extra_files = [
+]
+
 include_dirs = [
   'include',
   '../Gaff/include',
@@ -123,7 +126,7 @@ build_args = [
 ]
 
 if is_msvc
-  build_args = build_args + ['-D_CRT_SECURE_NO_WARNINGS']
+  build_args += ['-D_CRT_SECURE_NO_WARNINGS']
 endif
 
 ##################
@@ -169,5 +172,4 @@ gleam = static_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args + gleam_defines,
-  # pic: true,
 )

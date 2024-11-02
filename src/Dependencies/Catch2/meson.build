@@ -24,6 +24,5 @@ catch2 = static_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args,
-  # pic: true,
 )
 
