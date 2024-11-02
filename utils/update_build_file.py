@@ -7,9 +7,26 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument("directory", type=pathlib.Path)
-parser.add_argument("-rd", "--recursive_depth", default=-1, type=int)
-args = parser.parse_args()
+parser.add_argument(
+    "-he", "--header_extensions",
+    type=str,
+    nargs="*",
+    help="A list of file extensions to look for and add to the header_files array."
+)
+parser.add_argument(
+    "-se", "--source_extensions",
+    type=str,
+    nargs="*",
+    help="A list of file extensions to look for and add to the source_files array."
+)
+parser.add_argument(
+    "-rd", "--recursive_depth",
+    default=-1,
+    type=int,
+    help="How many folders deep we will search for a file type."
+)
 
+args = parser.parse_args()
 
 def GetFiles(directory, extension, depth):
     if args.recursive_depth >= 0 and depth > args.recursive_depth:
@@ -59,8 +76,11 @@ if not build_file.is_file():
     print("'meson.build' in '{}' is not a file.".format(args.directory.as_posix()))
     exit()
 
-header_files = GetFilesString("header_files", ["h"], True)
-source_files = GetFilesString("source_files", ["cpp"])
+header_extensions = ["h", "hpp"] + (args.header_extensions or [])
+source_extensions = ["cpp"] + (args.source_extensions or [])
+
+header_files = GetFilesString("header_files", header_extensions, True)
+source_files = GetFilesString("source_files", source_extensions)
 
 build_file_contents = build_file.read_text()
 
