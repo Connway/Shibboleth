@@ -175,14 +175,14 @@ const char8_t* MessagePackNode::getKey(int32_t index) const
 	mpack_node_t node = mpack_node_map_key_at(_node, static_cast<size_t>(index));
 	GAFF_ASSERT(node.data->type == mpack_type_str);
 
-	const size_t size = static_cast<size_t>(_node.data->len + 1);
+	const size_t size = static_cast<size_t>(node.data->len + 1);
 	char8_t* const ret = reinterpret_cast<char8_t*>(MPACK_MALLOC(size));
 
 	if (ret) {
-		mpack_node_copy_utf8(_node, reinterpret_cast<char*>(ret), size);
+		mpack_node_copy_utf8(node, reinterpret_cast<char*>(ret), size);
 		ret[size - 1] = 0;
 	} else {
-		mpack_node_flag_error(_node, mpack_error_memory);
+		mpack_node_flag_error(node, mpack_error_memory);
 	}
 
 	GAFF_ASSERT(node.tree->error == mpack_ok);
