@@ -5,6 +5,7 @@ project(
   meson_version: '1.6.0',
   default_options: {
     'warning_level': '3',
+    'werror': true,
     'c_std': 'c18',
     'cpp_std': 'c++20',
     'cpp_eh': 'a',
@@ -27,6 +28,11 @@ is_mac = host_machine.system() == 'darwin' and host_machine.subsystem() == 'maco
 
 is_arm64 = host_machine.cpu_family() == 'aarch64'
 is_x64 = host_machine.cpu_family() == 'x86_64'
+
+is_debug_optimized = get_option('buildtype') == 'debugoptimized'
+is_debug = is_debug_optimized or (get_option('buildtype') == 'debug')
+is_release = get_option('buildtype') == 'release'
+is_profile = is_debug or get_option('profile')
 
 if not is_windows and not is_linux and not is_mac
   error('Unsupported OS:', host_machine.system())
@@ -56,6 +62,33 @@ add_project_arguments(
   language: ['c', 'cpp']
 )
 
+if is_debug
+  add_project_arguments(
+    '-D__DEBUG',
+    '-D_DEBUG',
+    '-D_JPH_DEBUG_RENDERER',
+    '-D_JPH_FLOATING_POINT_EXCEPTIONS_ENABLED',
+    language: ['c', 'cpp']
+  )
+
+elif is_release
+  add_project_arguments(
+    '-D_HAS_ITERATOR_DEBUGGING=0',
+    '-D_ITERATOR_DEBUG_LEVEL=0',
+    '-DNDEBUG',
+    language: ['c', 'cpp']
+  )
+endif
+
+if is_profile
+  add_project_arguments(
+   '-D_SHIB_PROFILE',
+   '-D_JPH_PROFILE_ENABLED',
+   language: ['c', 'cpp']
+  )
+
+endif
+
 if is_windows
   add_project_arguments(
     '-DWIN32',
@@ -66,8 +99,6 @@ if is_windows
 endif
 
 if is_msvc
-  default_cpp_args += ['/WX']
-
   add_project_arguments(
     '/Zc:__cplusplus',
     '/permissive-',
@@ -79,8 +110,6 @@ if is_msvc
   )
 
 else
-  default_cpp_args += ['-Werror']
-
   add_project_arguments(
     '-fchar8_t',
     '-Wno-extra-semi',

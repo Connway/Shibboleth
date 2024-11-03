@@ -117,6 +117,10 @@ angelscript_defines = [
   '-DAS_NO_EXCEPTIONS'
 ]
 
+if is_debug
+  angelscript_defines += ['-DAS_DEBUG']
+endif
+
 if is_windows
   if is_x64
     source_files += ['angelscript/source/as_callfunc_x64_msvc_asm.asm']
@@ -143,5 +147,8 @@ angelscript = static_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: build_args,
+  override_options: {
+    'werror': false
+    }
 )
 

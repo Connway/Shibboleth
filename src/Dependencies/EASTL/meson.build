@@ -421,5 +421,8 @@ eastl = static_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: build_args,
+  override_options: {
+    'werror': false
+    }
 )
 
