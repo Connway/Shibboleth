@@ -155,6 +155,7 @@ subdir('src/Dependencies/glfw')
 subdir('src/Dependencies/imgui')
 subdir('src/Dependencies/libpng')
 subdir('src/Dependencies/libtiff')
+subdir('src/Dependencies/mimalloc')
 
 # Frameworks
 subdir('src/Frameworks/Gaff')
