@@ -71,7 +71,6 @@ extra_files = [
 ]
 
 include_dirs = [
-  'include',
 ]
 
 build_args = [
@@ -335,8 +334,15 @@ source_files = [
   'public/common/TracySystem.cpp',
   'public/common/tracy_lz4.cpp',
   'public/common/tracy_lz4hc.cpp',
- ]
+]
 
-
+include_dirs = [
+  'profiler',
+  'server',
+  'imgui',
+  '../../Dependencies/capstone/include/capstone/',
+  '../../Dependencies/capstone/include',
+  '../../Dependencies/glfw/include',
+]
 
 
