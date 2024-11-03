@@ -87,10 +87,14 @@ tracy_defines = [
   '-DTTRACY_EXPORTS'
 ]
 
-windows_libraries = []
+dependencies = [
+]
 
 if is_windows
-  windows_libraries += ['ws2_32', 'Dbghelp']
+  dependencies += [
+    compiler.find_library('ws2_32'),
+    compiler.find_library('Dbghelp'),
+  ]
 
 else
   source_files += [
@@ -116,9 +120,9 @@ tracy_client = shared_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args + tracy_defines,
+  dependencies: dependencies,
   override_options: {
     'werror': false,
-    'cpp_winlibs': windows_libraries,
   }
 )
 
