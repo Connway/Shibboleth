@@ -1,8 +1,0 @@
-option(
-  'renderer',
-  type: 'combo',
-  choices: ['d3d11', 'd3d12', 'vulkan', 'metal'],
-  value: 'd3d11',
-  description: 'Graphics Module: Which rendering backend to use.'
-)
-

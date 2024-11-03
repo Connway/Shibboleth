@@ -1,2 +1,11 @@
 option('wayland', type: 'boolean', value: false, description: 'On Linux, use Wayland instead of X11 window system.')
 option('profile', type: 'boolean', value: false, description: 'Enable profiling support.')
+
+option(
+  'renderer',
+  type: 'combo',
+  choices: ['d3d11', 'd3d12', 'vulkan', 'metal'],
+  value: 'd3d11',
+  description: 'Graphics Module: Which rendering backend to use.'
+)
+
