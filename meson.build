@@ -142,6 +142,8 @@ subdir('src/Dependencies/Catch2')
 subdir('src/Dependencies/EASTL')
 subdir('src/Dependencies/JoltPhysics')
 subdir('src/Dependencies/angelscript')
+subdir('src/Dependencies/assimp')
+subdir('src/Dependencies/capstone')
 
 # Frameworks
 subdir('src/Frameworks/Gaff')

@@ -420,7 +420,7 @@ eastl = static_library(
   header_files,
   source_files,
   include_directories: include_dirs,
-  cpp_args: build_args,
+  cpp_args: default_cpp_args + build_args,
   override_options: {
     'werror': false
     }
