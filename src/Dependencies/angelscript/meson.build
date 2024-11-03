@@ -122,11 +122,27 @@ if is_debug
 endif
 
 if is_windows
+  ml64 = find_program('ml64')
+  file_no_extension = ''
+
   if is_x64
-    source_files += ['angelscript/source/as_callfunc_x64_msvc_asm.asm']
+    file_no_extension = 'as_callfunc_x64_msvc_asm'
   elif is_arm64
-    source_files += ['angelscript/source/as_callfunc_arm64_msvc.asm']
+    file_no_extension = 'as_callfunc_arm64_msvc'
   endif
+
+  asm_file = 'angelscript/source/' + file_no_extension + '.asm'
+  obj_name = file_no_extension + '.obj'
+
+  asm_target = custom_target(
+    obj_name,
+    input: asm_file,
+    output: obj_name,
+    command: [ml64, '/c', '/nologo', '/Zi', '/Fo@OUTPUT@', '/W3', '/errorReport:prompt', '/Ta', '@INPUT@']
+  )
+
+  source_files += asm_target
+
 elif is_linux
   if is_x64
     # $TODO: Figure out which assembly files to build.
@@ -149,6 +165,6 @@ angelscript = static_library(
   cpp_args: default_cpp_args + build_args,
   override_options: {
     'werror': false
-    }
+  }
 )
 
