@@ -152,6 +152,7 @@ subdir('src/Dependencies/angelscript')
 subdir('src/Dependencies/assimp')
 subdir('src/Dependencies/capstone')
 subdir('src/Dependencies/glfw')
+subdir('src/Dependencies/imgui')
 
 # Frameworks
 subdir('src/Frameworks/Gaff')
