@@ -74,6 +74,10 @@ include_dirs = [
 ]
 
 build_args = [
+  '-DWIN32_LEAN_AND_MEAN',
+  '-DNOMINMAX',
+  '-D_CRT_SECURE_NO_WARNINGS',
+  '-D_SCL_SECURE_NO_WARNINGS',
 ]
 
 tracy_defines = [
@@ -113,6 +117,7 @@ tracy_client = shared_library(
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args + tracy_defines,
   override_options: {
+    'werror': false,
     'cpp_winlibs': windows_libraries,
   }
 )

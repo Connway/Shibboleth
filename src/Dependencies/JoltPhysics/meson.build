@@ -434,7 +434,7 @@ include_dirs = [
 ]
 
 extra_files = [
-  'Jolt/Jolt.nativs'
+  'Jolt/Jolt.natvis'
 ]
 
 build_args = [
