@@ -156,6 +156,7 @@ subdir('src/Dependencies/imgui')
 subdir('src/Dependencies/libpng')
 subdir('src/Dependencies/libtiff')
 subdir('src/Dependencies/mimalloc')
+subdir('src/Dependencies/minizip-ng')
 
 # Frameworks
 subdir('src/Frameworks/Gaff')
