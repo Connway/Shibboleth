@@ -153,6 +153,8 @@ subdir('src/Dependencies/assimp')
 subdir('src/Dependencies/capstone')
 subdir('src/Dependencies/glfw')
 subdir('src/Dependencies/imgui')
+subdir('src/Dependencies/libpng')
+subdir('src/Dependencies/libtiff')
 
 # Frameworks
 subdir('src/Frameworks/Gaff')
