@@ -86,9 +86,7 @@ elif is_linux
 
 elif is_mac
   build_args += ['-D_GLFW_COCOA']
-  dependencies += [
-    dependency('appleframeworks', modules: ['Cocoa', 'IOKit', 'QuartzCore'])
-  ]
+  dependencies += dependency('appleframeworks', modules: ['Cocoa', 'IOKit', 'QuartzCore'])
 
   source_files += [
     'src/cocoa_init.m',

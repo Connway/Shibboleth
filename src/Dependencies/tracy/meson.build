@@ -74,10 +74,6 @@ include_dirs = [
 ]
 
 build_args = [
-  '-DWIN32_LEAN_AND_MEAN',
-  '-DNOMINMAX',
-  '-D_CRT_SECURE_NO_WARNINGS',
-  '-D_SCL_SECURE_NO_WARNINGS',
 ]
 
 tracy_defines = [
@@ -91,6 +87,13 @@ dependencies = [
 ]
 
 if is_windows
+  build_args += [
+    '-DWIN32_LEAN_AND_MEAN',
+    '-DNOMINMAX',
+    '-D_CRT_SECURE_NO_WARNINGS',
+    '-D_SCL_SECURE_NO_WARNINGS',
+  ]
+
   dependencies += [
     compiler.find_library('ws2_32'),
     compiler.find_library('Dbghelp'),
@@ -259,8 +262,6 @@ source_files = [
   'imgui/imgui_draw.cpp',
   'imgui/imgui_tables.cpp',
   'imgui/imgui_widgets.cpp',
-  'nfd/nfd_gtk.cpp',
-  'nfd/nfd_win.cpp',
   'server/TracyMemory.cpp',
   'server/TracyMmap.cpp',
   'server/TracyPrint.cpp',
@@ -353,5 +354,44 @@ include_dirs = [
   '../../Dependencies/capstone/include',
   '../../Dependencies/glfw/include',
 ]
+
+if is_windows
+  source_files += ['nfd/nfd_win.cpp']
+
+elif is_linux
+  source_files += ['nfd/nfd_gtk.cpp']
+
+  if is_wayland
+    build_args += ['-DDISPLAY_SERVER_WAYLAND']
+  else
+    dependencies += [
+      dependency('dl'),
+      dependency('pthread'),
+      dependency('gtk+', version: '3.0')
+    ]
+
+    build_args += ['-DDISPLAY_SERVER_X11']
+    # $TODO: Figure out how to do this with Meson.
+    # buildoptions { "`pkg-config --cflags-only-I gtk+-3.0`" }
+    # linkoptions { "`pkg-config --libs gtk+-3.0`", "-lpthread", "-ldl" }
+  endif
+
+elif is_mac
+  source_files += ['nfd/nfd_cocoa.m']
+  dependencies += dependency('appleframeworks', modules: ['Cocoa', 'UniformTypeIdentifiers'])
+endif
+
+tracy_profiler = executable(
+  'TracyProfiler',
+  header_files,
+  source_files,
+  include_directories: include_dirs,
+  cpp_args: default_cpp_args + build_args + tracy_defines,
+  dependencies: dependencies,
+  link_with: [capstone, glfw], #capstone
+  override_options: {
+    'werror': false,
+  }
+)
 
 

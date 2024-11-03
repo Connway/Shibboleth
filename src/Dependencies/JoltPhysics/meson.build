@@ -540,13 +540,13 @@ if is_windows
     'TestFramework',
   ]
 
-  windows_libraries = [
-    'd3d12',
-    'shcore',
-    'dxguid',
-    'dinput8',
-    'dxgi',
-    'd3dcompiler'
+  dependencies = [
+    compiler.find_library('d3d12'),
+    compiler.find_library('shcore'),
+    compiler.find_library('dxguid'),
+    compiler.find_library('dinput8'),
+    compiler.find_library('dxgi'),
+    compiler.find_library('d3dcompiler'),
   ]
 
   jolt_viewer = executable(
@@ -556,10 +556,8 @@ if is_windows
     include_directories: include_dirs,
     cpp_args: default_cpp_args + build_args,
     link_with: [jolt_physics],
+    dependencies: dependencies,
     win_subsystem: 'windows',
     extra_files: extra_files,
-    override_options: {
-      'cpp_winlibs': windows_libraries,
-    }
   )
 endif
