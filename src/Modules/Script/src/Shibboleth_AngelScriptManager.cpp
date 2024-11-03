@@ -686,6 +686,7 @@ AngelScriptManager::CompileResult AngelScriptManager::compile(AngelScriptResourc
 
 	if (!script_info.includes.empty()) {
 		for (const U8String& include_file : script_info.includes) {
+			GAFF_REF(include_file);
 		}
 
 		return CompileResult::Deferred;
