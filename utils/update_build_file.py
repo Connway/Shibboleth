@@ -91,7 +91,7 @@ if not build_file.is_file():
     exit()
 
 header_extensions = ["h", "hpp"] + (args.header_extensions or [])
-source_extensions = ["cpp"] + (args.source_extensions or [])
+source_extensions = ["c", "cc", "cpp"] + (args.source_extensions or [])
 extra_files_extensions = ["inl", "natvis"] + (args.extra_files_extensions or [])
 
 header_files = GetFilesString("header_files", header_extensions, True)
