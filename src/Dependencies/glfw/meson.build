@@ -101,8 +101,6 @@ endif
 
 if is_msvc
   build_args += ['-D_CRT_SECURE_NO_WARNINGS']
-elif is_clang
-  # build_args += ['-D__GNUC__'] # GLFW doesn't set GLFW_API appropriately on Clang when building a shared library.
 endif
 
 glfw = shared_library(

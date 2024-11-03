@@ -68,10 +68,10 @@ add_project_arguments(
 
 if is_debug
   add_project_arguments(
-    '-D__DEBUG',
     '-D_DEBUG',
-    '-D_JPH_DEBUG_RENDERER',
-    '-D_JPH_FLOATING_POINT_EXCEPTIONS_ENABLED',
+    '-DDEBUG',
+    '-DJPH_DEBUG_RENDERER',
+    '-DJPH_FLOATING_POINT_EXCEPTIONS_ENABLED',
     language: ['c', 'cpp']
   )
 
@@ -86,8 +86,8 @@ endif
 
 if is_profile
   add_project_arguments(
-   '-D_SHIB_PROFILE',
-   '-D_JPH_PROFILE_ENABLED',
+   '-DSHIB_PROFILE',
+   '-DJPH_PROFILE_ENABLED',
    language: ['c', 'cpp']
   )
 
@@ -126,16 +126,16 @@ endif
 
 if is_x64
   add_project_arguments(
-    #'GLM_FORCE_SSE42',
-    #'JPH_USE_LZCNT',
-    #'JPH_USE_TZCNT',
-    #'JPH_USE_FMADD',
-    'JPH_USE_SSE4_1',
-    'JPH_USE_SSE4_2',
-    #'JPH_USE_AVX2',
-    #'JPH_USE_AVX',
-    #'JPH_USE_F16C',
-    'GLM_FORCE_SILENT_WARNINGS',
+    #'-DGLM_FORCE_SSE42',
+    #'-DGJPH_USE_LZCNT',
+    #'-DGJPH_USE_TZCNT',
+    #'-DGJPH_USE_FMADD',
+    '-DGJPH_USE_SSE4_1',
+    '-DGJPH_USE_SSE4_2',
+    #'-DGJPH_USE_AVX2',
+    #'-DGJPH_USE_AVX',
+    #'-DGJPH_USE_F16C',
+    '-DGGLM_FORCE_SILENT_WARNINGS',
     language: ['c', 'cpp']
   )
 endif
@@ -157,6 +157,8 @@ subdir('src/Dependencies/libpng')
 subdir('src/Dependencies/libtiff')
 subdir('src/Dependencies/mimalloc')
 subdir('src/Dependencies/minizip-ng')
+subdir('src/Dependencies/mpack')
+subdir('src/Dependencies/tracy')
 
 # Frameworks
 subdir('src/Frameworks/Gaff')
