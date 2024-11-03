@@ -446,6 +446,7 @@ jolt_physics = static_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args,
+  extra_files: extra_files,
 )
 
 if is_windows
@@ -556,6 +557,7 @@ if is_windows
     cpp_args: default_cpp_args + build_args,
     link_with: [jolt_physics],
     win_subsystem: 'windows',
+    extra_files: extra_files,
     override_options: {
       'cpp_winlibs': windows_libraries,
     }

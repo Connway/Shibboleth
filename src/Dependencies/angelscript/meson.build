@@ -145,10 +145,8 @@ if is_windows
 
 elif is_linux
   if is_x64
-    # $TODO: Figure out which assembly files to build.
   elif is_arm64
     if is_clang
-      # $TODO: Figure out which assembly files to build.
     elif is_gcc
       source_files += ['angelscript/source/as_callfunc_arm64_gcc.S']
     endif
