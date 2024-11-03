@@ -270,6 +270,7 @@ capstone = static_library(
   header_files,
   source_files,
   include_directories: include_dirs,
+  c_args: default_c_args + build_args,
   cpp_args: default_cpp_args + build_args,
   override_options: {
     'werror': false,

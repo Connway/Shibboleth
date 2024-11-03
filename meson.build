@@ -6,10 +6,11 @@ project(
   default_options: {
     'warning_level': '3',
     'werror': true,
-    'c_std': 'c18',
+    'c_std': 'c17', # Using c17 instead of c18, because when we add objc on Mac, it uses this variable to initialize objc_c_std, even though we defined it below.
     'cpp_std': 'c++20',
     'cpp_eh': 'a',
     'cpp_rtti': false,
+    'objc_c_std': 'c17',
   }
 )
 
@@ -34,6 +35,8 @@ is_debug = is_debug_optimized or (get_option('buildtype') == 'debug')
 is_release = get_option('buildtype') == 'release'
 is_profile = is_debug or get_option('profile')
 
+is_wayland = is_linux and get_option('wayland')
+
 if not is_windows and not is_linux and not is_mac
   error('Unsupported OS:', host_machine.system())
 endif
@@ -50,6 +53,7 @@ endif
 # Global Setup.
 ###############
 default_cpp_args = []
+default_c_args = []
 
 add_project_arguments(
   '-DUNICODE', '-D_UNICODE',
@@ -96,6 +100,9 @@ if is_windows
     '-D_WINDOWS',
     language: ['c', 'cpp']
   )
+
+elif is_mac
+  add_languages('objc', native: false)
 endif
 
 if is_msvc
@@ -144,6 +151,7 @@ subdir('src/Dependencies/JoltPhysics')
 subdir('src/Dependencies/angelscript')
 subdir('src/Dependencies/assimp')
 subdir('src/Dependencies/capstone')
+subdir('src/Dependencies/glfw')
 
 # Frameworks
 subdir('src/Frameworks/Gaff')
