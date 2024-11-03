@@ -49,6 +49,10 @@ if not is_arm64 and not is_x64
   error('Unsupported CPU architecture:', host_machine.cpu_family())
 endif
 
+if is_windows and not is_msvc
+  error('Unsupported compiler "' + compiler.get_id() + '" on platform "' + host_machine.cpu_family() + '".')
+endif
+
 ###############
 # Global Setup.
 ###############
