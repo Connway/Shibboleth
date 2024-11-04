@@ -166,3 +166,10 @@ angelscript = static_library(
   }
 )
 
+angelscript_dep = declare_dependency(
+  include_directories: include_dirs,
+  compile_args: angelscript_defines,
+  link_with: [angelscript],
+)
+
+all_deps += angelscript

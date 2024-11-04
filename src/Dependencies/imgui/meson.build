@@ -39,3 +39,9 @@ imgui = static_library(
   extra_files: extra_files,
 )
 
+imgui_deps = declare_dependency(
+  include_directories: ['.'],
+  link_with: [imgui],
+)
+
+all_deps += imgui

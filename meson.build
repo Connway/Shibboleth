@@ -37,21 +37,10 @@ is_profile = is_debug or get_option('profile')
 
 is_wayland = is_linux and get_option('wayland')
 
-if not is_windows and not is_linux and not is_mac
-  error('Unsupported OS:', host_machine.system())
-endif
-
-if not is_clang and not is_msvc and not is_gcc
-  error('Unsupported compiler:', compiler.get_id())
-endif
-
-if not is_arm64 and not is_x64
-  error('Unsupported CPU architecture:', host_machine.cpu_family())
-endif
-
-if is_windows and not is_msvc
-  error('Unsupported compiler "' + compiler.get_id() + '" on platform "' + host_machine.cpu_family() + '".')
-endif
+assert(is_windows or is_linux or is_mac, 'Unsupported OS: ' + host_machine.system())
+assert(is_msvc or is_gcc or is_clang, 'Unsupported compiler: ' + compiler.get_id())
+assert(is_x64 or is_arm64, 'Unsupported CPU architecture: ' + host_machine.cpu_family())
+assert(not is_windows or is_msvc, 'Unsupported compiler "' + compiler.get_id() + '" on platform "' + host_machine.cpu_family() + '".')
 
 ###############
 # Global Setup.
@@ -61,12 +50,8 @@ default_c_args = []
 
 add_project_arguments(
   '-DUNICODE', '-D_UNICODE',
-  '-DEA_COMPILER_NO_RTTI',
   '-DGLM_FORCE_INTRINSICS',
   '-DZLIB_COMPAT',
-  '-DJPH_USE_LZCNT',
-  '-DJPH_USE_TZCNT',
-  '-DJPH_USE_FMADD',
   language: ['c', 'cpp']
 )
 
@@ -74,8 +59,6 @@ if is_debug
   add_project_arguments(
     '-D_DEBUG',
     '-DDEBUG',
-    '-DJPH_DEBUG_RENDERER',
-    '-DJPH_FLOATING_POINT_EXCEPTIONS_ENABLED',
     language: ['c', 'cpp']
   )
 
@@ -91,7 +74,6 @@ endif
 if is_profile
   add_project_arguments(
    '-DSHIB_PROFILE',
-   '-DJPH_PROFILE_ENABLED',
    language: ['c', 'cpp']
   )
 
@@ -131,14 +113,6 @@ endif
 if is_x64
   add_project_arguments(
     #'-DGLM_FORCE_SSE42',
-    #'-DGJPH_USE_LZCNT',
-    #'-DGJPH_USE_TZCNT',
-    #'-DGJPH_USE_FMADD',
-    '-DGJPH_USE_SSE4_1',
-    '-DGJPH_USE_SSE4_2',
-    #'-DGJPH_USE_AVX2',
-    #'-DGJPH_USE_AVX',
-    #'-DGJPH_USE_F16C',
     '-DGGLM_FORCE_SILENT_WARNINGS',
     language: ['c', 'cpp']
   )
@@ -149,12 +123,14 @@ endif
 ############################
 
 # Dependency Folders
-subdir('src/Dependencies/Catch2')
-subdir('src/Dependencies/EASTL')
-subdir('src/Dependencies/JoltPhysics')
+all_deps = []
+
 subdir('src/Dependencies/angelscript')
 subdir('src/Dependencies/assimp')
 subdir('src/Dependencies/capstone')
+subdir('src/Dependencies/Catch2')
+subdir('src/Dependencies/EASTL')
+subdir('src/Dependencies/fmt')
 subdir('src/Dependencies/glfw')
 subdir('src/Dependencies/imgui')
 subdir('src/Dependencies/libpng')
@@ -162,18 +138,33 @@ subdir('src/Dependencies/libtiff')
 subdir('src/Dependencies/mimalloc')
 subdir('src/Dependencies/minizip-ng')
 subdir('src/Dependencies/mpack')
+subdir('src/Dependencies/rapidjson')
+subdir('src/Dependencies/zlib-ng')
+subdir('src/Dependencies/zstd')
+
+subdir('src/Dependencies/JoltPhysics')
 subdir('src/Dependencies/tracy')
 
+all_deps_target = alias_target('dependencies', all_deps)
+
 # Frameworks
+all_frameworks = []
+
 subdir('src/Frameworks/Gaff')
 subdir('src/Frameworks/Gleam')
 subdir('src/Frameworks/Esprit')
 
+# all_frameworks_target = alias_target('frameworks', all_frameworks)
+
 # Core Folders
+all_core = []
 
 # Module Folders
+all_modules = []
 
 # Tool Folders
+all_tools = []
 
 # Test Folders
+all_tests = []
 

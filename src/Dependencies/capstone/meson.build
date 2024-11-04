@@ -274,6 +274,12 @@ capstone = static_library(
   cpp_args: default_cpp_args + build_args,
   override_options: {
     'werror': false,
-    }
+  }
 )
 
+capstone_dep = declare_dependency(
+  include_directories: include_dirs,
+  link_with: [capstone],
+)
+
+all_deps += capstone

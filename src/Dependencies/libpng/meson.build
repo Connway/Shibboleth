@@ -37,12 +37,14 @@ include_dirs = [
 build_args = [
 ]
 
+msvc_args = []
+
 if is_debug
   build_args += ['-DPNG_DEBUG']
 endif
 
 if is_msvc
-  build_args += ['-D_CRT_SECURE_NO_WARNINGS']
+  msvc_args += ['-D_CRT_SECURE_NO_WARNINGS']
 endif
 
 libpng = static_library(
@@ -50,6 +52,13 @@ libpng = static_library(
   header_files,
   source_files,
   include_directories: include_dirs,
-  c_args: default_c_args + build_args,
+  c_args: default_c_args + build_args + msvc_args,
 )
 
+libpng_dep = declare_dependency(
+  include_directories: ['.'],
+  compile_args: build_args,
+  link_with: [libpng],
+)
+
+all_deps += libpng

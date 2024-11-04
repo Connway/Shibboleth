@@ -666,3 +666,9 @@ assimp = static_library(
   }
 )
 
+assimp_dep = declare_dependency(
+  include_directories: ['include'],
+  link_with: [assimp],
+)
+
+all_deps += assimp

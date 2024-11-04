@@ -95,6 +95,12 @@ libtiff = static_library(
   cpp_args: default_cpp_args + build_args,
   override_options: {
     'werror': false,
-    }
+  }
 )
 
+libtiff_dep = declare_dependency(
+  include_directories: ['.'],
+  link_with: [libtiff],
+)
+
+all_deps += libtiff

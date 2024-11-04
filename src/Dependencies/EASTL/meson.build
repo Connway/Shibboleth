@@ -409,6 +409,7 @@ include_dirs = [
 ]
 
 build_args = [
+  '-DEA_COMPILER_NO_RTTI',
 ]
 
 if is_msvc
@@ -424,6 +425,18 @@ eastl = static_library(
   extra_files: extra_files,
   override_options: {
     'werror': false
-    }
+  }
 )
 
+eastl_no_link_dep = declare_dependency(
+  include_directories: include_dirs,
+  compile_args: ['-DEA_COMPILER_NO_RTTI'],
+  extra_files: ['doc/EASTL.natvis'],
+)
+
+eastl_dep = declare_dependency(
+  dependencies: [eastl_no_link_dep],
+  link_with: [eastl],
+)
+
+all_deps += eastl

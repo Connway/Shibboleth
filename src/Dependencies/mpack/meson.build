@@ -37,3 +37,10 @@ mpack = static_library(
   c_args: default_c_args + build_args,
 )
 
+mpack_dep = declare_dependency(
+  include_directories: ['.'],
+  compile_args: build_args,
+  link_with: [mpack],
+)
+
+all_deps += mpack

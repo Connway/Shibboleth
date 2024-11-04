@@ -129,11 +129,13 @@ tracy_client = shared_library(
   }
 )
 
-final_tracy_defines = []
+tracy_client_dep = declare_dependency(
+  include_directories: ['.'],
+  compile_args: tracy_defines,
+  link_with: [tracy_client],
+)
 
-if is_profile
-  final_tracy_defines = tracy_client
-endif
+all_deps += tracy_client
 
 
 
@@ -386,9 +388,9 @@ tracy_profiler = executable(
   header_files,
   source_files,
   include_directories: include_dirs,
-  cpp_args: default_cpp_args + build_args + tracy_defines,
+  cpp_args: default_cpp_args + build_args,
   dependencies: dependencies,
-  link_with: [capstone, glfw], #capstone
+  link_with: [capstone, glfw, zstd],
   override_options: {
     'werror': false,
   }

@@ -112,6 +112,12 @@ glfw = shared_library(
   dependencies: dependencies,
   override_options: {
     'werror': false,
-    }
+  }
 )
 
+glfw_dep = declare_dependency(
+  include_directories: include_dirs,
+  link_with: [glfw],
+)
+
+all_deps += glfw

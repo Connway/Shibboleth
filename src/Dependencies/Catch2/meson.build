@@ -26,3 +26,9 @@ catch2 = static_library(
   cpp_args: default_cpp_args + build_args,
 )
 
+catch2_dep = declare_dependency(
+  include_directories: ['.'],
+  link_with: [catch2],
+)
+
+all_deps += catch2

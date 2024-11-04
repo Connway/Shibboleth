@@ -440,6 +440,19 @@ extra_files = [
 build_args = [
 ]
 
+if is_debug
+  build_args += [
+    '-DJPH_DEBUG_RENDERER',
+    '-DJPH_FLOATING_POINT_EXCEPTIONS_ENABLED',
+  ]
+endif
+
+if is_profile
+  build_args += [
+    '-DJPH_PROFILE_ENABLED',
+  ]
+endif
+
 jolt_physics = static_library(
   'JoltPhysics',
   header_files,
@@ -448,6 +461,14 @@ jolt_physics = static_library(
   cpp_args: default_cpp_args + build_args,
   extra_files: extra_files,
 )
+
+jolt_physics_dep = declare_dependency(
+  include_directories: ['.'],
+  compile_args: build_args,
+  link_with: [jolt_physics],
+)
+
+all_deps += jolt_physics
 
 if is_windows
   header_files = [
