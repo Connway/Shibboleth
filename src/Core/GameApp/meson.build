@@ -29,15 +29,4 @@ game_app = executable(
   win_subsystem: 'windows',
 )
 
-# game_app_console = executable(
-#   'GameAppConsole',
-#   header_files,
-#   source_files,
-#   include_directories: include_dirs,
-#   cpp_args: default_cpp_args + build_args,
-#   dependencies: dependencies,
-#   win_subsystem: 'console',
-# )
-
-# all_core += [game_app, game_app_console]
 all_core += game_app

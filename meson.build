@@ -162,7 +162,7 @@ all_core = []
 
 subdir('src/Core/Memory')
 subdir('src/Core/Engine')
-subdir('src/Core/Game_App')
+subdir('src/Core/GameApp')
 
 all_core_target = alias_target('core', all_core)
 
