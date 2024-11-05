@@ -134,11 +134,17 @@ if is_windows
   asm_file = 'angelscript/source/' + file_no_extension + '.asm'
   obj_name = file_no_extension + '.obj'
 
+  assembler_args = [ml64, '/c', '/nologo', '/Fo@OUTPUT@', '/W3', '/errorReport:prompt', '@INPUT@']
+
+  if is_debug
+    assembler_args += ['/Zi', '/Zd']
+  endif
+
   asm_target = custom_target(
     obj_name,
     input: asm_file,
     output: obj_name,
-    command: [ml64, '/c', '/nologo', '/Zi', '/Fo@OUTPUT@', '/W3', '/errorReport:prompt', '/Ta', '@INPUT@']
+    command: assembler_args,
   )
 
   source_files += asm_target

@@ -63,7 +63,6 @@ source_files = [
   'compress/zstd_opt.c',
   'compress/zstdmt_compress.c',
   'decompress/huf_decompress.c',
-  'decompress/huf_decompress_amd64.S',
   'decompress/zstd_ddict.c',
   'decompress/zstd_decompress.c',
   'decompress/zstd_decompress_block.c',
@@ -82,6 +81,12 @@ include_dirs = [
 build_args = [
   '-DZSTD_MULTITHREAD=1',
 ]
+
+if is_x64
+  if not is_windows
+    source_files += 'decompress/huf_decompress_amd64.S'
+  endif
+endif
 
 zstd = static_library(
   'zstd',
