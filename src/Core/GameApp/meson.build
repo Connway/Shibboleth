@@ -19,6 +19,15 @@ dependencies = [
   memory_dep,
 ]
 
+if is_windows
+  dependencies += [
+    compiler.find_library('Dbghelp'),
+    compiler.find_library('iphlpapi'),
+    compiler.find_library('psapi'),
+    compiler.find_library('userenv'),
+  ]
+endif
+
 game_app = executable(
   'GameApp',
   header_files,

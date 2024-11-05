@@ -11,6 +11,7 @@ project(
     'cpp_eh': 'a',
     'cpp_rtti': false,
     'objc_c_std': 'c17',
+    'backend_startup_project': 'GameApp',
   }
 )
 
