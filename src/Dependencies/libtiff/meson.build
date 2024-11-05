@@ -99,7 +99,7 @@ libtiff = static_library(
 )
 
 libtiff_dep = declare_dependency(
-  include_directories: ['.'],
+  include_directories: ['.', 'libtiff'],
   link_with: [libtiff],
 )
 

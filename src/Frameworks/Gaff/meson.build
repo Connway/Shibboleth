@@ -92,12 +92,15 @@ extra_files = [
 
 include_dirs = [
   'include',
-  '../../Dependencies/EASTL/include',
-  '../../Dependencies/rapidjson',
-  '../../Dependencies/mpack',
 ]
 
 build_args = [
+]
+
+dependencies = [
+  eastl_dep,
+  rapidjson_dep,
+  mpack_dep,
 ]
 
 if is_msvc
@@ -110,4 +113,13 @@ gaff = static_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args,
+  dependencies: dependencies,
 )
+
+gaff_dep = declare_dependency(
+  include_directories: include_dirs,
+  link_with: [gaff],
+  dependencies: dependencies,
+)
+
+all_frameworks += gaff

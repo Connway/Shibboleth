@@ -22,16 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifndef TRACY_IMPORTS
-	#define TRACY_IMPORTS
-#endif
-
-#ifdef SHIB_PROFILE
-	#define TRACY_ENABLE
-	#define TRACY_CALLSTACK 10
-	#define TRACY_FIBERS
-#endif
-
 MSVC_DISABLE_WARNING_PUSH(4554)
 #include <public/tracy/Tracy.hpp>
 MSVC_DISABLE_WARNING_POP()

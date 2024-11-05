@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_Defines.h>
 #include <Gaff_IAllocator.h>
 
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wgnu-zero-variadic-macro-arguments")
 #define SHIB_ALLOC_ARRAYT_ALIGNED_POOL(type, alignment, count, pool_index, allocator, ...) (allocator).template allocArrayT<type>(alignment, pool_index, ##__VA_ARGS__)
 #define SHIB_ALLOC_ARRAYT_ALIGNED GAFF_ALLOC_ARRAYT_ALIGNED
 #define SHIB_ALLOC_ARRAYT_POOL(type, count, pool_index, allocator, ...) (allocator).template allocArrayT<type>(pool_index, __FILE__, __LINE__, ##__VA_ARGS__)
@@ -58,6 +59,7 @@ THE SOFTWARE.
 #define SHIB_ALLOC_CAST_ALIGNED GAFF_ALLOC_CAST_ALIGNED
 #define SHIB_ALLOC_CAST_POOL(type, size, pool_index, allocator) reinterpret_cast<type>(SHIB_ALLOC_POOL(size, pool_index, allocator))
 #define SHIB_ALLOC_CAST GAFF_ALLOC_CAST
+GCC_CLANG_DISABLE_WARNING_POP()
 
 NS_SHIBBOLETH
 

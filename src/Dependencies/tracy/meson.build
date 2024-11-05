@@ -74,13 +74,13 @@ include_dirs = [
 ]
 
 build_args = [
+  '-DTRACY_EXPORTS',
 ]
 
 tracy_defines = [
   '-DTRACY_ENABLE',
   '-DTTRACY_CALLSTACK=10',
   '-DTTRACY_FIBERS',
-  '-DTTRACY_EXPORTS'
 ]
 
 dependencies = [
@@ -129,11 +129,17 @@ tracy_client = shared_library(
   }
 )
 
-tracy_client_dep = declare_dependency(
-  include_directories: ['.'],
-  compile_args: tracy_defines,
-  link_with: [tracy_client],
-)
+if is_profile
+  tracy_client_dep = declare_dependency(
+    include_directories: ['.'],
+    compile_args: tracy_defines + ['-DTRACY_IMPORTS'],
+    link_with: [tracy_client],
+  )
+else
+  tracy_client_dep = declare_dependency(
+    include_directories: ['.'],
+  )
+endif
 
 all_deps += tracy_client
 

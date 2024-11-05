@@ -48,5 +48,11 @@
  */
 #define MPACK_FREE MPackInternalFree
 
-void* MPackInternalAlloc(size_t size);
-void MPackInternalFree(void* data);
+#ifdef __cplusplus
+	#define MPACK_API extern "C"
+#else
+	#define MPACK_API
+#endif
+
+MPACK_API void* MPackInternalAlloc(size_t size);
+MPACK_API void MPackInternalFree(void* data);

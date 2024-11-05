@@ -132,6 +132,7 @@ subdir('src/Dependencies/Catch2')
 subdir('src/Dependencies/EASTL')
 subdir('src/Dependencies/fmt')
 subdir('src/Dependencies/glfw')
+subdir('src/Dependencies/glm')
 subdir('src/Dependencies/imgui')
 subdir('src/Dependencies/libpng')
 subdir('src/Dependencies/libtiff')
@@ -154,10 +155,16 @@ subdir('src/Frameworks/Gaff')
 subdir('src/Frameworks/Gleam')
 subdir('src/Frameworks/Esprit')
 
-# all_frameworks_target = alias_target('frameworks', all_frameworks)
+all_frameworks_target = alias_target('frameworks', all_frameworks)
 
 # Core Folders
 all_core = []
+
+subdir('src/Core/Memory')
+subdir('src/Core/Engine')
+subdir('src/Core/Game_App')
+
+all_core_target = alias_target('core', all_core)
 
 # Module Folders
 all_modules = []

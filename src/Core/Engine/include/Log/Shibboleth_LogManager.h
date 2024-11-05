@@ -101,6 +101,7 @@ static constexpr Gaff::Hash32 k_log_channel_default = Gaff::FNV1aHash32StringCon
 
 NS_END
 
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wgnu-zero-variadic-macro-arguments")
 #define LogWithApp(app, type, channel, message, ...) (app).getLogManager().logMessage(type, channel, u8##message, ##__VA_ARGS__)
 
 #define LogType(type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::type, channel, u8##message, ##__VA_ARGS__)
@@ -119,3 +120,4 @@ NS_END
 #define LogErrorAndReturnDefault(return_value, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Error, Shibboleth::k_log_channel_default, message, ##__VA_ARGS__); return return_value
 #define LogWarningAndReturnDefault(return_value, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Warning, Shibboleth::k_log_channel_default, message, ##__VA_ARGS__); return return_value
 #define LogInfoAndReturnDefault(return_value, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LogType::Info, Shibboleth::k_log_channel_default, message, ##__VA_ARGS__); return return_value
+GCC_CLANG_DISABLE_WARNING_POP()

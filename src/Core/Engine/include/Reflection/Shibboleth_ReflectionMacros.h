@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wgnu-zero-variadic-macro-arguments")
+
 #define CLASS_HASH(class_type) Gaff::FNV1aHash64Const(GAFF_STR_U8(class_type))
 #define ARG_HASH(...) Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::k_init_hash64, eastl::array<const char8_t*, Gaff::GetNumArgs<__VA_ARGS__>()>{ GAFF_FOR_EACH_COMMA(GAFF_STR_U8, __VA_ARGS__) })
 #define BASE(type) template base<type>(GAFF_STR_U8(type))
@@ -298,3 +300,5 @@ NS_END
 	} else { \
 		return staticFunc(op_name, backup_func<T, Other>, attributes...); \
 	}
+
+GCC_CLANG_DISABLE_WARNING_POP()

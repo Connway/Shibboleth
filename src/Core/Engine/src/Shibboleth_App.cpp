@@ -281,7 +281,7 @@ bool App::loadFileSystem(void)
 		}
 
 	} else {
-		const U8String fs = engine_config.file_system + TARGET_SUFFIX_U8 DYNAMIC_MODULE_EXTENSION_U8;
+		const U8String fs = engine_config.file_system + /*TARGET_SUFFIX_U8*/ DYNAMIC_MODULE_EXTENSION_U8;
 
 		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), u8"FileSystem");
 
@@ -396,7 +396,7 @@ bool App::loadModules(void)
 
 				GAFF_ASSERT(pos != U8String::npos);
 
-				module_name = module_name.substr(pos + 1, module_name.size() - eastl::CharStrlen(u8"Module" TARGET_SUFFIX_U8 DYNAMIC_MODULE_EXTENSION_U8) - (pos + 1));
+				module_name = module_name.substr(pos + 1, module_name.size() - eastl::CharStrlen(u8"Module" /*TARGET_SUFFIX_U8*/ DYNAMIC_MODULE_EXTENSION_U8) - (pos + 1));
 
 				DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(temp, module_name.data());
 
@@ -695,7 +695,7 @@ bool App::createConfigs(void)
 
 void App::ModuleChanged(const char8_t* path)
 {
-	if (!Gaff::EndsWith(path, TARGET_SUFFIX_U8 DYNAMIC_MODULE_EXTENSION_U8)) {
+	if (!Gaff::EndsWith(path, /*TARGET_SUFFIX_U8*/ DYNAMIC_MODULE_EXTENSION_U8)) {
 		return;
 	}
 

@@ -28,14 +28,14 @@ source_files = [
 
 include_dirs = [
   'include',
-  '../Gaff/include',
-  '../Gleam/include',
-  '../../Dependencies/EASTL/include',
-  '../../Dependencies/glfw/include',
-  '../../Dependencies/glm',
 ]
 
 build_args = [
+]
+
+dependencies = [
+  gaff_dep,
+  gleam_dep,
 ]
 
 esprit = static_library(
@@ -44,5 +44,13 @@ esprit = static_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args,
+  dependencies: dependencies,
 )
 
+esprit_dep = declare_dependency(
+  include_directories: ['include'],
+  link_with: [esprit],
+  dependencies: dependencies,
+)
+
+all_frameworks += esprit

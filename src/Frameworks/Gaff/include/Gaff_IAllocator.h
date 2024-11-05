@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Gaff_Defines.h"
 #include <new>
 
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wgnu-zero-variadic-macro-arguments")
 #define GAFF_ALLOC_ARRAYT_ALIGNED(Class, alignment, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, count, __FILE__, __LINE__, ##__VA_ARGS__)
 #define GAFF_ALLOC_ARRAYT(Class, count, allocator, ...) (allocator).template allocArrayT<Class>(count, __FILE__, __LINE__, ##__VA_ARGS__)
 #define GAFF_ALLOCT_ALIGNED(Class, alignment, allocator, ...) (allocator).template allocT<Class>(alignment, __FILE__, __LINE__, ##__VA_ARGS__)
@@ -41,6 +42,7 @@ THE SOFTWARE.
 
 #define GAFF_ALLOC_CAST_ALIGNED(type, size, alignment, allocator) reinterpret_cast<type>(GAFF_ALLOC_ALIGNED(size, alignment, allocator))
 #define GAFF_ALLOC_CAST(type, size, allocator) reinterpret_cast<type>(GAFF_ALLOC(size, allocator))
+GCC_CLANG_DISABLE_WARNING_POP()
 
 NS_GAFF
 

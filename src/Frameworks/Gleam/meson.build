@@ -115,14 +115,16 @@ extra_files = [
 
 include_dirs = [
   'include',
-  '../Gaff/include',
-  '../../Dependencies/EASTL/include',
-  '../../Dependencies/glfw/include',
-  '../../Dependencies/glm',
-  #'../../Dependencies/vulkan'
 ]
 
 build_args = [
+]
+
+dependencies = [
+  gaff_dep,
+  glfw_dep,
+  glm_dep,
+  # vulkan_dep,
 ]
 
 if is_msvc
@@ -172,4 +174,13 @@ gleam = static_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args + gleam_defines,
+  dependencies: dependencies,
 )
+
+gleam_dep = declare_dependency(
+  include_directories: include_dirs,
+  compile_args: gleam_defines,
+  dependencies: dependencies,
+)
+
+all_frameworks += gleam
