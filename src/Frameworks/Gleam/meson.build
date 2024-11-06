@@ -181,6 +181,7 @@ gleam_dep = declare_dependency(
   include_directories: include_dirs,
   compile_args: gleam_defines,
   dependencies: dependencies,
+  link_with: [gleam],
 )
 
 all_frameworks += gleam
