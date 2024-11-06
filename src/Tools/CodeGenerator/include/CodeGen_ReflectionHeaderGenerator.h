@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <filesystem>
+
 namespace argparse
 {
 	class ArgumentParser;
@@ -36,4 +38,4 @@ constexpr const char* const k_arg_no_write = "--no_write_if_empty";
 
 
 void ReflectionHeaderGenerator_AddArguments(argparse::ArgumentParser& program);
-int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program);
+int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program, const std::vector<std::filesystem::path>& output_files);

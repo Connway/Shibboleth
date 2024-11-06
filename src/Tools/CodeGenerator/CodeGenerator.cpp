@@ -36,6 +36,10 @@ int main(int argc, const char** argv)
 		.help("(Optional) The root directory of the project.")
 		.default_value<std::string>("../..");
 
+	program.add_argument("--output_files", "-of")
+		.help("(Optional) Defines the output file(s) the given operation should write to.")
+		.nargs(argparse::nargs_pattern::at_least_one);
+
 	program.add_argument("action")
 		.help("Generate action to perform. Examples: module_header, tool_header, static_header");
 
@@ -52,14 +56,28 @@ int main(int argc, const char** argv)
 		return -1;
 	}
 
-	const std::string working_dir = program.get("--root_path");
-	CONVERT_STRING(char8_t, temp, working_dir.data());
-	Gaff::SetWorkingDir(temp);
+	const std::vector<std::string> output_files = program.get< std::vector<std::string> >("--output_files");
+	std::vector<std::filesystem::path> output_file_paths;
+
+	output_file_paths.reserve(output_files.size());
+
+	for (const std::string& path : output_files) {
+		output_file_paths.emplace_back(std::filesystem::absolute(path));
+	}
 
 	const std::string action = program.get("action");
 
-	if (action == "module_header" || action == "tool_header" || action == "static_header") {
-		return ReflectionHeaderGenerator_Run(program);
+	if (action == "engine_header" || action == "engine_static_header") {
+		Gaff::SetWorkingDir(u8"..");
+
+	} else {
+		const std::string working_dir = program.get("--root_path");
+		CONVERT_STRING(char8_t, temp, working_dir.data());
+		Gaff::SetWorkingDir(temp);
+	}
+
+	if (action == "module_header" || action == "tool_header" || action == "static_header" || action == "engine_header" || action == "engine_static_header") {
+		return ReflectionHeaderGenerator_Run(program, output_file_paths);
 	} else {
 		std::cout << program;
 	}

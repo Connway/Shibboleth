@@ -375,7 +375,7 @@ elif is_linux
     dependencies += [
       dependency('dl'),
       dependency('pthread'),
-      dependency('gtk+', version: '3.0')
+      dependency('gtk+-3.0')
     ]
 
     build_args += ['-DDISPLAY_SERVER_X11']

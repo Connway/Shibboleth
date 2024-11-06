@@ -40,6 +40,7 @@ fmt = static_library(
 
 fmt_no_link_dep = declare_dependency(
   include_directories: include_dirs,
+  compile_args: ['-DFMT_HEADER_ONLY']
 )
 
 fmt_dep = declare_dependency(

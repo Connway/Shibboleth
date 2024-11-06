@@ -128,6 +128,7 @@ all_deps = []
 
 subdir('src/Dependencies/angelscript')
 subdir('src/Dependencies/assimp')
+subdir('src/Dependencies/argparse')
 subdir('src/Dependencies/capstone')
 subdir('src/Dependencies/Catch2')
 subdir('src/Dependencies/EASTL')
@@ -158,6 +159,12 @@ subdir('src/Frameworks/Esprit')
 
 all_frameworks_target = alias_target('frameworks', all_frameworks)
 
+# Tool Folders
+all_tools = []
+
+subdir('src/Tools/CodeGenerator')
+subdir('src/Tools/JSONToMessagePack')
+
 # Core Folders
 all_core = []
 
@@ -165,13 +172,13 @@ subdir('src/Core/Memory')
 subdir('src/Core/Engine')
 subdir('src/Core/GameApp')
 
+subdir('src/Tools/ReflectionHashDump') # ReflectionHashDump depends on Memory and Engine.
+
 all_core_target = alias_target('core', all_core)
+all_tools_target = alias_target('tools', all_tools)
 
 # Module Folders
 all_modules = []
-
-# Tool Folders
-all_tools = []
 
 # Test Folders
 all_tests = []

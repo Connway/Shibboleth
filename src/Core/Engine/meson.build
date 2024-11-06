@@ -130,6 +130,25 @@ extra_files = [
 include_dirs = [
   'include',
 ]
+# $TODO: Convert this to a Python script.
+generated_files = [
+  custom_target(
+    'Gen_ReflectionInit.h',
+    output: 'Gen_ReflectionInit.h',
+    command: [code_generator, 'engine_header'],
+    depends: [code_generator],
+    build_always_stale: true,
+    capture: true,
+  ),
+  custom_target(
+    'Gen_StaticReflectionInit.h',
+    output: 'Gen_StaticReflectionInit.h',
+    command: [code_generator, 'engine_static_header'],
+    depends: [code_generator],
+    build_always_stale: true,
+    capture: true,
+  )
+]
 
 build_args = [
 ]
@@ -149,6 +168,7 @@ engine = static_library(
   'Engine',
   header_files,
   source_files,
+  generated_files,
   include_directories: include_dirs,
   extra_files: extra_files,
   cpp_args: default_cpp_args + build_args,
