@@ -11,8 +11,6 @@ header_files = [
   'include/Containers/Shibboleth_VectorMap.h',
   'include/FileSystem/Shibboleth_IFileSystem.h',
   'include/FileSystem/Shibboleth_LooseFileSystem.h',
-  'include/Gen_ReflectionInit.h',
-  'include/Gen_StaticReflectionInit.h',
   'include/Log/Shibboleth_LogManager.h',
   'include/Ptrs/Shibboleth_ArrayPtr.h',
   'include/Ptrs/Shibboleth_InstancedPtr.h',

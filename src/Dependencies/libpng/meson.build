@@ -53,6 +53,9 @@ libpng = static_library(
   source_files,
   include_directories: include_dirs,
   c_args: default_c_args + build_args + msvc_args,
+  override_options: {
+    'werror': false,
+  },
 )
 
 libpng_dep = declare_dependency(
