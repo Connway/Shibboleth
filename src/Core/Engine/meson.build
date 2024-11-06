@@ -133,18 +133,16 @@ generated_files = [
   custom_target(
     'Gen_ReflectionInit.h',
     output: 'Gen_ReflectionInit.h',
-    command: [code_generator, 'engine_header'],
+    command: [code_generator, 'engine_header', '-rp', '@SOURCE_ROOT@', '-of', '@OUTPUT@'],
     depends: [code_generator],
     build_always_stale: true,
-    capture: true,
   ),
   custom_target(
     'Gen_StaticReflectionInit.h',
     output: 'Gen_StaticReflectionInit.h',
-    command: [code_generator, 'engine_static_header'],
+    command: [code_generator, 'engine_static_header', '-rp', '@SOURCE_ROOT@', '-of', '@OUTPUT@'],
     depends: [code_generator],
     build_always_stale: true,
-    capture: true,
   )
 ]
 

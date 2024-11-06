@@ -180,6 +180,8 @@ all_tools_target = alias_target('tools', all_tools)
 # Module Folders
 all_modules = []
 
+subdir('src/Modules/Camera')
+
 # Test Folders
 all_tests = []
 
