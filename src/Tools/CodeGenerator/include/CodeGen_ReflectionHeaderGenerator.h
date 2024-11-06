@@ -38,4 +38,4 @@ constexpr const char* const k_arg_no_write = "--no_write_if_empty";
 
 
 void ReflectionHeaderGenerator_AddArguments(argparse::ArgumentParser& program);
-int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program, const std::vector<std::filesystem::path>& output_files);
+int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program, const std::filesystem::path& output_file);

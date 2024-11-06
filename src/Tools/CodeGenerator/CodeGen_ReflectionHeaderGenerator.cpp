@@ -211,7 +211,7 @@ static int WriteFile(
 	const std::map< std::u8string, std::vector<std::u8string> >& file_class_map,
 	const std::filesystem::path& abs_path,
 	const argparse::ArgumentParser& program,
-	const std::filesystem::path* output_file)
+	const std::filesystem::path& output_file)
 {
 	std::u8string init_func = (file_class_map.empty()) ? u8"\t\tGAFF_REF(mode);\n" : u8"";
 	std::u8string include_files = u8"";
@@ -284,12 +284,12 @@ static int WriteFile(
 		module_name.data()
 	);
 
-	if (program.get("action") == "engine_header") {
+	if (program.get<bool>("--print_to_stdout")) {
 		std::cout << final_text;
 		return 0;
 	}
 
-	const std::u8string gen_file_path = (output_file) ? abs_path.u8string() + u8"/include/Gen_ReflectionInit.h" : output_file->u8string();
+	const std::u8string gen_file_path = (output_file.empty()) ? abs_path.u8string() + u8"/include/Gen_ReflectionInit.h" : output_file.u8string();
 	Gaff::File gen_file(gen_file_path.data(), Gaff::File::OpenMode::Read);
 
 	if (gen_file.isOpen()) {
@@ -324,7 +324,7 @@ static int WriteFile(
 static int GenerateStaticReflectionHeader(
 	const std::filesystem::path& abs_module_path,
 	const argparse::ArgumentParser& program,
-	const std::filesystem::path* output_file)
+	const std::filesystem::path& output_file)
 {
 	const char8_t separator = Gaff::ConvertChar<char8_t>(std::filesystem::path::preferred_separator);
 	std::vector<std::u8string> modules;
@@ -411,12 +411,12 @@ static int GenerateStaticReflectionHeader(
 		reinterpret_cast<const char*>(inits.data())
 	);
 
-	if (program.get("action") == "engine_static_header") {
+	if (program.get<bool>("--print_to_stdout")) {
 		std::cout << final_text;
 		return 0;
 	}
 
-	const std::u8string gen_file_path = (output_file) ? abs_module_path.u8string() + u8"/include/Gen_StaticReflectionInit.h" : output_file->u8string();
+	const std::u8string gen_file_path = (output_file.empty()) ? abs_module_path.u8string() + u8"/include/Gen_StaticReflectionInit.h" : output_file.u8string();
 	Gaff::File gen_file(gen_file_path.data(), Gaff::File::OpenMode::Read);
 
 	if (gen_file.isOpen()) {
@@ -442,7 +442,7 @@ static int GenerateStaticReflectionHeader(
 static int GenerateReflectionHeader(
 	const std::filesystem::path& abs_module_path,
 	const argparse::ArgumentParser& program,
-	const std::filesystem::path* output_file)
+	const std::filesystem::path& output_file)
 {
 	std::map< std::u8string, std::vector<std::u8string> > file_class_map;
 
@@ -521,7 +521,7 @@ void ReflectionHeaderGenerator_AddArguments(argparse::ArgumentParser& program)
 		.implicit_value(true);
 }
 
-int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program, const std::vector<std::filesystem::path>& output_files)
+int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program, const std::filesystem::path& output_file)
 {
 	const std::string action = program.get("action");
 	std::string path;
@@ -542,7 +542,7 @@ int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program, const
 
 		path = "src/Tools/" + program.get(k_arg_tool);
 
-	} else if (action == "static_header" || action == "engine_header" || action == "engine_static_header") {
+	} else if (action == "engine_header" || action == "engine_static_header") {
 		path = "src/Core/Engine";
 
 	} else {
@@ -557,24 +557,17 @@ int ReflectionHeaderGenerator_Run(const argparse::ArgumentParser& program, const
 
 	const std::filesystem::path abs_module_path = std::filesystem::absolute(path);
 
-	// if (const auto out_dir = abs_module_path.u8string() + u8"/include"; !Gaff::CreateDir(out_dir.data(), 0777)) {
-	// 	std::cerr << "Failed to create output directory '" << reinterpret_cast<const char*>(out_dir.data()) << "'." << std::endl;
-	// 	return -5;
-	// }
-
-	if (action == "static_header") {
-		const int ret = GenerateReflectionHeader(abs_module_path, program, (output_files.size() > 0) ? &output_files[0] : nullptr);
-
-		if (!ret) {
-			return GenerateStaticReflectionHeader(abs_module_path, program, (output_files.size() > 1) ? &output_files[1] : nullptr);
+	if (output_file.empty()) {
+		if (const auto out_dir = abs_module_path.u8string() + u8"/include"; !Gaff::CreateDir(out_dir.data(), 0777)) {
+			std::cerr << "Failed to create output directory '" << reinterpret_cast<const char*>(out_dir.data()) << "'." << std::endl;
+			return -5;
 		}
+	}
 
-		return ret;
-
-	} else if (action != "engine_static_header") {
-		return GenerateReflectionHeader(abs_module_path, program, (output_files.size() > 0) ? &output_files[0] : nullptr);
+	if (action != "engine_static_header") {
+		return GenerateReflectionHeader(abs_module_path, program, output_file);
 
 	} else {
-		return GenerateStaticReflectionHeader(abs_module_path, program, (output_files.size() > 0) ? &output_files[0] : nullptr);
+		return GenerateStaticReflectionHeader(abs_module_path, program, output_file);
 	}
 }

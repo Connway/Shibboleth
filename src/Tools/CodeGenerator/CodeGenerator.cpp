@@ -36,13 +36,19 @@ int main(int argc, const char** argv)
 		.help("(Optional) The root directory of the project.")
 		.default_value<std::string>("../..");
 
-	program.add_argument("--output_files", "-of")
-		.help("(Optional) Defines the output file(s) the given operation should write to.")
-		.nargs(argparse::nargs_pattern::at_least_one);
+	program.add_argument("--output_file", "-of")
+		.help("(Optional) Defines the output file the given operation should write to.");
+
+	program.add_argument("--print_to_stdout", "-pts")
+		.help("(Optional) Prints resulting file to standard output.")
+		.default_value<bool>(false);
+
+	program.add_argument("--capture_output_files_pre_cwd_change", "-cofpcc")
+		.help("(Optional) Captures the output file paths before changing the current working diretory.")
+		.default_value<bool>(true);
 
 	program.add_argument("action")
-		.help("Generate action to perform. Examples: module_header, tool_header, static_header");
-
+		.help("Generate action to perform. Examples: module_header, tool_header, engine_header, engine_static_header");
 
 	ReflectionHeaderGenerator_AddArguments(program);
 
@@ -56,28 +62,36 @@ int main(int argc, const char** argv)
 		return -1;
 	}
 
-	const std::vector<std::string> output_files = program.get< std::vector<std::string> >("--output_files");
-	std::vector<std::filesystem::path> output_file_paths;
+	const std::string output_file = program.get<std::string>("--output_file");
+	const bool capture_pre_cwd = program.get<bool>("-cofpcc");
+	std::filesystem::path output_file_path;
 
-	output_file_paths.reserve(output_files.size());
+	if (capture_pre_cwd) {
+		output_file_path = std::filesystem::absolute(output_file);
 
-	for (const std::string& path : output_files) {
-		output_file_paths.emplace_back(std::filesystem::absolute(path));
+		if (output_file_path.empty()) {
+			std::cerr << "Failed to find valid absolute path for '" << output_file << "'." << std::endl;
+			return -8;
+		}
 	}
 
-	const std::string action = program.get("action");
+	const std::string working_dir = program.get("--root_path");
+	CONVERT_STRING(char8_t, temp, working_dir.data());
+	Gaff::SetWorkingDir(temp);
 
-	if (action == "engine_header" || action == "engine_static_header") {
-		Gaff::SetWorkingDir(u8"..");
+	if (!capture_pre_cwd) {
+		output_file_path = std::filesystem::absolute(output_file);
 
-	} else {
-		const std::string working_dir = program.get("--root_path");
-		CONVERT_STRING(char8_t, temp, working_dir.data());
-		Gaff::SetWorkingDir(temp);
+		if (output_file_path.empty()) {
+			std::cerr << "Failed to find valid absolute path for '" << output_file << "'." << std::endl;
+			return -8;
+		}
 	}
 
-	if (action == "module_header" || action == "tool_header" || action == "static_header" || action == "engine_header" || action == "engine_static_header") {
-		return ReflectionHeaderGenerator_Run(program, output_file_paths);
+	const std::string action = program.get<std::string>("action");
+
+	if (action == "module_header" || action == "tool_header" || action == "engine_header" || action == "engine_static_header") {
+		return ReflectionHeaderGenerator_Run(program, output_file_path);
 	} else {
 		std::cout << program;
 	}
