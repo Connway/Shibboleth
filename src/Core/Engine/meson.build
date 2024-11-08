@@ -128,7 +128,7 @@ extra_files = [
 include_dirs = [
   'include',
 ]
-# $TODO: Convert this to a Python script.
+
 generated_files = [
   custom_target(
     'Gen_ReflectionInit.h',
