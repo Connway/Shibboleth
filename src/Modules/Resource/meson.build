@@ -21,6 +21,20 @@ source_files = [
   'src/Shibboleth_ResourceSystem.cpp',
 ]
 
+module_source_files = [
+  'src/Shibboleth_ResourceModule.cpp',
+]
+
+generated_files = [
+  custom_target(
+    'Gen_ReflectionInit.h',
+    output: 'Gen_ReflectionInit.h',
+    command: [code_generator, 'module_header', '-rp', '@SOURCE_ROOT@', '-of', '@OUTPUT@', '-m', 'Resource'],
+    depends: [code_generator],
+    build_always_stale: true,
+  ),
+]
+
 extra_files = [
   'include/Shibboleth_DeferredResourcePtrReflection.inl',
   'include/Shibboleth_ResourcePtrReflection.inl',
@@ -31,6 +45,10 @@ include_dirs = [
 ]
 
 build_args = [
+  '-DSHIB_STATIC',
+]
+
+module_build_args = [
 ]
 
 dependencies = [
@@ -40,19 +58,31 @@ dependencies = [
   main_loop_dep,
 ]
 
-if is_debug
-  dependencies += dev_debug_dep
-endif
-
-game_app = executable(
-  'GameApp',
+resource = static_library(
+  'Resource',
   header_files,
   source_files,
+  generated_files,
   include_directories: include_dirs,
   extra_files: extra_files,
   cpp_args: default_cpp_args + build_args,
-  dependencies: default_dependencies + dependencies,
+  dependencies: default_dependencies + default_module_dependencies + dependencies,
 )
 
-all_core += game_app
+resource_dep = declare_dependency(
+  include_directories: include_dirs,
+  dependencies: default_dependencies + default_module_dependencies + dependencies,
+  dependencies: dependencies,
+  link_with: [resource],
+  sources: [generated_files],
+)
+
+resource_module = shared_library(
+  'ResourceModule',
+  module_source_files,
+  cpp_args: default_cpp_args + module_build_args,
+  dependencies: resource_dep,
+)
+
+all_modules += [resource, resource_module]
 

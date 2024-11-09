@@ -189,9 +189,17 @@ all_tools_target = alias_target('tools', all_tools)
 all_modules = []
 
 subdir('src/Modules/DevDebug')
+
+default_module_dependencies = []
+
+if is_debug
+  default_module_dependencies += dev_debug_dep
+endif
+
 # subdir('src/Modules/Camera')
 subdir('src/Modules/MainLoop')
-# subdir('src/Modules/Resource')
+subdir('src/Modules/Resource')
+# subdir('src/Modules/Entity')
 # subdir('src/Modules/Graphics')
 # subdir('src/Modules/DevDebugGraphics')
 
