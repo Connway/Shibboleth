@@ -60,7 +60,7 @@ camera = static_library(
   generated_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args,
-  dependencies: dependencies,
+  dependencies: default_dependencies + dependencies,
 )
 
 camera_dep = declare_dependency(

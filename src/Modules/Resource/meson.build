@@ -34,8 +34,6 @@ build_args = [
 ]
 
 dependencies = [
-  imgui_dep,
-
   engine_dep,
   memory_dep,
 
@@ -53,7 +51,7 @@ game_app = executable(
   include_directories: include_dirs,
   extra_files: extra_files,
   cpp_args: default_cpp_args + build_args,
-  dependencies: dependencies,
+  dependencies: default_dependencies + dependencies,
 )
 
 all_core += game_app

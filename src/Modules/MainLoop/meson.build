@@ -55,7 +55,7 @@ main_loop = static_library(
   generated_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args,
-  dependencies: dependencies,
+  dependencies: default_dependencies + dependencies,
 )
 
 main_loop_dep = declare_dependency(

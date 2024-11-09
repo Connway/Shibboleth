@@ -52,7 +52,7 @@ dev_debug = static_library(
   generated_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args,
-  dependencies: dependencies,
+  dependencies: default_dependencies + dependencies,
 )
 
 dev_debug_dep = declare_dependency(
