@@ -23,7 +23,6 @@ build_args = [
 ]
 
 dependencies = [
-  tracy_client_dep,
   mimalloc_dep,
 
   gaff_dep,
@@ -46,7 +45,7 @@ memory = shared_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args,
-  dependencies: dependencies,
+  dependencies: default_dependencies + dependencies,
 )
 
 memory_dep = declare_dependency(

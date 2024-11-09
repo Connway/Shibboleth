@@ -23,6 +23,8 @@ THE SOFTWARE.
 #include "Shibboleth_DebugAttributes.h"
 #include "Shibboleth_IDebugManager.h"
 #include <Shibboleth_IAllocator.h>
+#include <Shibboleth_IManager.h>
+#include <Shibboleth_AppUtils.h>
 #include <Shibboleth_Memory.h>
 
 SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::DebugMenuClassAttribute, Refl::IAttribute)

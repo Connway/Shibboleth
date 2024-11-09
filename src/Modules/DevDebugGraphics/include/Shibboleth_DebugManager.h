@@ -22,7 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IDebugManager.h"
+#include "Shibboleth_IDebugGraphicsManager.h"
+#include <Shibboleth_IDebugManager.h>
 #include <Model/Shibboleth_ModelResource.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_JobPool.h>
@@ -63,7 +64,7 @@ class InputManager;
 struct Time;
 
 // $TODO: Port from ECS.
-class DebugManager final : public IDebugManager
+class DebugManager final : public IManager, public IDebugManager, public IDebugGraphicsManager
 {
 public:
 	enum class DebugFlag
