@@ -47,6 +47,7 @@ dependencies = [
   graphics_dep,
   entity_dep,
   input_dep,
+  logic_dep,
 ]
 
 if is_debug

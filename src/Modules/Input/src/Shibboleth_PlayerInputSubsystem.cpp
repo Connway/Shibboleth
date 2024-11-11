@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_PlayerInputSubsystem.h"
 #include "Shibboleth_InputMappingResource.h"
 #include "Shibboleth_InputManager.h"

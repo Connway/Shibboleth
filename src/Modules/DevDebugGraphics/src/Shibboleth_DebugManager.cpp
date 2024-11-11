@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_DebugManager.h"
 #include "Shibboleth_DebugAttributes.h"
 #include <Shibboleth_RenderManager.h>
@@ -441,10 +442,10 @@ GAFF_STATIC_FILE_FUNC
 }
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugManager::DebugFlag)
-	.entry("Draw FPS", Shibboleth::DebugManager::DebugFlag::DrawFPS)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::DebugManager::DebugFlag)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugManager)
+	.BASE(Shibboleth::IDebugGraphicsManager)
 	.BASE(Shibboleth::IDebugManager)
 	.template base<Shibboleth::IManager>()
 	.template ctor<>()

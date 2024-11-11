@@ -22,13 +22,11 @@ THE SOFTWARE.
 
 #define SHIB_REFL_IMPL
 #include "Shibboleth_FlyCameraProcess.h"
-//#include <Shibboleth_ECSComponentCommon.h>
+#include <Shibboleth_StateMachineReflection.h>
 #include <Shibboleth_InputManager.h>
-//#include <Shibboleth_ECSManager.h>
 #include <Shibboleth_GameTime.h>
 #include <Shibboleth_AppUtils.h>
 #include <Shibboleth_Math.h>
-#include <Esprit_StateMachine.h>
 #include <Gleam_Quaternion.h>
 #include <Gleam_Matrix3x3.h>
 #include <Gaff_Math.h>

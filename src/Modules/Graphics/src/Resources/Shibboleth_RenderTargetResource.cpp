@@ -20,8 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
+#define SHIB_REFL_IMPL
 #include "Resources/Shibboleth_RenderTargetResource.h"
 #include "Shibboleth_GraphicsDefines.h"
 #include <Shibboleth_ResourceAttributesCommon.h>

@@ -37,10 +37,10 @@ module_build_args = [
 ]
 
 dependencies = [
+  imgui_dep,
+
   engine_dep,
   memory_dep,
-
-  imgui_dep,
 ]
 
 dev_debug = static_library(

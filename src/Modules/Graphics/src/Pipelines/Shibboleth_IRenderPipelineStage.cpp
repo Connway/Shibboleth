@@ -20,10 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Pipelines/Shibboleth_IRenderPipelineStage.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::IRenderPipelineStage)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::IRenderPipelineStage)
+SHIB_REFLECTION_IMPL(Shibboleth::IRenderPipelineStage)
 
 NS_SHIBBOLETH
 

@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#define SHIB_REFL_IMPL
 #include "Pipelines/Stages/Shibboleth_RenderGBufferStage.h"
 #include "Camera/Shibboleth_CameraPipelineData.h"
 #include "Shibboleth_GraphicsLogging.h"

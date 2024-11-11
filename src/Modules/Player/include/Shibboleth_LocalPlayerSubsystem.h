@@ -33,3 +33,12 @@ class LocalPlayerSubsystem : public ISubsystem
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::LocalPlayerSubsystem)
+
+#ifdef SHIB_REFL_IMPL
+	#include <Attributes/Shibboleth_EngineAttributesCommon.h>
+
+	SHIB_REFLECTION_BUILD_BEGIN(Shibboleth::LocalPlayerSubsystem)
+		.classAttrs(Shibboleth::ClassBucketAttribute())
+		.template base<Shibboleth::ISubsystem>()
+	SHIB_REFLECTION_BUILD_END(Shibboleth::LocalPlayerSubsystem)
+#endif

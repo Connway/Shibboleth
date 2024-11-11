@@ -74,7 +74,7 @@ public:
 		~DebugRenderHandle(void)
 		{
 			if (_instance) {
-				GETMANAGERT(Shibboleth::IDebugManager, Shibboleth::DebugManager).removeDebugRender(*this);
+				GETMANAGERT(Shibboleth::IDebugGraphicsManager, Shibboleth::DebugManager).removeDebugRender(*this);
 			}
 		}
 

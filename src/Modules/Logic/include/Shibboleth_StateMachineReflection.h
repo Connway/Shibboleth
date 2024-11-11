@@ -61,6 +61,6 @@ SHIB_REFLECTION_DECLARE(Esprit::IProcess)
 		)
 
 		.func("init", &Type::init)
-		.func("update", &Type::update)
+		// .func("update", &Type::update)
 	SHIB_REFLECTION_BUILD_END(Esprit::IProcess)
 #endif

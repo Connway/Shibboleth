@@ -57,10 +57,6 @@ dependencies = [
   resource_dep,
 ]
 
-if is_debug
-  dependencies += dev_debug_dep
-endif
-
 entity = static_library(
   'Entity',
   header_files,

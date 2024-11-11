@@ -20,24 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_InputMappingResource.h"
+#define SHIB_REFL_IMPL
+#include "Shibboleth_InputManager.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMappingResource)
-	.template base<Shibboleth::IResource>()
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputManager)
+	.template base<Shibboleth::IManager>()
 	.template ctor<>()
-
-	.var(u8"mappings", &Type::_mappings)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMappingResource)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::InputManager)
 
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(InputMappingResource)
+SHIB_REFLECTION_CLASS_DEFINE(InputManager)
 
 
-const Vector<InputMapping>& InputMappingResource::getMappings(void) const
+bool InputManager::initAllModulesLoaded(void)
 {
-	return _mappings;
+	return true;
+}
+
+void InputManager::registerInputSubsystem(PlayerInputSubsystem& input_subsystem)
+{
+	GAFF_ASSERT(!Gaff::Contains(_input_subsystems, &input_subsystem));
+	_input_subsystems.emplace_back(&input_subsystem);
+}
+
+void InputManager::unregisterInputSubsystem(const PlayerInputSubsystem& input_subsystem)
+{
+	const auto it = Gaff::Find(_input_subsystems, &input_subsystem);
+	GAFF_ASSERT(it != _input_subsystems.end());
+
+	_input_subsystems.erase_unsorted(it);
 }
 
 NS_END

@@ -1,12 +1,13 @@
 header_files = [
   'include/Shibboleth_DebugManager.h',
   'include/Shibboleth_DebugSystem.h',
-  'include/Shibboleth_IDebugManager.h',
+  'include/Shibboleth_IDebugGraphicsManager.h',
 ]
 
 source_files = [
   'src/Shibboleth_DebugManager.cpp',
   'src/Shibboleth_DebugSystem.cpp',
+  'src/Shibboleth_DevDebugGraphicsModule.cpp',
 ]
 
 module_source_files = [
@@ -43,6 +44,7 @@ dependencies = [
 
   dev_debug_dep,
   graphics_dep,
+  input_dep,
 ]
 
 dev_debug_graphics = static_library(

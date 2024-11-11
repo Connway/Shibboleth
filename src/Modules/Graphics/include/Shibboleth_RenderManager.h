@@ -162,3 +162,10 @@ private:
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::RenderManager);
+
+#ifdef SHIB_REFL_IMPL
+	SHIB_REFLECTION_BUILD_BEGIN(Shibboleth::RenderManager)
+		.template base<Shibboleth::IManager>()
+		.template ctor<>()
+	SHIB_REFLECTION_BUILD_END(Shibboleth::RenderManager)
+#endif

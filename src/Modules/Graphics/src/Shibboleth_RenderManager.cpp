@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_RenderManager.h"
 #include "Shibboleth_GraphicsReflection.h"
 #include "Shibboleth_GraphicsLogging.h"
@@ -51,10 +52,7 @@ THE SOFTWARE.
 	#include <IOKit/graphics/IOGraphicsLib.h>
 #endif
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::RenderManager)
-	.template base<Shibboleth::IManager>()
-	.template ctor<>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::RenderManager)
+SHIB_REFLECTION_IMPL(Shibboleth::RenderManager)
 
 namespace
 {

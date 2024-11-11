@@ -54,3 +54,8 @@ private:
 NS_END
 
 SHIB_REFLECTION_DECLARE(Shibboleth::IRenderPipelineStage)
+
+#ifdef SHIB_REFL_IMPL
+	SHIB_REFLECTION_BUILD_BEGIN(Shibboleth::IRenderPipelineStage)
+	SHIB_REFLECTION_BUILD_END(Shibboleth::IRenderPipelineStage)
+#endif

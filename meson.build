@@ -196,12 +196,16 @@ if is_debug
   default_module_dependencies += dev_debug_dep
 endif
 
-# subdir('src/Modules/Camera')
 subdir('src/Modules/MainLoop')
 subdir('src/Modules/Resource')
-# subdir('src/Modules/Entity')
-# subdir('src/Modules/Graphics')
-# subdir('src/Modules/DevDebugGraphics')
+subdir('src/Modules/Player')
+subdir('src/Modules/Input')
+subdir('src/Modules/Entity')
+subdir('src/Modules/Graphics')
+subdir('src/Modules/Script')
+subdir('src/Modules/Logic')
+subdir('src/Modules/Camera')
+subdir('src/Modules/DevDebugGraphics')
 
 # Test Folders
 all_tests = []

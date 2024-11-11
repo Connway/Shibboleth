@@ -71,7 +71,6 @@ resource = static_library(
 
 resource_dep = declare_dependency(
   include_directories: include_dirs,
-  dependencies: default_dependencies + default_module_dependencies + dependencies,
   dependencies: dependencies,
   link_with: [resource],
   sources: [generated_files],

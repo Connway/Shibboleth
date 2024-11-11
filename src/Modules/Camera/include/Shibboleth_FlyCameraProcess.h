@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include <Reflection/Shibboleth_Reflection.h>
-//#include <Shibboleth_ECSEntity.h>
 #include <Esprit_IProcess.h>
 #include <Gleam_Vec3.h>
 
@@ -31,7 +30,6 @@ NS_SHIBBOLETH
 
 class GameTimeManager;
 class InputManager;
-//class ECSManager;
 
 class FlyCameraProcess final : public Esprit::IProcess, public Refl::IReflectionObject
 {

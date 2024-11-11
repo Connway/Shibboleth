@@ -21,51 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #define SHIB_REFL_IMPL
-#include "Model/Shibboleth_ModelComponent.h"
-#include "Model/Shibboleth_ModelPipelineData.h"
-#include "Shibboleth_RenderManager.h"
-#include <Ptrs/Shibboleth_ManagerRef.h>
+#include "Shibboleth_LocalPlayerSubsystem.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ModelComponent)
-	.template base<Shibboleth::EntitySceneComponent>()
-	.template ctor<>()
-
-	.var("data", &Type::_model_instance_data)
-SHIB_REFLECTION_DEFINE_END(Shibboleth::ModelComponent)
-
-
-NS_SHIBBOLETH
-
-SHIB_REFLECTION_CLASS_DEFINE(ModelComponent)
-
-bool ModelComponent::init(void)
-{
-	// Nothing to register.
-	if (!_model_instance_data.model) {
-		return true;
-	}
-
-	ManagerRef<RenderManager> render_mgr;
-	ModelPipelineData* const model_data = render_mgr->getRenderPipeline().getOrAddRenderData<ModelPipelineData>();
-
-	_handle = model_data->registerModel(_model_instance_data, *this);
-
-	return true;
-}
-
-void ModelComponent::destroy(void)
-{
-	if (!_model_instance_data.model) {
-		return;
-	}
-
-	ManagerRef<RenderManager> render_mgr;
-	ModelPipelineData* const model_data = render_mgr->getRenderPipeline().getRenderData<ModelPipelineData>();
-
-	GAFF_ASSERT(model_data);
-
-	model_data->unregisterModel(_handle);
-	_handle = ModelInstanceHandle{};
-}
-
-NS_END
+SHIB_REFLECTION_IMPL(Shibboleth::LocalPlayerSubsystem)

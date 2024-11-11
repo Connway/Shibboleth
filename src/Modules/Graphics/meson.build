@@ -91,12 +91,9 @@ module_build_args = [
 ]
 
 dependencies = [
-  # minizip_ng_dep,
-  # zlib_ng_dep,
-  libtiff_dep,
-  libpng_dep,
+  minizip_ng_dep,
   assimp_dep,
-  # zstd_dep,
+  zstd_dep,
 
   gleam_dep,
 

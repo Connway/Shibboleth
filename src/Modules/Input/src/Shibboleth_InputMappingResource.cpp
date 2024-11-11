@@ -20,10 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LocalPlayerSubsystem.h"
-#include <Attributes/Shibboleth_EngineAttributesCommon.h>
+#define SHIB_REFL_IMPL
+#include "Shibboleth_InputMappingResource.h"
 
-SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LocalPlayerSubsystem)
-	.classAttrs(Shibboleth::ClassBucketAttribute())
-	.template base<Shibboleth::ISubsystem>()
-SHIB_REFLECTION_DEFINE_END(Shibboleth::LocalPlayerSubsystem)
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMappingResource)
+	.template base<Shibboleth::IResource>()
+	.template ctor<>()
+
+	.var(u8"mappings", &Type::_mappings)
+SHIB_REFLECTION_DEFINE_END(Shibboleth::InputMappingResource)
+
+
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(InputMappingResource)
+
+
+const Vector<InputMapping>& InputMappingResource::getMappings(void) const
+{
+	return _mappings;
+}
+
+NS_END

@@ -107,7 +107,8 @@ extra_files = [
 ]
 
 include_dirs = [
-  'angelscript/include'
+  'angelscript/include',
+  'add_on',
 ]
 
 build_args = [

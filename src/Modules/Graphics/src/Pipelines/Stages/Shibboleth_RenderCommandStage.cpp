@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Pipelines/Stages/Shibboleth_RenderCommandStage.h"
 #include "Camera/Shibboleth_CameraPipelineData.h"
 #include "Model/Shibboleth_ModelPipelineData.h"
