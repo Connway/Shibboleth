@@ -73,8 +73,8 @@ SHIB_REFLECTION_DEFINE_BEGIN(Derived)
 	.BASE(Base2)
 
 	.var("c", &Derived::c)
-	//.var("cFunc", &Derived::getC, &Derived::setC)
-	.var("cRef", &Derived::getCRef, &Derived::setC)
+	//.varFunc("cFunc", &Derived::getC, &Derived::setC)
+	.varFunc("cRef", &Derived::getCRef, &Derived::setC)
 SHIB_REFLECTION_DEFINE_END(Derived)
 
 

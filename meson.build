@@ -172,8 +172,6 @@ if is_profile
   default_dependencies += tracy_client_dep
 endif
 
-# $TODO: All core and modules to add default_dependencies to their dependencies.
-
 all_core = []
 
 subdir('src/Core/Memory')
