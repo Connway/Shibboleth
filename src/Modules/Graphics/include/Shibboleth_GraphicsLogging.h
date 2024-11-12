@@ -30,10 +30,12 @@ NS_SHIBBOLETH
 
 static constexpr const char8_t* const k_log_channel_name_graphics = u8"Graphics";
 static constexpr Gaff::Hash32 k_log_channel_graphics = Gaff::FNV1aHash32StringConst(k_log_channel_name_graphics);
+
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wgnu-zero-variadic-macro-arguments")
 #define LogWarningGraphics(msg, ...) LogWarning(Shibboleth::k_log_channel_graphics, msg, ##__VA_ARGS__)
 #define LogErrorGraphics(msg, ...) LogError(Shibboleth::k_log_channel_graphics, msg, ##__VA_ARGS__)
 #define LogInfoGraphics(msg, ...) LogInfo(Shibboleth::k_log_channel_graphics, msg, ##__VA_ARGS__)
-
-#define LogInfoStringGraphics(msg, ...) Shibboleth::GetApp().getLogManager().logMessage(Shibboleth::LogType::Info, Shibboleth::k_log_channel_graphics, msg);
+#define LogGraphics(type, msg, ...) LogType(type, Shibboleth::k_log_channel_graphics, msg, ##__VA_ARGS__)
+GCC_CLANG_DISABLE_WARNING_POP()
 
 NS_END

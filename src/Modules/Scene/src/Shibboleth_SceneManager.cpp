@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_SceneManager.h"
 #include "Shibboleth_SceneLogging.h"
 #include "Shibboleth_SceneConfig.h"

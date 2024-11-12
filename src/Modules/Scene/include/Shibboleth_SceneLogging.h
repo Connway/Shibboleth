@@ -31,10 +31,11 @@ NS_SHIBBOLETH
 static constexpr const char8_t* const k_log_channel_name_scene = u8"Scene";
 static constexpr Gaff::Hash32 k_log_channel_scene = Gaff::FNV1aHash32StringConst(k_log_channel_name_scene);
 
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wgnu-zero-variadic-macro-arguments")
 #define LogWarningScene(msg, ...) LogWarning(Shibboleth::k_log_channel_scene, msg, ##__VA_ARGS__)
 #define LogErrorScene(msg, ...) LogError(Shibboleth::k_log_channel_scene, msg, ##__VA_ARGS__)
 #define LogInfoScene(msg, ...) LogInfo(Shibboleth::k_log_channel_scene, msg, ##__VA_ARGS__)
-
-#define LogInfoStringScene(msg, ...) Shibboleth::GetApp().getLogManager().logMessage(Shibboleth::LogType::Info, Shibboleth::k_log_channel_scene, msg);
+#define LogScene(type, msg, ...) LogType(type, Shibboleth::k_log_channel_scene, msg, ##__VA_ARGS__)
+GCC_CLANG_DISABLE_WARNING_POP()
 
 NS_END

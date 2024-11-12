@@ -205,6 +205,7 @@ subdir('src/Modules/Graphics')
 subdir('src/Modules/Script')
 subdir('src/Modules/Logic')
 subdir('src/Modules/Camera')
+subdir('src/Modules/Scene')
 subdir('src/Modules/DevDebugGraphics')
 
 # Test Folders

@@ -31,9 +31,11 @@ NS_SHIBBOLETH
 static constexpr const char8_t* const k_log_channel_name_script = u8"Script";
 static constexpr Gaff::Hash32 k_log_channel_script = Gaff::FNV1aHash32StringConst(k_log_channel_name_script);
 
+GCC_CLANG_DISABLE_WARNING_PUSH("-Wgnu-zero-variadic-macro-arguments")
 #define LogWarningScript(msg, ...) LogWarning(Shibboleth::k_log_channel_script, msg, ##__VA_ARGS__)
 #define LogErrorScript(msg, ...) LogError(Shibboleth::k_log_channel_script, msg, ##__VA_ARGS__)
 #define LogInfoScript(msg, ...) LogInfo(Shibboleth::k_log_channel_script, msg, ##__VA_ARGS__)
 #define LogScript(type, msg, ...) LogType(type, Shibboleth::k_log_channel_script, msg, ##__VA_ARGS__)
+GCC_CLANG_DISABLE_WARNING_POP()
 
 NS_END
