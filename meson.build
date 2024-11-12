@@ -201,12 +201,21 @@ subdir('src/Modules/Resource')
 subdir('src/Modules/Player')
 subdir('src/Modules/Input')
 subdir('src/Modules/Entity')
-subdir('src/Modules/Graphics')
 subdir('src/Modules/Script')
 subdir('src/Modules/Logic')
+subdir('src/Modules/Graphics')
+subdir('src/Modules/DevDebugGraphics')
+subdir('src/Modules/Physics')
 subdir('src/Modules/Camera')
 subdir('src/Modules/Scene')
-subdir('src/Modules/DevDebugGraphics')
+# subdir('src/Modules/DevEditor')
+
+all_modules_target = alias_target('modules', all_modules)
 
 # Test Folders
 all_tests = []
+
+subdir('src/Tests/AllocatorTest')
+subdir('src/Tests/ReflectionTest')
+
+all_tests_target = alias_target('tests', all_tests)

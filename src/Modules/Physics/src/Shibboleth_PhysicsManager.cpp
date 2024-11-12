@@ -20,10 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_PhysicsManager.h"
 #include "Shibboleth_RigidBodyComponent.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_GameTime.h>
+#include <Shibboleth_AppUtils.h>
 #include <Shibboleth_JobPool.h>
 #include <Gaff_IncludeTracy.h>
 #include <Gaff_Math.h>
