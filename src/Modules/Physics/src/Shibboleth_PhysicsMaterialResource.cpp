@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_PhysicsMaterialResource.h"
 #include "Shibboleth_PhysicsManager.h"
 #include <Shibboleth_ResourceAttributesCommon.h>
