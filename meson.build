@@ -227,53 +227,52 @@ subdir('src/Tests/ReflectionTest')
 
 all_tests_target = alias_target('tests', all_tests)
 
-
-qmake = find_program('qmake')
-qt_bin = qmake.full_path().to_lower()
-
-if is_windows and qt_bin.endswith('.exe')
-  qt_bin = qt_bin.substring(0, -4)
-endif
-
-qt_bin = qt_bin.substring(0, -5)
-qt_bin = qt_bin / '..' / 'bin'
-
-qt_modules = [
-  'Core',
-  'Gui',
-  'Widgets',
-]
-
 if is_windows
-  extension = '.dll'
-elif is_linux
-  extension = '.so'
-elif is_mac
-  extension = '.dylib'
-endif
+  qmake = find_program('qmake')
+  qt_bin = qmake.full_path().to_lower()
 
-qt_prefix = 'Qt6'
+  if is_windows and qt_bin.endswith('.exe')
+    qt_bin = qt_bin.substring(0, -4)
+  endif
 
-qt_files = []
+  qt_bin = qt_bin.substring(0, -5)
+  qt_bin = qt_bin / '..' / 'bin'
 
-# $TODO: Platform files
-foreach module : qt_modules
-  qt_files += [
-    qt_bin / (qt_prefix + module + 'd' + extension),
-    qt_bin / (qt_prefix + module + extension),
+  qt_modules = [
+    'Core',
+    'Gui',
+    'Widgets',
   ]
 
   if is_windows
-    qt_files += [
-      qt_bin / (qt_prefix + module + 'd.pdb'),
-      qt_bin / (qt_prefix + module + '.pdb'),
-    ]
+    extension = '.dll'
+  elif is_linux
+    extension = '.so'
+  elif is_mac
+    extension = '.dylib'
   endif
-endforeach
 
-message(qt_files)
+  qt_prefix = 'Qt6'
 
-install_data(
-  qt_files,
-  install_dir: 'bin',
-)
+  qt_files = []
+
+  # $TODO: Platform files
+  foreach module : qt_modules
+    qt_files += [
+      qt_bin / (qt_prefix + module + 'd' + extension),
+      qt_bin / (qt_prefix + module + extension),
+    ]
+
+    if is_windows
+      qt_files += [
+        qt_bin / (qt_prefix + module + 'd.pdb'),
+        qt_bin / (qt_prefix + module + '.pdb'),
+      ]
+    endif
+  endforeach
+
+  install_data(
+    qt_files,
+    install_dir: 'bin',
+  )
+endif
