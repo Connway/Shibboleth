@@ -5,8 +5,8 @@ header_files = [
 ]
 
 source_files = [
-  'Shibboleth_Allocator.cpp',
-  'Shibboleth_Memory.cpp',
+  'src/Shibboleth_Allocator.cpp',
+  'src/Shibboleth_Memory.cpp',
 ]
 
 extra_files = [
@@ -20,6 +20,10 @@ include_dirs = [
 build_args = [
   '-DIS_MEMORY',
   '-DCHECK_FOR_LEAKS',
+]
+
+static_build_args = [
+  '-DMEMORY_STATIC',
 ]
 
 dependencies = [
@@ -39,6 +43,17 @@ if is_windows
   dependencies += compiler.find_library('Dbghelp')
 endif
 
+memory_static = static_library(
+  'MemoryStatic',
+  header_files,
+  source_files,
+  include_directories: include_dirs,
+  cpp_args: default_cpp_args + build_args + static_build_args,
+  dependencies: default_static_dependencies + dependencies,
+  install: true,
+  install_dir: 'bin',
+)
+
 memory = shared_library(
   'Memory',
   header_files,
@@ -48,6 +63,12 @@ memory = shared_library(
   dependencies: default_dependencies + dependencies,
   install: true,
   install_dir: 'bin',
+)
+
+memory_static_dep = declare_dependency(
+  include_directories: ['include'],
+  compile_args: static_build_args,
+  link_with: [memory_static],
 )
 
 memory_dep = declare_dependency(

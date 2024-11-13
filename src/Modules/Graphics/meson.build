@@ -128,6 +128,8 @@ graphics_module = shared_library(
   module_source_files,
   cpp_args: default_cpp_args + module_build_args,
   dependencies: graphics_dep,
+  install: true,
+  install_dir: 'Modules',
 )
 
 all_modules += [graphics, graphics_module]

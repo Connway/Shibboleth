@@ -78,6 +78,8 @@ logic_module = shared_library(
   module_source_files,
   cpp_args: default_cpp_args + module_build_args,
   dependencies: logic_dep,
+  install: true,
+  install_dir: 'Modules',
 )
 
 all_modules += [logic, logic_module]

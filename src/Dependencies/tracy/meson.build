@@ -117,6 +117,18 @@ else
   endif
 endif
 
+tracy_client_static = static_library(
+  'TracyClientStatic',
+  header_files,
+  source_files,
+  include_directories: include_dirs,
+  cpp_args: default_cpp_args + tracy_defines,
+  dependencies: dependencies,
+  override_options: {
+    'werror': false,
+  },
+)
+
 tracy_client = shared_library(
   'TracyClient',
   header_files,
@@ -132,12 +144,22 @@ tracy_client = shared_library(
 )
 
 if is_profile
+  tracy_client_static_dep = declare_dependency(
+    include_directories: ['.'],
+    compile_args: tracy_defines,
+    link_with: [tracy_client_static],
+  )
+
   tracy_client_dep = declare_dependency(
     include_directories: ['.'],
     compile_args: tracy_defines + ['-DTRACY_IMPORTS'],
     link_with: [tracy_client],
   )
 else
+  tracy_client_static_dep = declare_dependency(
+    include_directories: ['.'],
+  )
+
   tracy_client_dep = declare_dependency(
     include_directories: ['.'],
   )

@@ -156,9 +156,26 @@ dependencies = [
 
   gaff_dep,
   gleam_dep,
+]
 
+non_static_dependencies = [
   memory_dep,
 ]
+
+static_dependencies = [
+  memory_static_dep,
+]
+
+engine_static = static_library(
+  'EngineStatic',
+  header_files,
+  source_files,
+  generated_files,
+  include_directories: include_dirs,
+  extra_files: extra_files,
+  cpp_args: default_cpp_args + build_args,
+  dependencies: dependencies + static_dependencies,
+)
 
 engine = static_library(
   'Engine',
@@ -168,13 +185,19 @@ engine = static_library(
   include_directories: include_dirs,
   extra_files: extra_files,
   cpp_args: default_cpp_args + build_args,
-  dependencies: dependencies,
+  dependencies: dependencies + non_static_dependencies,
+)
+
+engine_static_dep = declare_dependency(
+  include_directories: include_dirs,
+  link_with: [engine_static],
+  dependencies: dependencies + static_dependencies,
 )
 
 engine_dep = declare_dependency(
   include_directories: include_dirs,
   link_with: [engine],
-  dependencies: dependencies,
+  dependencies: dependencies + non_static_dependencies,
 )
 
 all_core += engine

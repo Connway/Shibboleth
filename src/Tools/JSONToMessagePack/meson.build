@@ -27,7 +27,7 @@ json_to_message_pack = executable(
   cpp_args: default_cpp_args + build_args,
   dependencies: dependencies,
   install: true,
-  install_dir: 'tools'
+  install_dir: 'Tools',
 )
 
 all_tools += json_to_message_pack

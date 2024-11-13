@@ -25,76 +25,77 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static Allocator g_allocator;
+//static Allocator g_allocator;
 
 int32_t GetPoolIndex(const char* pool_name)
 {
-	return g_allocator.getPoolIndex(pool_name);
+	return GetAllocator().getPoolIndex(pool_name);
 }
 
 IAllocator& GetAllocator(void)
 {
+	static Allocator g_allocator;
 	return g_allocator;
 }
 
 void* ShibbolethAllocate(size_t size, size_t alignment, int32_t pool_index)
 {
-	return SHIB_ALLOC_ALIGNED_POOL(size, alignment, pool_index, g_allocator);
+	return SHIB_ALLOC_ALIGNED_POOL(size, alignment, pool_index, GetAllocator());
 }
 
 void* ShibbolethAllocate(size_t size, int32_t pool_index)
 {
-	return SHIB_ALLOC_POOL(size, pool_index, g_allocator);
+	return SHIB_ALLOC_POOL(size, pool_index, GetAllocator());
 }
 
 void* ShibbolethAllocate(size_t size, size_t alignment)
 {
-	return SHIB_ALLOC_ALIGNED(size, alignment, g_allocator);
+	return SHIB_ALLOC_ALIGNED(size, alignment, GetAllocator());
 }
 
 void* ShibbolethAllocate(size_t size)
 {
-	return SHIB_ALLOC(size, g_allocator);
+	return SHIB_ALLOC(size, GetAllocator());
 }
 
 void ShibbolethFree(void* data)
 {
-	SHIB_FREE(data, g_allocator);
+	SHIB_FREE(data, GetAllocator());
 }
 
 void* ShibbolethCalloc(size_t num_members, size_t member_size, int32_t pool_index)
 {
-	return SHIB_CALLOC_POOL(num_members, member_size, pool_index, g_allocator);
+	return SHIB_CALLOC_POOL(num_members, member_size, pool_index, GetAllocator());
 }
 
 void* ShibbolethCalloc(size_t num_members, size_t member_size)
 {
-	return SHIB_CALLOC(num_members, member_size, g_allocator);
+	return SHIB_CALLOC(num_members, member_size, GetAllocator());
 }
 
 void* ShibbolethRealloc(void* old_ptr, size_t new_size, size_t alignment, int32_t pool_index)
 {
-	return SHIB_REALLOC_ALIGNED_POOL(old_ptr, new_size, alignment, pool_index, g_allocator);
+	return SHIB_REALLOC_ALIGNED_POOL(old_ptr, new_size, alignment, pool_index, GetAllocator());
 }
 
 void* ShibbolethRealloc(void* old_ptr, size_t new_size, int32_t pool_index)
 {
-	return SHIB_REALLOC_POOL(old_ptr, new_size, pool_index, g_allocator);
+	return SHIB_REALLOC_POOL(old_ptr, new_size, pool_index, GetAllocator());
 }
 
 void* ShibbolethRealloc(void* old_ptr, size_t new_size, size_t alignment)
 {
-	return SHIB_REALLOC_ALIGNED(old_ptr, new_size, alignment, g_allocator);
+	return SHIB_REALLOC_ALIGNED(old_ptr, new_size, alignment, GetAllocator());
 }
 
 void* ShibbolethRealloc(void* old_ptr, size_t new_size)
 {
-	return SHIB_REALLOC(old_ptr, new_size, g_allocator);
+	return SHIB_REALLOC(old_ptr, new_size, GetAllocator());
 }
 
 void SetLogDir(const char8_t* dir)
 {
-	g_allocator.setLogDir(dir);
+	static_cast<Allocator&>(GetAllocator()).setLogDir(dir);
 }
 
 NS_END

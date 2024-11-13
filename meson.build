@@ -173,9 +173,11 @@ subdir('src/Tools/CodeGenerator')
 subdir('src/Tools/JSONToMessagePack')
 
 # Core Folders
+default_static_dependencies = []
 default_dependencies = []
 
 if is_profile
+  default_static_dependencies += tracy_client_static_dep
   default_dependencies += tracy_client_dep
 endif
 
@@ -229,14 +231,16 @@ all_tests_target = alias_target('tests', all_tests)
 
 if is_windows
   qmake = find_program('qmake')
-  qt_bin = qmake.full_path().to_lower()
+  qt_root= qmake.full_path().to_lower()
 
-  if is_windows and qt_bin.endswith('.exe')
-    qt_bin = qt_bin.substring(0, -4)
+  if is_windows and qt_root.endswith('.exe')
+    qt_root = qt_root.substring(0, -4)
   endif
 
-  qt_bin = qt_bin.substring(0, -5)
-  qt_bin = qt_bin / '..' / 'bin'
+  qt_root = qt_root.substring(0, -5) / '..'
+  qt_plugins = qt_root / 'plugins'
+  qt_platforms = qt_plugins / 'platforms'
+  qt_bin = qt_root / 'bin'
 
   qt_modules = [
     'Core',
@@ -268,6 +272,14 @@ if is_windows
         qt_bin / (qt_prefix + module + 'd.pdb'),
         qt_bin / (qt_prefix + module + '.pdb'),
       ]
+
+      install_data(
+        qt_platforms / 'qwindowsd.dll',
+        qt_platforms / 'qwindowsd.pdb',
+        qt_platforms / 'qwindows.dll',
+        qt_platforms / 'qwindows.pdb',
+        install_dir: 'bin/platforms',
+      )
     endif
   endforeach
 

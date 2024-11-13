@@ -78,6 +78,8 @@ scene_module = shared_library(
   module_source_files,
   cpp_args: default_cpp_args + module_build_args,
   dependencies: scene_dep,
+  install: true,
+  install_dir: 'Modules',
 )
 
 all_modules += [scene, scene_module]

@@ -69,6 +69,8 @@ dev_debug_graphics_module = shared_library(
   module_source_files,
   cpp_args: default_cpp_args + module_build_args,
   dependencies: dev_debug_graphics_dep,
+  install: true,
+  install_dir: 'DevModules',
 )
 
 all_modules += [dev_debug_graphics, dev_debug_graphics_module]

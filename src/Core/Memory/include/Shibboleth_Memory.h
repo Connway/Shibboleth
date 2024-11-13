@@ -25,10 +25,15 @@ THE SOFTWARE.
 #include <Shibboleth_Defines.h>
 #include <Gaff_Defines.h>
 
-#ifdef IS_MEMORY
-	#define MEMORY_API GAFF_DYNAMIC_EXPORT
+#ifdef MEMORY_STATIC
+	#define MEMORY_API
+
 #else
-	#define MEMORY_API GAFF_DYNAMIC_IMPORT
+	#ifdef IS_MEMORY
+		#define MEMORY_API GAFF_DYNAMIC_EXPORT
+	#else
+		#define MEMORY_API GAFF_DYNAMIC_IMPORT
+	#endif
 #endif
 
 NS_SHIBBOLETH

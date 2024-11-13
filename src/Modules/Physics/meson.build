@@ -80,6 +80,8 @@ physics_module = shared_library(
   module_source_files,
   cpp_args: default_cpp_args + module_build_args,
   dependencies: physics_dep,
+  install: true,
+  install_dir: 'Modules',
 )
 
 all_modules += [physics, physics_module]

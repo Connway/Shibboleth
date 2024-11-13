@@ -21,8 +21,8 @@ build_args = [
 dependencies = [
   catch2_dep,
 
-  engine_dep,
-  memory_dep,
+  engine_static_dep,
+  memory_static_dep,
 ]
 
 if is_windows

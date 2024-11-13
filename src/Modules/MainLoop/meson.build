@@ -71,6 +71,8 @@ main_loop_module = shared_library(
   module_source_files,
   cpp_args: default_cpp_args + module_build_args,
   dependencies: main_loop_dep,
+  install: true,
+  install_dir: 'Modules',
 )
 
 all_modules += [main_loop, main_loop_module]

@@ -79,6 +79,8 @@ dev_editor_module = shared_library(
   module_source_files,
   cpp_args: default_cpp_args + module_build_args,
   dependencies: dev_editor_dep,
+  install: true,
+  install_dir: 'DevModules',
 )
 
 all_modules += [dev_editor, dev_editor_module]
