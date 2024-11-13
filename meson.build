@@ -43,6 +43,12 @@ assert(is_msvc or is_gcc or is_clang, 'Unsupported compiler: ' + compiler.get_id
 assert(is_x64 or is_arm64, 'Unsupported CPU architecture: ' + host_machine.cpu_family())
 assert(not is_windows or is_msvc, 'Unsupported compiler "' + compiler.get_id() + '" on platform "' + host_machine.cpu_family() + '".')
 
+qt = import('qt6')
+
+declare_dependency(
+  compile_args: [ '-DQT_DISABLE_DEPRECATED_BEFORE=0x060000' ],
+)
+
 ###############
 # Global Setup.
 ###############
@@ -126,6 +132,7 @@ endif
 # Dependency Folders
 all_deps = []
 
+subdir('src/Dependencies/ads')
 subdir('src/Dependencies/angelscript')
 subdir('src/Dependencies/assimp')
 subdir('src/Dependencies/argparse')
@@ -206,7 +213,9 @@ subdir('src/Modules/DevDebugGraphics')
 subdir('src/Modules/Physics')
 subdir('src/Modules/Camera')
 subdir('src/Modules/Scene')
-# subdir('src/Modules/DevEditor')
+
+# Editor Modules
+subdir('src/Modules/DevEditor')
 
 all_modules_target = alias_target('modules', all_modules)
 
@@ -217,3 +226,54 @@ subdir('src/Tests/AllocatorTest')
 subdir('src/Tests/ReflectionTest')
 
 all_tests_target = alias_target('tests', all_tests)
+
+
+qmake = find_program('qmake')
+qt_bin = qmake.full_path().to_lower()
+
+if is_windows and qt_bin.endswith('.exe')
+  qt_bin = qt_bin.substring(0, -4)
+endif
+
+qt_bin = qt_bin.substring(0, -5)
+qt_bin = qt_bin / '..' / 'bin'
+
+qt_modules = [
+  'Core',
+  'Gui',
+  'Widgets',
+]
+
+if is_windows
+  extension = '.dll'
+elif is_linux
+  extension = '.so'
+elif is_mac
+  extension = '.dylib'
+endif
+
+qt_prefix = 'Qt6'
+
+qt_files = []
+
+# $TODO: Platform files
+foreach module : qt_modules
+  qt_files += [
+    qt_bin / (qt_prefix + module + 'd' + extension),
+    qt_bin / (qt_prefix + module + extension),
+  ]
+
+  if is_windows
+    qt_files += [
+      qt_bin / (qt_prefix + module + 'd.pdb'),
+      qt_bin / (qt_prefix + module + '.pdb'),
+    ]
+  endif
+endforeach
+
+message(qt_files)
+
+install_data(
+  qt_files,
+  install_dir: 'bin',
+)

@@ -41,4 +41,6 @@ reflection_test = executable(
   dependencies: dependencies,
 )
 
+test('Reflection', reflection_test, is_parallel: true)
+
 all_tests += [reflection_test]

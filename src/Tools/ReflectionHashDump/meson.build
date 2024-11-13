@@ -34,6 +34,8 @@ reflection_hash_dump = executable(
   extra_files: extra_files,
   cpp_args: default_cpp_args + build_args,
   dependencies: dependencies,
+  install: true,
+  install_dir: 'tools'
 )
 
 all_tools += reflection_hash_dump

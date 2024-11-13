@@ -41,4 +41,6 @@ allocator_test = executable(
   dependencies: dependencies,
 )
 
+test('Allocator', allocator_test, is_parallel: true)
+
 all_tests += [allocator_test]

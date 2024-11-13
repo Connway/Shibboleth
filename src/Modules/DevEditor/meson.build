@@ -1,6 +1,6 @@
 header_files = [
   'include/Shibboleth_EditorAttributesCommon.h',
-  'include/Shibboleth_EditorDevEditor.h',
+  'include/Shibboleth_EditorMainLoop.h',
   'include/Shibboleth_EditorMainWindow.h',
   'include/Shibboleth_QtReflection.h',
   'include/Shibboleth_ToDoWindow.h',
@@ -9,7 +9,7 @@ header_files = [
 source_files = [
   'src/Shibboleth_DevEditorModule.cpp',
   'src/Shibboleth_EditorAttributesCommon.cpp',
-  'src/Shibboleth_EditorDevEditor.cpp',
+  'src/Shibboleth_EditorMainLoop.cpp',
   'src/Shibboleth_EditorMainWindow.cpp',
   'src/Shibboleth_ToDoWindow.cpp',
 ]
@@ -51,12 +51,10 @@ dependencies = [
   main_loop_dep,
 ]
 
-# local qt_modules =
-# {
-# 	"core",
-# 	"gui",
-# 	"widgets"
-# }
+source_files += [
+  qt.compile_translations(ts_files: ['ShibEd_en_US.ts']),
+  qt.compile_moc(headers: header_files, dependencies: dependencies),
+]
 
 dev_editor = static_library(
   'DevEditor',
@@ -83,5 +81,5 @@ dev_editor_module = shared_library(
   dependencies: dev_editor_dep,
 )
 
-all_modules += [dev_editor, main_loop_module]
+all_modules += [dev_editor, dev_editor_module]
 

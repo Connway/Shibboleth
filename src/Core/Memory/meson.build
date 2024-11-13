@@ -46,6 +46,8 @@ memory = shared_library(
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args,
   dependencies: default_dependencies + dependencies,
+  install: true,
+  install_dir: 'bin',
 )
 
 memory_dep = declare_dependency(

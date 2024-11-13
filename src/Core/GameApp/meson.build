@@ -36,6 +36,8 @@ game_app = executable(
   cpp_args: default_cpp_args + build_args,
   dependencies: dependencies,
   win_subsystem: 'windows',
+  install: true,
+  install_dir: 'bin',
 )
 
 all_core += game_app

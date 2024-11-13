@@ -112,7 +112,9 @@ glfw = shared_library(
   dependencies: dependencies,
   override_options: {
     'werror': false,
-  }
+  },
+  install: true,
+  install_dir: 'bin',
 )
 
 glfw_dep = declare_dependency(

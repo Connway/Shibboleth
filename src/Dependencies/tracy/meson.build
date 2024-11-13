@@ -126,7 +126,9 @@ tracy_client = shared_library(
   dependencies: dependencies,
   override_options: {
     'werror': false,
-  }
+  },
+  install: true,
+  install_dir: 'bin',
 )
 
 if is_profile
@@ -399,7 +401,7 @@ tracy_profiler = executable(
   link_with: [capstone, glfw, zstd],
   override_options: {
     'werror': false,
-  }
+  },
+  install: true,
+  install_dir: 'tools',
 )
-
-
