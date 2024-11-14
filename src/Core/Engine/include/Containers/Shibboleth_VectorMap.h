@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#define EASTL_VECTOR_MAP_DEFAULT_NAME "Untagged"
 #endif
 
-#include "Shibboleth_ProxyAllocator.h"
+#include <Shibboleth_ProxyAllocator.h>
 #include <Gaff_VectorMap.h>
 
 NS_SHIBBOLETH

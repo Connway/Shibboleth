@@ -1,5 +1,8 @@
 #include "catch_amalgamated.hpp"
-#include <Shibboleth_App.h>
+
+#ifndef SHIB_TEST_NO_APP
+	#include <Shibboleth_App.h>
+#endif
 
 #ifdef PLATFORM_WINDOWS
 	// Force machines with integrated graphics and discrete GPUs to favor discrete GPUs.
@@ -18,6 +21,7 @@ namespace Catch
 
 int RunTests(int argc, const char** argv)
 {
+#ifndef SHIB_TEST_NO_APP
 	Shibboleth::App app;
 
 	const size_t index = Gaff::ReverseFind(argv[0], '\\');
@@ -44,6 +48,7 @@ int RunTests(int argc, const char** argv)
 		app.destroy();
 		return -1;
 	}
+#endif
 
 	// We want to force the linker not to discard the global variable
 	// and its constructor, as it (optionally) registers leak detector
@@ -51,8 +56,10 @@ int RunTests(int argc, const char** argv)
 
 	const int ret = Catch::Session().run(argc, argv);
 
+#ifndef SHIB_TEST_NO_APP
 	//app.run();
 	app.destroy();
+#endif
 
 	return ret;
 }

@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ProxyAllocator.h"
+#include <Shibboleth_ProxyAllocator.h>
 #include <Gaff_FileWatcher.h>
 
 NS_SHIBBOLETH

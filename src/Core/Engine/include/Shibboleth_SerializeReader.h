@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 #include "Shibboleth_SerializeInterfaces.h"
 #include "Containers/Shibboleth_Vector.h"
-#include "Shibboleth_ProxyAllocator.h"
 #include "Shibboleth_String.h"
+#include <Shibboleth_ProxyAllocator.h>
 #include <Gaff_Assert.h>
 
 NS_SHIBBOLETH

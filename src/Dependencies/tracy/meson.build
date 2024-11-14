@@ -74,7 +74,6 @@ include_dirs = [
 ]
 
 build_args = [
-  '-DTRACY_EXPORTS',
 ]
 
 tracy_defines = [
@@ -122,7 +121,7 @@ tracy_client_static = static_library(
   header_files,
   source_files,
   include_directories: include_dirs,
-  cpp_args: default_cpp_args + tracy_defines,
+  cpp_args: default_cpp_args + build_args + tracy_defines,
   dependencies: dependencies,
   override_options: {
     'werror': false,
@@ -134,7 +133,7 @@ tracy_client = shared_library(
   header_files,
   source_files,
   include_directories: include_dirs,
-  cpp_args: default_cpp_args + build_args + tracy_defines,
+  cpp_args: default_cpp_args + build_args + tracy_defines + ['-DTRACY_EXPORTS'],
   dependencies: dependencies,
   override_options: {
     'werror': false,

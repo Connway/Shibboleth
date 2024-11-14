@@ -30,7 +30,7 @@ THE SOFTWARE.
 	#define EASTL_DEQUE_DEFAULT_NAME "Untagged"
 #endif
 
-#include "Shibboleth_ProxyAllocator.h"
+#include <Shibboleth_ProxyAllocator.h>
 #include <EASTL/queue.h>
 
 NS_SHIBBOLETH

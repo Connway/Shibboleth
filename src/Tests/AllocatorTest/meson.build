@@ -16,12 +16,12 @@ include_dirs = [
 ]
 
 build_args = [
+  '-DSHIB_TEST_NO_APP',
 ]
 
 dependencies = [
   catch2_dep,
 
-  engine_static_dep,
   memory_static_dep,
 ]
 

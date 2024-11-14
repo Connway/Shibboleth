@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#define EASTL_BASIC_STRING_DEFAULT_NAME "Untagged"
 #endif
 
-#include "Shibboleth_ProxyAllocator.h"
+#include <Shibboleth_ProxyAllocator.h>
 #include <Gaff_String.h>
 
 NS_SHIBBOLETH
