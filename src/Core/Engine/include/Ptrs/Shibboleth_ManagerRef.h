@@ -31,7 +31,7 @@ class ManagerRef final
 {
 public:
 	ManagerRef(void):
-		_manager(init())
+		_manager(Init())
 	{
 	}
 
@@ -64,11 +64,7 @@ public:
 	{
 		if constexpr (k_lazy_init) {
 			if (!_manager) {
-				if constexpr (k_use_fast_getter) {
-					_manager = &GetManagerTFast< std::decay_t<T> >();
-				} else {
-					_manager = &GetManagerT< std::decay_t<T> >();
-				}
+				_manager = GetManager();
 			}
 		}
 
@@ -88,12 +84,21 @@ public:
 private:
 	T* _manager = nullptr;
 
-	T* init(void)
+	static T* GetManager(void)
+	{
+		if constexpr (k_use_fast_getter) {
+			return &GetManagerTFast< std::decay_t<T> >();
+		} else {
+			return &GetManagerT< std::decay_t<T> >();
+		}
+	}
+
+	static T* Init(void)
 	{
 		if constexpr (k_lazy_init) {
 			return nullptr;
 		} else {
-			return get();
+			return GetManager();
 		}
 	}
 };
