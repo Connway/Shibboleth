@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Config/Shibboleth_Config.h"
 #include "Attributes/Shibboleth_EngineAttributesCommon.h"
 #include "Log/Shibboleth_LogManager.h"
@@ -41,20 +42,24 @@ SHIB_REFLECTION_DEFINE_WITH_BASE_NO_INHERITANCE(Shibboleth::ConfigFileAttribute,
 
 SHIB_SIMPLE_ATTRIBUTE_DEFINE(ConfigVarAttribute, Shibboleth)
 
+SHIB_REFLECTION_IMPL(Shibboleth::Config)
+
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_ATTRIBUTE_DEFINE(InitFromConfigAttribute)
 SHIB_REFLECTION_ATTRIBUTE_DEFINE(GlobalConfigAttribute)
 SHIB_REFLECTION_ATTRIBUTE_DEFINE(ConfigFileAttribute)
 
+SHIB_REFLECTION_CLASS_DEFINE(Config)
 
 
-void GlobalConfigAttribute::setConfig(const Refl::IReflectionObject* config)
+
+void GlobalConfigAttribute::setConfig(const Config* config)
 {
 	_config = config;
 }
 
-const Refl::IReflectionObject* GlobalConfigAttribute::getConfig(void) const
+const Config* GlobalConfigAttribute::getConfig(void) const
 {
 	return _config;
 }
@@ -62,7 +67,7 @@ const Refl::IReflectionObject* GlobalConfigAttribute::getConfig(void) const
 Error GlobalConfigAttribute::createAndLoadConfig(const Refl::IReflectionDefinition& ref_def)
 {
 	ProxyAllocator allocator{ ENGINE_ALLOCATOR }; // $TODO: Allocator attribute.
-	Refl::IReflectionObject* const config_instance = ref_def.CREATET(Refl::IReflectionObject, allocator);
+	Config* const config_instance = ref_def.createT<Config>(allocator);
 
 	if (!config_instance) {
 		LogErrorDefault(
@@ -176,7 +181,12 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 
 	// Strip out the word Config in classes with the naming pattern MyClassNameConfig.
 	if (Gaff::EndsWith(config_path.data(), k_config_name_ending.data())) {
-		config_path.erase(config_path.size() - k_config_name_ending.size() - 1);
+		config_path.erase(config_path.size() - k_config_name_ending.size());
+	}
+
+	// Strip out namespaces.
+	if (const size_t colon_index = config_path.find_last_of(u8':'); colon_index != U8String::npos) {
+		config_path.erase(0, colon_index + 1);
 	}
 
 	const ConfigFileAttribute* const config_file_attr = ref_def.getClassAttr<ConfigFileAttribute>();

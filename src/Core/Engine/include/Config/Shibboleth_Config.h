@@ -28,21 +28,28 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class Config : public Refl::IReflectionObject
+{
+	SHIB_REFLECTION_CLASS_DECLARE(Config);
+};
+
+
+
 class GlobalConfigAttribute final : public Refl::IAttribute
 {
 public:
 	GlobalConfigAttribute(const GlobalConfigAttribute& attr) = default;
 	GlobalConfigAttribute(void) = default;
 
-	void setConfig(const Refl::IReflectionObject* config);
-	const Refl::IReflectionObject* getConfig(void) const;
+	void setConfig(const Config* config);
+	const Config* getConfig(void) const;
 
 	Error createAndLoadConfig(const Refl::IReflectionDefinition& ref_def);
 
 	void apply(Refl::IReflectionDefinition& ref_def) override;
 
 private:
-	const Refl::IReflectionObject* _config = nullptr;
+	const Config* _config = nullptr;
 
 	SHIB_REFLECTION_ATTRIBUTE_DECLARE(GlobalConfigAttribute);
 };
@@ -131,3 +138,9 @@ SHIB_SIMPLE_ATTRIBUTE_DECLARE(ConfigVarAttribute, Shibboleth)
 SHIB_REFLECTION_DECLARE(Shibboleth::InitFromConfigAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::GlobalConfigAttribute)
 SHIB_REFLECTION_DECLARE(Shibboleth::ConfigFileAttribute)
+SHIB_REFLECTION_DECLARE(Shibboleth::Config)
+
+#ifdef SHIB_REFL_IMPL
+	SHIB_REFLECTION_BUILD_BEGIN(Shibboleth::Config)
+	SHIB_REFLECTION_BUILD_END(Shibboleth::Config)
+#endif

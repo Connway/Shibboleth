@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class EngineConfig final : public Refl::IReflectionObject
+class EngineConfig final : public Config
 {
 public:
 	static constexpr const char8_t* const k_read_file_pool_name = u8"read_file";

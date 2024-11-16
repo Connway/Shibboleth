@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Config/Shibboleth_EngineConfig.h"
 #include "Attributes/Shibboleth_EngineAttributesCommon.h"
 
@@ -34,6 +35,9 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EngineConfig)
 	.classAttrs(
 		Shibboleth::GlobalConfigAttribute{}
 	)
+
+	.template base<Shibboleth::Config>()
+	.template ctor<>()
 
 	// $TODO: Allocator attribute.
 	.var(u8"module_unload_order", &Shibboleth::EngineConfig::module_unload_order, Shibboleth::OptionalAttribute{})

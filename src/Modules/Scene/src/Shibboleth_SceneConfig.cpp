@@ -20,12 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_SceneConfig.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneConfig)
 	.classAttrs(
 		Shibboleth::GlobalConfigAttribute()
 	)
+
+	.template base<Shibboleth::Config>()
+	.template ctor<>()
 
 	.var("starting_scene", &Type::starting_scene)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneConfig)

@@ -47,7 +47,7 @@ struct GraphicsConfigWindow final
 	Vector< HashString32<> > tags{ GRAPHICS_ALLOCATOR };
 };
 
-class GraphicsConfig final : public Refl::IReflectionObject
+class GraphicsConfig final : public Config
 {
 public:
 	DeferredResourcePtr<SamplerStateResource> texture_filtering_sampler;

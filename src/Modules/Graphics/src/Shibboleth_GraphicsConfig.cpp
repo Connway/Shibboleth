@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_GraphicsConfig.h"
 #include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
@@ -43,6 +44,9 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)
 		Shibboleth::ConfigFileAttribute{ u8"graphics/graphics" },
 		Shibboleth::GlobalConfigAttribute{}
 	)
+
+	.template base<Shibboleth::Config>()
+	.template ctor<>()
 
 	.var("texture_filtering_sampler", &Type::texture_filtering_sampler)
 	.var("icon", &Type::icon, Shibboleth::OptionalAttribute{})

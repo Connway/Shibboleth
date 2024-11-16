@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class SceneConfig final : public Refl::IReflectionObject
+class SceneConfig final : public Config
 {
 public:
 	DeferredResourcePtr<SceneResource> starting_scene;
