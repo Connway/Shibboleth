@@ -1,9 +1,9 @@
 {
 	"variables":
 	{
-		"integers":
+		"references":
 		{
-			"entity_id": -1
+			"entity": null
 		},
 
 		"floats":

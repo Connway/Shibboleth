@@ -2,53 +2,35 @@
 	"entities":
 	[
 		{
-			"base": "Entities/test.entity",
-			"name": "test_1",
-
-			"components":
+			"key": "test_1",
+			"value":
 			{
-				"test model":
-				{
-					"transformRelative":
-					{
-						"translation": { x": -2.5, "y": -5.0, "z": 5.0 },
-						"rotationEuler": { "x": 0.0, "y": 0.0, "z": 0.0 }
-					}
-				},
-			}
-		},
-		/*{
-			"archetype": "Archetypes/test.archetype",
+				"entity_base": "Entities/test.entity",
 
-			"overrides":
-			{
-				"components":
+				"overrides":
 				{
-					"Shibboleth::Position": { "value": {"x": 2.5, "y": -5.0, "z": 5.0} },
-					//"Shibboleth::Rotation": { "value": {"x": 0.25, "y": 0.0, "z": 0.0} },
-					"Shibboleth::StateMachine":
+					"modify_components":
 					{
-						"floats":
+						"test model":
 						{
-							"rot_speed": -0.5
+							"transformRelative":
+							{
+								"translation": { x": -2.5, "y": -5.0, "z": 5.0 },
+								"rotationEuler": { "x": 0.0, "y": 0.0, "z": 0.0 }
+							}
 						}
 					}
 				}
-			}
-		},
+			},
+		}
 		{
-			"archetype": "Archetypes/camera.archetype",
-
-			"overrides":
+			"key": "camera",
+			"value":
 			{
-				"shared_components": {},
-				"components":
-				{
-					"Shibboleth::Position": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} },
-					"Shibboleth::Rotation": { "value": {"x": 0.0, "y": 0.0, "z": 0.0} }
-				}
+				"entity_base": "Entities/camera.entity"
 			}
-		},
+		}
+		/*
 		// floor
 		{
 			"overrides":
@@ -76,6 +58,7 @@
 					"Shibboleth::Scale": { "value": {"x": 1.0, "y": 1.0, "z": 1.0} }
 				}
 			}
-		}*/
+		}
+		*/
 	]
 }
