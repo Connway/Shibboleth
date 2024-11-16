@@ -82,6 +82,7 @@ bool RenderManager::init(void)
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_graphics));
 
 	const GraphicsConfig& config = GetConfigRef<GraphicsConfig>();
+	GAFF_ASSERT(config.texture_filtering_sampler);
 
 	const_cast<GraphicsConfig&>(config).texture_filtering_sampler->requestLoad();
 
@@ -92,13 +93,16 @@ bool RenderManager::init(void)
 
 	_default_sampler = config.texture_filtering_sampler;
 
-	const_cast<GraphicsConfig&>(config).icon->requestLoad();
 	GLFWimage icon;
 
-	if (config.icon->waitUntilLoaded()) {
-		config.icon->fillGLFWImage(icon);
-	} else {
-		// $TODO: Log warning.
+	if (config.icon) {
+		const_cast<GraphicsConfig&>(config).icon->requestLoad();
+
+		if (config.icon->waitUntilLoaded()) {
+			config.icon->fillGLFWImage(icon);
+		} else {
+			// $TODO: Log warning.
+		}
 	}
 
 	// $TODO: Do not create windows in editor mode.
@@ -235,7 +239,7 @@ bool RenderManager::init(void)
 				}
 			}
 
-			if (config.icon->isLoaded()) {
+			if (config.icon && config.icon->isLoaded()) {
 				window->setIcon(icon);
 			}
 
