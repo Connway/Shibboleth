@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ScriptConfig final : public Refl::IReflectionObject
+class ScriptConfig final : public Config
 {
 public:
 	static constexpr const char8_t* const k_script_pool_name = u8"Script";

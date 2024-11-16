@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define SHIB_REFL_IMPL
 #include "Shibboleth_ScriptConfig.h"
 #include "Attributes/Shibboleth_EngineAttributesCommon.h"
 
@@ -27,6 +28,9 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::ScriptConfig)
 	.classAttrs(
 		Shibboleth::GlobalConfigAttribute{}
 	)
+
+	.template base<Shibboleth::Config>()
+	.template ctor<>()
 
 	.var(u8"num_threads", &Type::num_threads, Shibboleth::OptionalAttribute{})
 SHIB_REFLECTION_DEFINE_END(Shibboleth::ScriptConfig)
