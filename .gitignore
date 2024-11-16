@@ -45,3 +45,4 @@ src/Dependencies/LuaJIT/src/lj_ffdef.h
 .vscode/*
 **/.idea/*
 .cache/*
+*.rdbg
