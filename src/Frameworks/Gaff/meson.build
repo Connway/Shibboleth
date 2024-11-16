@@ -113,6 +113,7 @@ gaff = static_library(
   source_files,
   include_directories: include_dirs,
   cpp_args: default_cpp_args + build_args,
+  extra_files: extra_files,
   dependencies: dependencies,
 )
 
