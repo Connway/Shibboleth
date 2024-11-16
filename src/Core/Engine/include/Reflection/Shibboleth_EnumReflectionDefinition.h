@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IEnumReflectionDefinition.h>
+#include "Shibboleth_IEnumReflectionDefinition.h"
 #include "Containers/Shibboleth_VectorMap.h"
 #include "Shibboleth_SerializeInterfaces.h"
 #include "Containers/Shibboleth_Vector.h"
