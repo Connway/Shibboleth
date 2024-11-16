@@ -68,6 +68,22 @@ protected:
 		Refl::InitClassReflection();
 	}
 
+	virtual void initNonOwnedEnums(void)
+	{
+		Refl::InitEnumReflection();
+	}
+
+	virtual void initNonOwnedAttributes(void)
+	{
+		Refl::InitAttributeReflection();
+	}
+
+	virtual void initNonOwnedClasses(void)
+	{
+		Refl::InitClassReflection();
+	}
+
+
 	friend class App;
 };
 

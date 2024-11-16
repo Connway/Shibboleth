@@ -426,6 +426,7 @@ bool App::loadModules(void)
 
 	_module_map.shrink_to_fit();
 
+	// Run module pre-init.
 	for (auto& entry : _module_map) {
 		if (!entry.second->preInit(*this)) {
 			//LogErrorDefault("Module::preInit() failed for module '%s'.", entry.first.getBuffer());
@@ -433,6 +434,7 @@ bool App::loadModules(void)
 		}
 	}
 
+	// Init owned enums and attributes reflection.
 	for (auto& entry : _module_map) {
 		entry.second->initReflectionEnums();
 	}
@@ -441,19 +443,28 @@ bool App::loadModules(void)
 		entry.second->initReflectionAttributes();
 	}
 
+	// Init non-owned enums and attributes reflection.
+	for (auto& entry : _module_map) {
+		entry.second->initNonOwnedEnums();
+	}
+
+	for (auto& entry : _module_map) {
+		entry.second->initNonOwnedAttributes();
+	}
+
+	// Init owned classes reflection.
 	for (auto& entry : _module_map) {
 		entry.second->initReflectionClasses();
 	}
 
+	// Init non-owned classes reflection.
 	for (auto& entry : _module_map) {
-		entry.second->initNonOwned();
+		entry.second->initNonOwnedClasses();
 	}
 
-	for (auto& entry : _module_map) {
-		if (!entry.second->postInit()) {
-			//LogErrorDefault("Module::postInit() failed for module '%s'.", entry.first.getBuffer());
-			return false;
-		}
+	// Initialize any newly loaded configs.
+	if (!createConfigs()) {
+		return false;
 	}
 
 	// Create manager instances.
@@ -481,14 +492,15 @@ bool App::loadModules(void)
 
 	_manager_map.shrink_to_fit();
 
-	_job_pool.run();
-
-
-	// Initialize any newly loaded configs.
-	if (!createConfigs()) {
-		return false;
+	// Run module post-init.
+	for (auto& entry : _module_map) {
+		if (!entry.second->postInit()) {
+			//LogErrorDefault("Module::postInit() failed for module '%s'.", entry.first.getBuffer());
+			return false;
+		}
 	}
 
+	_job_pool.run();
 
 	// Call initAllModulesLoaded() on all managers.
 	Vector<const Refl::IReflectionDefinition*> already_initialized_managers;
