@@ -22,20 +22,34 @@ THE SOFTWARE.
 
 #include <Shibboleth_App.h>
 
+#ifdef _DEBUG
+	#include <Gaff_Utils.h>
+#endif
+
 namespace
 {
 	static Shibboleth::App* g_app = nullptr;
 
 	bool InitApp(int argc, const char** argv)
 	{
+	#ifdef _DEBUG
+		for (int i = 0; i < argc; ++i) {
+			if (!strcmp(argv[i], "--wait-for-debugger")) {
+				while (!Gaff::IsDebuggerAttached()) {
+				}
+
+				break;
+			}
+		}
+	#endif
+
 		static Shibboleth::App app;
 		g_app = &app;
 
 		// Step out of bin directory into main directory.
-		Gaff::SetWorkingDir(u8"..");
-
-		//while (true) {
-		//}
+		if (char8_t working_dir[1024]; Gaff::GetWorkingDir(working_dir, std::size(working_dir)) && Gaff::EndsWith(working_dir, u8"bin")) {
+			Gaff::SetWorkingDir(u8"..");
+		}
 
 		if (!app.init(argc, argv)) {
 			app.destroy();
