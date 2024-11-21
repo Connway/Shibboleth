@@ -61,7 +61,7 @@ template <class T>
 class Reflection final : public IReflection
 {
 public:
-	static constexpr bool HasReflection = false;
+	static constexpr bool k_has_reflection = false;
 
 	static const IReflectionDefinition& GetReflectionDefinition(void)
 	{

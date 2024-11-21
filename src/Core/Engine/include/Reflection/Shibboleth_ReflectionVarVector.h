@@ -98,7 +98,7 @@ public:
 	using ReflectionType = VarTypeHelper<T, ContainerType>::ReflectionType;
 	using VarType = VarTypeHelper<T, ContainerType>::VariableType;
 
-	static_assert(Reflection<ReflectionType>::HasReflection);
+	static_assert(Reflection<ReflectionType>::k_has_reflection);
 
 	explicit VectorVar(ContainerType T::*ptr);
 

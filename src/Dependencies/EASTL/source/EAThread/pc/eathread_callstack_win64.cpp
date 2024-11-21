@@ -34,12 +34,12 @@
 
 
 // Disable optimization of this code under VC++ for x64.
-// This is due to some as-yet undetermined crash that happens  
+// This is due to some as-yet undetermined crash that happens
 // when compiler optimizations are enabled for this code.
-// This function is not performance-sensitive and so disabling 
+// This function is not performance-sensitive and so disabling
 // optimizations shouldn't matter.
 #if defined(_MSC_VER) && (defined(_M_AMD64) || defined(_WIN64))
-	#pragma optimize("", off) 
+	#pragma optimize("", off)
 #endif
 
 
@@ -80,9 +80,9 @@
 
 		#if !defined(_MSC_VER) || (_MSC_VER < 1500) // if earlier than VS2008...
 			typedef struct _KNONVOLATILE_CONTEXT_POINTERS
-			{ 
-				PULONGLONG dummy; 
-			} KNONVOLATILE_CONTEXT_POINTERS, *PKNONVOLATILE_CONTEXT_POINTERS; 
+			{
+				PULONGLONG dummy;
+			} KNONVOLATILE_CONTEXT_POINTERS, *PKNONVOLATILE_CONTEXT_POINTERS;
 
 			typedef struct _FRAME_POINTERS
 			{
@@ -90,8 +90,8 @@
 				ULONGLONG BackingStoreFp;
 			} FRAME_POINTERS, *PFRAME_POINTERS;
 
-			ULONGLONG WINAPI RtlVirtualUnwind(ULONG HandlerType, ULONGLONG ImageBase, ULONGLONG ControlPC, 
-													  PRUNTIME_FUNCTION FunctionEntry, PCONTEXT ContextRecord, PBOOLEAN InFunction, 
+			ULONGLONG WINAPI RtlVirtualUnwind(ULONG HandlerType, ULONGLONG ImageBase, ULONGLONG ControlPC,
+													  PRUNTIME_FUNCTION FunctionEntry, PCONTEXT ContextRecord, PBOOLEAN InFunction,
 													  PFRAME_POINTERS EstablisherFrame, PKNONVOLATILE_CONTEXT_POINTERS ContextPointers);
 		#endif
 	}
@@ -137,7 +137,7 @@ static bool IsAddressReadable(const void* pAddress)
 	// GetRSP
 	//
 	// Returns the RSP of the caller.
-	// 
+	//
 	// We could also solve this with the following asm function.
 	// .CODE
 	//      GetRSP PROC
@@ -204,47 +204,47 @@ EATHREADLIB_API void ShutdownCallstack()
 // two functions in particular that take care of the primary work of stack
 // tracing: RtlLookupFunctionEntry and RtlVirtualUnwind/RtlUnwindEx.
 //
-// On x64 each non-leaf function must have an info struct (unwind metadata) in 
-// static memory associated with it. That info struct describes the prologue and  
+// On x64 each non-leaf function must have an info struct (unwind metadata) in
+// static memory associated with it. That info struct describes the prologue and
 // epilogue of the function in such a way as tell identify where its return address
 // is stored and how to restore non-volatile registers of the caller so that
-// an unwind can happen during an exception and C++ object destructors can 
-// be called, etc. In order to implement a stack unwinding function for 
+// an unwind can happen during an exception and C++ object destructors can
+// be called, etc. In order to implement a stack unwinding function for
 // Microsoft x64, you can go the old x86 route of requiring the compiler to
-// emit stack frames and reading the stack frame values. But that would work 
+// emit stack frames and reading the stack frame values. But that would work
 // only where the frames were enabled (maybe just debug builds) and wouldn't
 // work with third party code that didn't use the frames. But the Microsoft
-// x64 ABI -requires- that all non-leaf functions have the info struct 
-// described above. And Microsoft provides the Rtl functions mentioned above 
-// to read the info struct (RtlLookupFunctionEntry) and use it to unwind a 
-// frame (RtlVirtualUnwind/RtlUnwindEx), whether you are in an exception or not. 
-// 
-// RtlVirtualUnwind implements a virtual (pretend) unwind of a stack and is 
-// useful for reading a call stack and its unwind info without necessarily 
-// executing an unwind (like in an exception handler). RtlVirtualUnwind provides 
-// the infrastructure upon which higher level exception and unwind handling 
+// x64 ABI -requires- that all non-leaf functions have the info struct
+// described above. And Microsoft provides the Rtl functions mentioned above
+// to read the info struct (RtlLookupFunctionEntry) and use it to unwind a
+// frame (RtlVirtualUnwind/RtlUnwindEx), whether you are in an exception or not.
+//
+// RtlVirtualUnwind implements a virtual (pretend) unwind of a stack and is
+// useful for reading a call stack and its unwind info without necessarily
+// executing an unwind (like in an exception handler). RtlVirtualUnwind provides
+// the infrastructure upon which higher level exception and unwind handling
 // support is implemented. It doesn't exist on x86, as x86 exception unwinding
-// is entirely done by generated C++ code and isn't in the ABI. The Virtual in 
-// RtlVirtualUnwind has nothing to do with virtual memory, virtual functions, 
+// is entirely done by generated C++ code and isn't in the ABI. The Virtual in
+// RtlVirtualUnwind has nothing to do with virtual memory, virtual functions,
 // or virtual disks.
 //
-// RtlUnwindEx (replaces RtlUnwind) implements an actual unwind and thus is 
-// mostly useful only in the implementation of an exception handler and not 
+// RtlUnwindEx (replaces RtlUnwind) implements an actual unwind and thus is
+// mostly useful only in the implementation of an exception handler and not
 // for doing an ad-hoc stack trace.
 //
-// You can't use RtlLookupFunctionEntry on the IP (instruction pointer) of a 
-// leaf function, as the compiler isn't guaranteed to generate this info for 
+// You can't use RtlLookupFunctionEntry on the IP (instruction pointer) of a
+// leaf function, as the compiler isn't guaranteed to generate this info for
 // such functions. But if a leaf function calls RtlLookupFunctionEntry on its
 // own IP then it's no longer a leaf function and by virtue of calling RtlLookupFunctionEntry
 // the info will necessarily be generated by the compiler. If you want to read
-// the info associated with an IP of another function which may be a leaf 
+// the info associated with an IP of another function which may be a leaf
 // function, it's best to read the return address of that associated with that
 // function's callstack context, which is that that function's rsp register's
-// value as a uintptr_t* dereferenced (i.e. rsp holds the address of the 
+// value as a uintptr_t* dereferenced (i.e. rsp holds the address of the
 // return address).
 //
-// UNWIND_HISTORY_TABLE "is used as a cache to speed up repeated exception handling lookups, 
-// and is typically optional as far as usage with RtlUnwindEx goes – though certainly 
+// UNWIND_HISTORY_TABLE "is used as a cache to speed up repeated exception handling lookups,
+// and is typically optional as far as usage with RtlUnwindEx goes – though certainly
 // recommended from a performance perspective." This may be useful to us, though we'd need
 // to make it a thread-safe static variable or similar and not a local variable.
 // History table declaration and preparation for use, which needs to be done per-thread:
@@ -277,22 +277,22 @@ EATHREADLIB_API size_t GetCallstack(void* pReturnAddressArray[], size_t nReturnA
 		context.Rbp          = pContext->mRBP;
 		context.ContextFlags = CONTEXT_CONTROL; // CONTEXT_CONTROL actually specifies SegSs, Rsp, SegCs, Rip, and EFlags. But for callstack tracing and unwinding, all that matters is Rip and Rsp.
 
-		// In the case where we are calling 0, we might be able to unwind one frame and see if we are now in a valid stack frame for 
+		// In the case where we are calling 0, we might be able to unwind one frame and see if we are now in a valid stack frame for
 		// callstack generation. If not abort, otherwise we continue one frame past where the exception (calling 0) was performed
 		if (context.Rip == 0 && context.Rsp != 0)
-		{ 
+		{
 			context.Rip = (ULONG64)(*(PULONG64)context.Rsp); // To consider: Use IsAddressReadable(pFrame) before dereferencing this pointer.
 			context.Rsp += 8; // reset the stack pointer (+8 since we know there has been no prologue run requiring a larger number since RIP == 0)
-		} 
+		}
 
 		if(context.Rip && (nFrameIndex < nReturnAddressArrayCapacity))
 			pReturnAddressArray[nFrameIndex++] = (void*)(uintptr_t)context.Rip;
 	}
 	else // Else we are reading the current thread's callstack.
 	{
-		// To consider: Don't call the RtlCaptureContext function for EA_WINAPI_PARTITION_DESKTOP and 
-		// instead use the simpler version below it which writes Rip/Rsp/Rbp. RtlCaptureContext is much 
-		// slower. We need to verify that the 'quality' and extent of returned callstacks is good for 
+		// To consider: Don't call the RtlCaptureContext function for EA_WINAPI_PARTITION_DESKTOP and
+		// instead use the simpler version below it which writes Rip/Rsp/Rbp. RtlCaptureContext is much
+		// slower. We need to verify that the 'quality' and extent of returned callstacks is good for
 		// the simpler version before using it exclusively.
 		#if EA_WINAPI_FAMILY_PARTITION(EA_WINAPI_PARTITION_DESKTOP)
 			// Apparently there is no need to memset the context struct.
@@ -312,7 +312,7 @@ EATHREADLIB_API size_t GetCallstack(void* pReturnAddressArray[], size_t nReturnA
 		#endif
 	}
 
-	// The following loop intentionally skips the first call stack frame because 
+	// The following loop intentionally skips the first call stack frame because
 	// that frame corresponds this function (GetCallstack).
 	while(context.Rip && (nFrameIndex < nReturnAddressArrayCapacity))
 	{
@@ -331,20 +331,20 @@ EATHREADLIB_API size_t GetCallstack(void* pReturnAddressArray[], size_t nReturnA
 
 		if(pRuntimeFunction)
 		{
-			// RtlVirtualUnwind is not declared in the SDK headers for non-desktop apps, 
+			// RtlVirtualUnwind is not declared in the SDK headers for non-desktop apps,
 			// but for 64 bit targets it's always present and appears to be needed by the
 			// existing RtlUnwindEx function. If in the end we can't use RtlVirtualUnwind
 			// and Microsoft doesn't provide an alternative, we can implement RtlVirtualUnwind
 			// ourselves manually (not trivial, but has the best results) or we can use
-			// the old style stack frame following, which works only when stack frames are 
+			// the old style stack frame following, which works only when stack frames are
 			// enabled in the build, which usually isn't so for optimized builds and for
-			// third party code. 
+			// third party code.
 
 			__try // Under at least the XBox One platform, RtlVirtualUnwind can crash here. It may possibly be due to the context being incomplete.
 			{
 				VOID*          handlerData = NULL;
 				ULONG64        establisherFramePointers[2] = { 0, 0 };
-				RtlVirtualUnwind(UNW_FLAG_NHANDLER, nImageBase, context.Rip, pRuntimeFunction, &context, &handlerData,  establisherFramePointers, NULL);                        
+				RtlVirtualUnwind(UNW_FLAG_NHANDLER, nImageBase, context.Rip, pRuntimeFunction, &context, &handlerData,  establisherFramePointers, NULL);
 			}
 			__except (EXCEPTION_EXECUTE_HANDLER)
 			{
@@ -388,14 +388,14 @@ EATHREADLIB_API uint32_t GetThreadIdFromThreadHandle(intptr_t threadId)
 // GetCallstackContext
 //
 // The threadId is the same thing as the Windows' HANDLE GetCurrentThread() function
-// and not the same thing as Windows' GetCurrentThreadId function. See the 
+// and not the same thing as Windows' GetCurrentThreadId function. See the
 // GetCallstackContextSysThreadId for the latter.
-// 
+//
 #if EA_USE_CPP11_CONCURRENCY
 EATHREADLIB_API bool GetCallstackContext(CallstackContext& context, EA::Thread::ThreadId threadId)
 {
 	// Retrieve the Windows thread identifier from the std::thread::id structure.
-	// This is unavoidable because GetCallstackContextSysThreadId compares the value of 'sysThreadId' 
+	// This is unavoidable because GetCallstackContextSysThreadId compares the value of 'sysThreadId'
 	// against data from the Windows API function 'GetCurrentThreadId' which returns a Windows thread identifier.
 	// http://msdn.microsoft.com/en-us/library/windows/desktop/ms683183(v=vs.85).aspx
 	static_assert(sizeof(_Thrd_t) == sizeof(threadId), "We expect the 'std::thread::id' to have a single member of type '_Thrd_t'.");
@@ -421,7 +421,7 @@ EATHREADLIB_API bool GetCallstackContext(CallstackContext& context, intptr_t thr
 ///////////////////////////////////////////////////////////////////////////////
 // GetCallstackContextSysThreadId
 //
-// A sysThreadId is a Microsoft DWORD thread id, which can be obtained from 
+// A sysThreadId is a Microsoft DWORD thread id, which can be obtained from
 // the currently running thread via GetCurrentThreadId. It can be obtained from
 // a Microsoft thread HANDLE via EA::Thread::GetThreadIdFromThreadHandle();
 // A DWORD thread id can be converted to a thread HANDLE via the Microsoft OpenThread
@@ -525,13 +525,13 @@ size_t GetModuleFromAddress(const void* address, char* pModuleName, size_t modul
 		if(hModule)
 		{
 			#if EA_WINAPI_FAMILY_PARTITION(EA_WINAPI_PARTITION_DESKTOP) // GetModuleFileName is desktop API-only.
-				// As of the early Windows 8 SDKs, GetModuleFileName is not exposed to non-desktop 
+				// As of the early Windows 8 SDKs, GetModuleFileName is not exposed to non-desktop
 				// apps, though it's apparently nevertheless present in the libraries.
 				return GetModuleFileNameA(hModule, pModuleName, (DWORD)moduleNameCapacity);
 			#else
 				// If it turns out in the end that we really can't do this, then for non-shipping builds
-				// we can likely implement a manual version of this via information found through the 
-				// TEB structure for the process. 
+				// we can likely implement a manual version of this via information found through the
+				// TEB structure for the process.
 				return GetModuleFileNameA(hModule, pModuleName, (DWORD)moduleNameCapacity);
 			#endif
 		}
@@ -591,13 +591,13 @@ EATHREADLIB_API void* GetStackLimit()
 	NT_TIB64* pTIB = (NT_TIB64*)NtCurrentTeb(); // NtCurrentTeb is defined in <WinNT.h> as an inline call to __readgsqword
 	return (void*)pTIB->StackLimit;
 
-	// The following is an alternative implementation that returns the extent 
-	// of the current stack usage as opposed to the stack limit as seen by the OS. 
-	// This value will be a higher address than Tib.StackLimit (recall that the 
+	// The following is an alternative implementation that returns the extent
+	// of the current stack usage as opposed to the stack limit as seen by the OS.
+	// This value will be a higher address than Tib.StackLimit (recall that the
 	// stack grows downward). It's debatable which of these two approaches is
 	// better, as one returns the thread's -usable- stack space while the
 	// other returns how much the thread is -currently- using. The determination
-	// of the usable stack space is complicated by the fact that Microsoft 
+	// of the usable stack space is complicated by the fact that Microsoft
 	// platforms auto-extend the stack if the process pushes beyond the current limit.
 	// In the end the Tib.StackLimit solution is actually the most portable across
 	// Microsoft OSs and compilers for those OSs (Microsoft or not).

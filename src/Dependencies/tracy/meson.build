@@ -446,5 +446,5 @@ tracy_profiler = executable(
     'werror': false,
   },
   install: true,
-  install_dir: 'tools',
+  install_dir: 'Tools',
 )

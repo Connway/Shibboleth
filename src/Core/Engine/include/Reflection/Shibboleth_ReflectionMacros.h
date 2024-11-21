@@ -73,7 +73,7 @@ GCC_CLANG_DISABLE_WARNING_PUSH("-Wgnu-zero-variadic-macro-arguments")
 	class Reflection<type> final : public ReflectionBase<type> \
 	{ \
 	public: \
-		static constexpr bool HasReflection = true; \
+		static constexpr bool k_has_reflection = true; \
 		static void Init(void); \
 		template <class Type, class ReflectionBuilder> \
 		static void BuildReflection(ReflectionBuilder& builder); \

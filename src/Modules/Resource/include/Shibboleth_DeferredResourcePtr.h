@@ -35,7 +35,7 @@ public:
 	using NoCountChange = Gaff::RefPtr<T>::NoCountChange;
 
 	static_assert(std::is_base_of_v<IResource, T>, "DeferredResourcePtr requires type to derive from IResource.");
-	static_assert(Refl::Reflection<T>::HasReflection, "DeferredResourcePtr requires type to have reflection.");
+	static_assert(Refl::Reflection<T>::k_has_reflection, "DeferredResourcePtr requires type to have reflection.");
 
 	DeferredResourcePtr(T* resource, const NoCountChange& no_count_change):
 		_ref_def(&Refl::Reflection<T>::GetReflectionDefinition()),

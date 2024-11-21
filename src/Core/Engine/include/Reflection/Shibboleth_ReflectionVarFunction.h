@@ -105,7 +105,7 @@ public:
 	static_assert(std::is_same_v< std::decay_t<GetVarType>, std::decay_t<SetVarType> >, "VarFunction getter and setter base type is not the same.");
 	static_assert(!std::is_pointer_v<GetVarType>, "VarFunction does not support getters that take pointers.");
 	static_assert(!std::is_pointer_v<SetVarType>, "VarFunction does not support setters that take pointers.");
-	static_assert(Reflection<ReflectionType>::HasReflection);
+	static_assert(Reflection<ReflectionType>::k_has_reflection);
 
 	explicit VarFunction(const FunctionPair& get_set_funcs);
 	VarFunction(void) = default;

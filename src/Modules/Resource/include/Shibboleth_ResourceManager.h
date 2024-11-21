@@ -213,7 +213,7 @@ public:
 	template<class T>
 	EA::Thread::Mutex& getResourceBucketLock()
 	{
-		static_assert(Refl::Reflection<T>::HasReflection, "T does not have reflection.");
+		static_assert(Refl::Reflection<T>::k_has_reflection, "T does not have reflection.");
 		static_assert(std::is_base_of_v<IResource, T>, "T is not derived from IResource.");
 
 		return getResourceBucketLock(Refl::Reflection<T>::GetReflectionDefinition());

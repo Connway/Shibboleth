@@ -116,8 +116,8 @@ class Var : public IVar<T>
 public:
 	using ReflectionType = VarTypeHelper< T, std::remove_pointer_t< std::decay_t<VarType> > >::ReflectionType;
 
-	static_assert(Reflection<ReflectionType>::HasReflection);
-	static_assert(Reflection<T>::HasReflection);
+	static_assert(Reflection<ReflectionType>::k_has_reflection);
+	static_assert(Reflection<T>::k_has_reflection);
 
 	explicit Var(VarType T::*ptr);
 	Var(void) = default;

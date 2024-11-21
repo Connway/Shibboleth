@@ -136,7 +136,7 @@ public:
 	}
 
 private:
-	static_assert(Refl::Reflection<T>::HasReflection, "Cannot make a RuntimeVar from a class without Reflection.");
+	static_assert(Refl::Reflection<T>::k_has_reflection, "Cannot make a RuntimeVar from a class without Reflection.");
 
 	T _value;
 };

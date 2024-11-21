@@ -29,7 +29,7 @@ NS_SHIBBOLETH
 template <class T>
 class InstancedPtr final
 {
-	static_assert(Refl::Reflection<T>::HasReflection, "Cannot serialize if type does not have reflection.");
+	static_assert(Refl::Reflection<T>::k_has_reflection, "Cannot serialize if type does not have reflection.");
 
 public:
 	template <class U>
@@ -38,7 +38,7 @@ public:
 		_ref_def(&Refl::Reflection<U>::GetReflectionDefinition()),
 		_allocator(allocator)
 	{
-		static_assert(Refl::Reflection<U>::HasReflection, "Assigning class does not have reflection.");
+		static_assert(Refl::Reflection<U>::k_has_reflection, "Assigning class does not have reflection.");
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
 	}
 
@@ -69,7 +69,7 @@ public:
 	template <class U>
 	void reset(U* ptr)
 	{
-		static_assert(Refl::Reflection<U>::HasReflection, "Assigning class does not have reflection.");
+		static_assert(Refl::Reflection<U>::k_has_reflection, "Assigning class does not have reflection.");
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated pointer types.");
 
 		_ref_def = &Refl::Reflection<U>::GetReflectionDefinition();

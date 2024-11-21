@@ -603,8 +603,8 @@ if is_windows
     win_subsystem: 'windows',
     extra_files: extra_files,
     install: true,
-    install_dir: 'tools/JoltViewer',
+    install_dir: 'Tools/JoltViewer',
   )
 
-  install_subdir('Assets', install_dir: 'tools/JoltViewer')
+  install_subdir('Assets', install_dir: 'Tools/JoltViewer')
 endif

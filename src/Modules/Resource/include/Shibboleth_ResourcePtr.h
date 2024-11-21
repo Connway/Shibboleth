@@ -33,7 +33,7 @@ public:
 	using NoCountChange = Gaff::RefPtr<T>::NoCountChange;
 
 	static_assert(std::is_base_of_v<IResource, T>, "ResourcePtr requires type to derive from IResource.");
-	static_assert(Refl::Reflection<T>::HasReflection, "ResourcePtr requires type to have reflection.");
+	static_assert(Refl::Reflection<T>::k_has_reflection, "ResourcePtr requires type to have reflection.");
 
 	ResourcePtr(T* resource, const NoCountChange& no_count_change):
 		_resource(resource, no_count_change)

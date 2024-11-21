@@ -30,7 +30,7 @@ NS_SHIBBOLETH
 template <class T>
 class InstancedArray final
 {
-	static_assert(Refl::Reflection<T>::HasReflection, "Cannot serialize if type does not have reflection.");
+	static_assert(Refl::Reflection<T>::k_has_reflection, "Cannot serialize if type does not have reflection.");
 
 public:
 	class Iterator final
@@ -325,7 +325,7 @@ public:
 	template <class U, class... Args>
 	U& pushT(Args&&... args)
 	{
-		static_assert(Refl::Reflection<U>::HasReflection, "U does not have reflection.");
+		static_assert(Refl::Reflection<U>::k_has_reflection, "U does not have reflection.");
 		static_assert(std::is_base_of_v<T, U>, "Assigning unrelated types.");
 		static_assert(Gaff::OffsetOfClass<T, U>() == 0, "Offset of T in class U must be zero.");
 

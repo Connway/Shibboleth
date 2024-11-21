@@ -55,6 +55,7 @@ header_files = [
   'include/Reflection/Shibboleth_ReflectionDefinitionVariable.h',
   'include/Reflection/Shibboleth_ReflectionMacros.h',
   'include/Reflection/Shibboleth_ReflectionManager.h',
+  'include/Reflection/Shibboleth_ReflectionOfType.h',
   'include/Reflection/Shibboleth_ReflectionUtils.h',
   'include/Reflection/Shibboleth_ReflectionVar.h',
   'include/Reflection/Shibboleth_ReflectionVarFlags.h',

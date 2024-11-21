@@ -63,8 +63,8 @@ public:
 	using KeyVarType = VarTypeHelper<T, ContainerType>::KeyVariableType;
 	using ValueVarType = VarTypeHelper<T, ContainerType>::ValueVariableType;
 
-	static_assert(Reflection<KeyReflectionType>::HasReflection);
-	static_assert(Reflection<ValueReflectionType>::HasReflection);
+	static_assert(Reflection<KeyReflectionType>::k_has_reflection);
+	static_assert(Reflection<ValueReflectionType>::k_has_reflection);
 
 	explicit MapVar(ContainerType T::*ptr);
 	MapVar(void);

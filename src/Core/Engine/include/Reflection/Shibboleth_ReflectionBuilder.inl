@@ -65,10 +65,10 @@ template <class T, class BaseType>
 template <class Base>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::base(void)
 {
-	static_assert(Reflection<Base>::HasReflection || Hash::ClassHashable<Base>::k_is_hashable, "Base class has no reflection and is not hashable.");
+	static_assert(Reflection<Base>::k_has_reflection || Hash::ClassHashable<Base>::k_is_hashable, "Base class has no reflection and is not hashable.");
 	static_assert(std::is_base_of_v<Base, T>, "Class is not a base class of T.");
 
-	if constexpr (Reflection<Base>::HasReflection) {
+	if constexpr (Reflection<Base>::k_has_reflection) {
 		Shibboleth::HashString64<> name_hash_str{ Reflection<Base>::GetName(), REFLECTION_ALLOCATOR };
 		GAFF_ASSERT(Gaff::Find(_data.base_classes, name_hash_str) == _data.base_classes.end());
 

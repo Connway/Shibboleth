@@ -99,7 +99,7 @@ template <class T>
 template <class Base>
 ReflectionVersionClass<T>& ReflectionVersionClass<T>::base(void)
 {
-	if constexpr (Reflection<Base>::HasReflection) {
+	if constexpr (Reflection<Base>::k_has_reflection) {
 		const Gaff::Hash64 version = Reflection<Base>::GetInstance().getVersion();
 		const ptrdiff_t offset = Gaff::OffsetOfClass<Base, T>();
 
