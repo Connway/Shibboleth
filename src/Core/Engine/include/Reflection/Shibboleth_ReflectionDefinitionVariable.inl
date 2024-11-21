@@ -29,3 +29,4 @@ THE SOFTWARE.
 #include "Shibboleth_ReflectionVarHash.inl"
 #include "Shibboleth_ReflectionVarFunction.inl"
 #include "Shibboleth_ReflectionVarReflectionDefinition.inl"
+#include "Shibboleth_ReflectionVarReflectionOfType.inl"

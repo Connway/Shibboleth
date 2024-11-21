@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Reflection/Shibboleth_ReflectionBuilder.h"
 #include "Shibboleth_IReflectionDefinition.h"
+#include "Shibboleth_ReflectionBuilder.h"
 #include <Gaff_ArrayString.h>
 
 NS_REFLECTION
