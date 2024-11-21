@@ -49,7 +49,6 @@ class IFileSystem : public Refl::IReflectionObject
 public:
 	//enum OpenMode { OT_READ = 0, OT_WRITE };
 
-	IFileSystem(void) {}
 	virtual ~IFileSystem(void) {}
 
 	virtual IFile* openFile(const char8_t* file_name/*, OpenMode mode*/) = 0;
