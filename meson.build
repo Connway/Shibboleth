@@ -35,6 +35,7 @@ is_debug_optimized = get_option('buildtype') == 'debugoptimized'
 is_debug = is_debug_optimized or (get_option('buildtype') == 'debug')
 is_release = get_option('buildtype') == 'release'
 is_profile = is_debug or get_option('profile')
+is_address_sanitization_enabled = is_debug or get_option('address-sanitizer')
 
 is_wayland = is_linux and get_option('wayland')
 
@@ -84,6 +85,11 @@ if is_profile
    language: ['c', 'cpp']
   )
 
+endif
+
+if is_address_sanitization_enabled
+  default_cpp_args +='-fsanitize=address'
+  default_c_args +='-fsanitize=address'
 endif
 
 if is_windows
