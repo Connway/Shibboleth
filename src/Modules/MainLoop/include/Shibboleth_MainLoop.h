@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class MainLoop : public IMainLoop
+class MainLoop final : public IMainLoop
 {
 public:
 	bool init(void) override;

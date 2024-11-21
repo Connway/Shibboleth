@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_MainLoop.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::MainLoop)
-	.BASE(Shibboleth::IMainLoop)
+	.template base<Shibboleth::IMainLoop>()
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::MainLoop)
 

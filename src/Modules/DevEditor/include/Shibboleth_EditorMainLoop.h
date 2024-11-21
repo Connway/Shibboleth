@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class EditorMainLoop : public IMainLoop
+class EditorMainLoop final : public IMainLoop
 {
 public:
 	bool init(void) override;

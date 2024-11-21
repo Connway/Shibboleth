@@ -27,7 +27,14 @@ THE SOFTWARE.
 #include <Gaff_File.h>
 #include <filesystem>
 
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::LooseFileSystem)
+	.template base<Shibboleth::IFileSystem>()
+	.template ctor<>()
+SHIB_REFLECTION_DEFINE_END(Shibboleth::LooseFileSystem)
+
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(LooseFileSystem)
 
 LooseFile::LooseFile(void)
 {

@@ -22,8 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Reflection/Shibboleth_IReflectionObject.h"
 #include "Shibboleth_Defines.h"
 #include <EASTL/functional.h>
+#include <Gaff_Hashable.h>
 
 NS_SHIBBOLETH
 
@@ -42,7 +44,7 @@ public:
 	//virtual void write(const char* buffer, unsigned int buffer_size) = 0;
 };
 
-class IFileSystem
+class IFileSystem : public Refl::IReflectionObject
 {
 public:
 	//enum OpenMode { OT_READ = 0, OT_WRITE };
@@ -57,4 +59,8 @@ public:
 	virtual bool forEachFile(const char8_t* directory, eastl::function<bool (const char8_t*, IFile*)>& callback, bool recursive = false) = 0;
 };
 
+NS_END
+
+NS_HASHABLE
+	GAFF_CLASS_HASHABLE(Shibboleth::IFileSystem);
 NS_END

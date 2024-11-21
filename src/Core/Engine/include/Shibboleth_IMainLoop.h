@@ -22,7 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
+#include "Reflection/Shibboleth_IReflectionObject.h"
+#include "Shibboleth_Defines.h"
+#include <Gaff_Hashable.h>
 
 NS_SHIBBOLETH
 
@@ -36,4 +38,8 @@ public:
 	virtual void update(void) = 0;
 };
 
+NS_END
+
+NS_HASHABLE
+	GAFF_CLASS_HASHABLE(Shibboleth::IMainLoop);
 NS_END

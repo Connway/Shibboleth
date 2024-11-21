@@ -23,14 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #include "FileSystem/Shibboleth_IFileSystem.h"
-#include "Containers/Shibboleth_Vector.h"
-#include "Shibboleth_String.h"
+#include "Reflection/Shibboleth_Reflection.h"
 #include <Gaff_IncludeEASTLAtomic.h>
 #include <eathread/eathread_mutex.h>
 
 NS_SHIBBOLETH
 
-class LooseFile : public IFile
+class LooseFile final : public IFile
 {
 public:
 	LooseFile(void);
@@ -48,7 +47,7 @@ private:
 	friend class LooseFileSystem;
 };
 
-class LooseFileSystem : public IFileSystem
+class LooseFileSystem final : public IFileSystem
 {
 public:
 	LooseFileSystem(void);
@@ -102,6 +101,10 @@ private:
 
 	Vector<FileData> _files;
 	EA::Thread::Mutex _file_lock;
+
+	SHIB_REFLECTION_CLASS_DECLARE(LooseFileSystem);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::LooseFileSystem)
