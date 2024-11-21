@@ -2,7 +2,7 @@ import argparse
 import pathlib
 
 parser = argparse.ArgumentParser(
-    prog="update_build_file",
+    prog="update_meson_file",
     description="Updates the meson.build file of a directory with an updated list of source files."
 )
 
