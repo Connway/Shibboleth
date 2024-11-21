@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<N10X>
+	<Workspace>
+		<IncludeFilter>*.*,</IncludeFilter>
+		<ExcludeFilter>*.obj,*.lib,*.pch,*.dll,*.pdb,.vs,Debug,Release,x64,obj,*.user,Intermediate,build,.git,</ExcludeFilter>
+		<SyncFiles>true</SyncFiles>
+		<Recursive>true</Recursive>
+		<ShowEmptyFolders>true</ShowEmptyFolders>
+		<IncludeFilesWithoutExt>true</IncludeFilesWithoutExt>
+		<IsVirtual>false</IsVirtual>
+		<IsFolder>false</IsFolder>
+		<BuildCommand>python3 utils/build.py $(Configuration)</BuildCommand>
+		<RebuildCommand>python3 utils/build.py $(Configuration) --rebuild</RebuildCommand>
+		<BuildFileCommand></BuildFileCommand>
+		<CleanCommand>python3 utils/build.py $(Configuration) --clean</CleanCommand>
+		<BuildWorkingDirectory></BuildWorkingDirectory>
+		<CancelBuild></CancelBuild>
+		<Exe>workingdir/bin/GameApp.exe</Exe>
+		<Args></Args>
+		<WorkingDirectory>workingdir</WorkingDirectory>
+		<DebugCommand></DebugCommand>
+		<DebugSln></DebugSln>
+		<UseVisualStudioEnvBat>false</UseVisualStudioEnvBat>
+		<CaptureExeOutput>true</CaptureExeOutput>
+		<Configurations>
+			<Configuration>Debug</Configuration>
+			<Configuration>DebugOptimized</Configuration>
+			<Configuration>Profile</Configuration>
+			<Configuration>Release</Configuration>
+		</Configurations>
+		<Platforms>
+			<Platform>x64</Platform>
+		</Platforms>
+		<AdditionalIncludePaths>
+			<AdditionalIncludePath>C:\Applications\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include</AdditionalIncludePath>
+			<AdditionalIncludePath>C:\Applications\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\ATLMFC\include</AdditionalIncludePath>
+			<AdditionalIncludePath>C:\Applications\Microsoft Visual Studio\2022\Community\VC\Auxiliary\VS\include</AdditionalIncludePath>
+			<AdditionalIncludePath>C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt</AdditionalIncludePath>
+			<AdditionalIncludePath>C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um</AdditionalIncludePath>
+			<AdditionalIncludePath>C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared</AdditionalIncludePath>
+			<AdditionalIncludePath>C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt</AdditionalIncludePath>
+			<AdditionalIncludePath>C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt</AdditionalIncludePath>
+			<AdditionalIncludePath>C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um</AdditionalIncludePath>
+		</AdditionalIncludePaths>
+		<Defines></Defines>
+		<ConfigProperties>
+			<ConfigAndPlatform>
+				<Name>Debug:x64</Name>
+				<Defines></Defines>
+				<ForceIncludes></ForceIncludes>
+			</ConfigAndPlatform>
+			<Config>
+				<Name>Debug</Name>
+				<Defines></Defines>
+			</Config>
+			<Platform>
+				<Name>x64</Name>
+				<Defines></Defines>
+			</Platform>
+		</ConfigProperties>
+		<Children></Children>
+	</Workspace>
+</N10X>
