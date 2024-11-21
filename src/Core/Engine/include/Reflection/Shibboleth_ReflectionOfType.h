@@ -212,6 +212,7 @@ public:
 
 	DeferredReflectionOfType(const DeferredReflectionOfType&) = default;
 	DeferredReflectionOfType(DeferredReflectionOfType&&) = default;
+	DeferredReflectionOfType(void) = default;
 
 	DeferredReflectionOfType& operator=(const DeferredReflectionOfType&) = default;
 	DeferredReflectionOfType& operator=(DeferredReflectionOfType&&) = default;
