@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #define SHIB_REFL_IMPL
+#include "FileSystem/Shibboleth_LooseFileSystem.h"
 #include "Config/Shibboleth_EngineConfig.h"
 #include "Attributes/Shibboleth_EngineAttributesCommon.h"
 
@@ -59,5 +60,10 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::EngineConfig)
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(EngineConfig)
+
+EngineConfig::EngineConfig(void):
+	file_system_type(Refl::Reflection<LooseFileSystem>::GetReflectionDefinition())
+{
+}
 
 NS_END

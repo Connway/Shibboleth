@@ -22,7 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Reflection/Shibboleth_ReflectionOfType.h"
+#include "FileSystem/Shibboleth_IFileSystem.h"
 #include "Shibboleth_EngineDefines.h"
+#include "Shibboleth_IMainLoop.h"
 #include "Shibboleth_Config.h"
 
 NS_SHIBBOLETH
@@ -43,6 +46,8 @@ public:
 		Count
 	};
 
+	EngineConfig(void);
+
 	Vector< HashString64<> > module_unload_order{ ENGINE_ALLOCATOR };
 	Vector< HashString64<> > module_load_order{ ENGINE_ALLOCATOR };
 	Vector<U8String> module_directories{ ENGINE_ALLOCATOR };
@@ -51,6 +56,9 @@ public:
 	U8String log_dir{ u8"./logs", ENGINE_ALLOCATOR };
 
 	U8String file_system{ ENGINE_ALLOCATOR };
+
+	Refl::DeferredReflectionOfType<IFileSystem> file_system_type;
+	Refl::DeferredReflectionOfType<IMainLoop> main_loop_type;
 
 	// $TODO: Attributes for limiting base class type.
 	const Refl::IReflectionDefinition* main_loop = nullptr;
