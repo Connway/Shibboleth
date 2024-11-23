@@ -3,10 +3,7 @@ import argparse
 import sys
 import os
 
-parser = argparse.ArgumentParser(
-    prog="10x_build",
-    description="Facilitates doing builds from the 10x editor."
-)
+parser = argparse.ArgumentParser(prog="shibboleth_build", description="Abstracts the execution of build commands.")
 
 parser.add_argument(
     "configuration",
@@ -16,8 +13,10 @@ parser.add_argument(
     help="Which configuration to generate and build."
 )
 
-parser.add_argument("-rb", "--rebuild", action="store_true")
-parser.add_argument("-c", "--clean", action="store_true")
+parser.add_argument("-i", "--install", action="store_true", help="Installs built binaries into destinatino directory.")
+parser.add_argument("-rb", "--rebuild", action="store_true", help="Performs a clean and build.")
+parser.add_argument("-c", "--clean", action="store_true", help="Deletes the build directory.")
+parser.add_argument("-t", "--target", type=str, help="Build a specific target.")
 
 args = parser.parse_args()
 
@@ -28,6 +27,9 @@ install_cmd = ["meson", "install", "-C", "build/" + configuration, "--destdir", 
 setup_cmd = ["meson", "setup", build_dir, "--vsenv"]
 build_cmd = ["meson", "compile", "-C", build_dir]
 clean_cmd = ["rm", "-rf", build_dir]
+
+if args.target:
+    build_cmd = build_cmd + [target]
 
 if sys.platform == "win32":
     clean_cmd = ["rmdir", build_dir.replace("/", "\\"), "/S", "/Q"]
@@ -49,4 +51,5 @@ if not os.path.exists(build_dir):
 if subprocess.call(build_cmd, shell=True):
     exit()
 
-subprocess.call(install_cmd, shell=True)
+if args.install:
+    subprocess.call(install_cmd, shell=True)

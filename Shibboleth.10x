@@ -9,8 +9,8 @@
 		<IncludeFilesWithoutExt>true</IncludeFilesWithoutExt>
 		<IsVirtual>false</IsVirtual>
 		<IsFolder>false</IsFolder>
-		<BuildCommand>python3 utils/build.py $(Configuration)</BuildCommand>
-		<RebuildCommand>python3 utils/build.py $(Configuration) --rebuild</RebuildCommand>
+		<BuildCommand>python3 utils/build.py $(Configuration) --install</BuildCommand>
+		<RebuildCommand>python3 utils/build.py $(Configuration) --rebuild --install</RebuildCommand>
 		<BuildFileCommand></BuildFileCommand>
 		<CleanCommand>python3 utils/build.py $(Configuration) --clean</CleanCommand>
 		<BuildWorkingDirectory></BuildWorkingDirectory>
