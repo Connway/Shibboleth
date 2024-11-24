@@ -82,7 +82,7 @@ bool VarDeferredReflectionOfType<T, U>::load(const Shibboleth::ISerializeReader&
 	DeferredReflectionOfType<U>* const var = reinterpret_cast<DeferredReflectionOfType<U>*>(object);
 	const char8_t* const class_name = reader.readString();
 
-	var->_type_name = class_name;
+	var->_class_name = class_name;
 	var->_ref_def = nullptr; // Just in case this was default constructed.
 
 	reader.freeString(class_name);
@@ -94,10 +94,10 @@ void VarDeferredReflectionOfType<T, U>::save(Shibboleth::ISerializeWriter& write
 {
 	const DeferredReflectionOfType<U>* const var = reinterpret_cast<const DeferredReflectionOfType<U>*>(object);
 
-	if (var->_type_name.empty()) {
+	if (var->_class_name.empty()) {
 		writer.writeNull();
 	} else {
-		writer.writeString(var->_type_name.getBuffer());
+		writer.writeString(var->_class_name.getBuffer());
 	}
 }
 
