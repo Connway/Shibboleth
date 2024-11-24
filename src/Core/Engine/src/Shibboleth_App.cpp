@@ -160,12 +160,10 @@ void App::destroy(void)
 	_reflection_mgr.destroy();
 	_dynamic_loader.clear();
 
-	// Destroy the file system
-	if (_fs.file_system_module) {
-		_fs.destroy_func(_fs.file_system);
-		_fs.file_system_module = nullptr;
-	} else if (_fs.file_system) {
-		SHIB_FREET(_fs.file_system, GetAllocator());
+	if (_file_system) {
+		_file_system->destroy();
+		SHIB_FREET(_file_system, GetAllocator());
+		_file_system = nullptr;
 	}
 
 #ifdef INIT_STACKTRACE_SYSTEM
@@ -194,7 +192,7 @@ IManager* App::getManager(Gaff::Hash64 name)
 
 IFileSystem& App::getFileSystem(void)
 {
-	return *_fs.file_system;
+	return *_file_system;
 }
 
 const Gaff::JSON& App::getConfigs(void) const
@@ -265,63 +263,26 @@ RuntimeVarManager& App::getRuntimeVarManager(void)
 }
 #endif
 
-// Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadFileSystem(void)
 {
 	const EngineConfig& engine_config = GetConfigRef<EngineConfig>();
+	const Refl::IReflectionDefinition* const ref_def = const_cast<EngineConfig&>(engine_config).file_system_class.retrieve();;
 
-	if (engine_config.file_system.empty()) {
-		LogInfoDefault("Defaulting to loose file system.");
+	if (!ref_def) {
+		LogErrorDefault("App::loadFileSystem: Failed to find 'IFileSystem' class '%s'.", engine_config.file_system_class.getClassName().getBuffer());
+		return false;
+	}
 
-		_fs.file_system = SHIB_ALLOCT(LooseFileSystem, GetAllocator());
+	_file_system = ref_def->template createT<IFileSystem>(ProxyAllocator::GetGlobal());
 
-		if (!_fs.file_system) {
-			LogErrorDefault("Failed to create loose file system.");
-			return false;
-		}
+	if (!_file_system) {
+		LogErrorDefault("App::loadFileSystem: Failed to construct main loop class '%s'.", ref_def->getReflectionInstance().getName());
+		return false;
+	}
 
-	} else {
-		const U8String fs = engine_config.file_system + /*TARGET_SUFFIX_U8*/ DYNAMIC_MODULE_EXTENSION_U8;
-
-		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), u8"FileSystem");
-
-		if (!_fs.file_system_module) {
-			LogInfoDefault("Failed to find file system '%s'.", fs.data());
-			return false;
-		}
-
-#ifdef INIT_STACKTRACE_SYSTEM
-		Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
-#endif
-
-		LogInfoDefault("Found '%s'. Creating file system.", fs.data());
-
-		InitFileSystemModuleFunc init_func = _fs.file_system_module->getFunc<InitFileSystemModuleFunc>("InitModule");
-
-		if (init_func && !init_func(*this)) {
-			LogErrorDefault("Failed to init file system module.");
-			return false;
-		}
-
-		_fs.destroy_func = _fs.file_system_module->getFunc<FileSystemData::DestroyFileSystemFunc>("DestroyFileSystem");
-		_fs.create_func = _fs.file_system_module->getFunc<FileSystemData::CreateFileSystemFunc>("CreateFileSystem");
-
-		if (!_fs.create_func) {
-			LogErrorDefault("Failed to find 'CreateFileSystem' in '%s'.", fs.data());
-			return false;
-		}
-
-		if (!_fs.destroy_func) {
-			LogErrorDefault("Failed to find 'DestroyFileSystem' in '%s'.", fs.data());
-			return false;
-		}
-
-		_fs.file_system = _fs.create_func();
-
-		if (!_fs.file_system) {
-			LogErrorDefault("Failed to create file system from '%s'.", fs.data());
-			return false;
-		}
+	if (!_file_system->init()) {
+		LogErrorDefault("App::loadFileSystem: Failed to initialize main loop class '%s'.", ref_def->getReflectionInstance().getName());
+		return false;
 	}
 
 	return true;
@@ -335,24 +296,22 @@ bool App::loadMainLoop(void)
 		return true;
 	}
 
-	const Vector<const Refl::IReflectionDefinition*>* const bucket = _reflection_mgr.getTypeBucket(CLASS_HASH(Shibboleth::IMainLoop));
+	const Refl::IReflectionDefinition* const ref_def = const_cast<EngineConfig&>(engine_config).main_loop_class.retrieve();
 
-	if (!bucket || bucket->empty()) {
-		LogErrorDefault("App::loadMainLoop: Failed to find a class that implements the 'IMainLoop' interface.");
+	if (!ref_def) {
+		LogErrorDefault("App::loadMainLoop: Failed to find 'IMainLoop' class '%s'.", engine_config.main_loop_class.getClassName().getBuffer());
 		return false;
 	}
 
-	const Refl::IReflectionDefinition* const refl = engine_config.main_loop ? engine_config.main_loop : bucket->front();
-
-	_main_loop = refl->template createT<IMainLoop>(CLASS_HASH(Shibboleth::IMainLoop), ProxyAllocator::GetGlobal());
+	_main_loop = ref_def->template createT<IMainLoop>(ProxyAllocator::GetGlobal());
 
 	if (!_main_loop) {
-		LogErrorDefault("Failed to construct main loop class '%s'.", refl->getReflectionInstance().getName());
+		LogErrorDefault("App::loadMainLoop: Failed to construct main loop class '%s'.", ref_def->getReflectionInstance().getName());
 		return false;
 	}
 
 	if (!_main_loop->init()) {
-		LogErrorDefault("Failed to initialize main loop class '%s'.", refl->getReflectionInstance().getName());
+		LogErrorDefault("App::loadMainLoop: Failed to initialize main loop class '%s'.", ref_def->getReflectionInstance().getName());
 		return false;
 	}
 
@@ -540,7 +499,6 @@ bool App::initApp(void)
 {
 	EA::Thread::SetAllocator(&_thread_allocator);
 
-	_reflection_mgr.registerTypeBucket(CLASS_HASH(Shibboleth::IMainLoop));
 	_reflection_mgr.registerTypeBucket<Refl::IAttribute>();
 
 	// Init engine reflection.
@@ -603,16 +561,11 @@ bool App::initApp(void)
 
 	_job_pool.addPool(HashStringView32<>(EngineConfig::k_read_file_pool_name), engine_config.read_file_threads);
 
-	if (!loadFileSystem()) {
-		return false;
-	}
-
 	if (!loadModules()) {
 		return false;
 	}
 
-	// Reload engine config now that all modules are loaded.
-	if (InitConfig<EngineConfig>().isFatal()) {
+	if (!loadFileSystem()) {
 		return false;
 	}
 

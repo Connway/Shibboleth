@@ -48,9 +48,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EngineConfig)
 	.var(u8"working_dir", &Shibboleth::EngineConfig::working_dir, Shibboleth::OptionalAttribute{})
 	.var(u8"log_dir", &Shibboleth::EngineConfig::log_dir, Shibboleth::OptionalAttribute{})
 
-	.var(u8"file_system", &Shibboleth::EngineConfig::file_system, Shibboleth::OptionalAttribute{})
-	.var(u8"main_loop", &Shibboleth::EngineConfig::main_loop, Shibboleth::OptionalAttribute{})
-
 	.var(u8"read_file_threads", &Shibboleth::EngineConfig::read_file_threads, Shibboleth::OptionalAttribute{})
 
 	.var(u8"flags", &Shibboleth::EngineConfig::flags, Shibboleth::OptionalAttribute{})
@@ -62,7 +59,7 @@ NS_SHIBBOLETH
 SHIB_REFLECTION_CLASS_DEFINE(EngineConfig)
 
 EngineConfig::EngineConfig(void):
-	file_system_type(Refl::Reflection<LooseFileSystem>::GetReflectionDefinition())
+	file_system_class(Refl::Reflection<LooseFileSystem>::GetReflectionDefinition())
 {
 }
 

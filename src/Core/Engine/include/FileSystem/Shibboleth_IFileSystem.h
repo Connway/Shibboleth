@@ -51,6 +51,9 @@ public:
 
 	virtual ~IFileSystem(void) {}
 
+	virtual bool init(void) { return true; }
+	virtual void destroy(void) {}
+
 	virtual IFile* openFile(const char8_t* file_name/*, OpenMode mode*/) = 0;
 	virtual void closeFile(const IFile* file) = 0;
 

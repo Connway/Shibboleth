@@ -55,13 +55,8 @@ public:
 	U8String working_dir{ ENGINE_ALLOCATOR };
 	U8String log_dir{ u8"./logs", ENGINE_ALLOCATOR };
 
-	U8String file_system{ ENGINE_ALLOCATOR };
-
-	Refl::DeferredReflectionOfType<IFileSystem> file_system_type;
-	Refl::DeferredReflectionOfType<IMainLoop> main_loop_type;
-
-	// $TODO: Attributes for limiting base class type.
-	const Refl::IReflectionDefinition* main_loop = nullptr;
+	Refl::DeferredReflectionOfType<IFileSystem> file_system_class;
+	Refl::DeferredReflectionOfType<IMainLoop> main_loop_class;
 
 	int32_t read_file_threads = 1;
 

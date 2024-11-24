@@ -159,12 +159,12 @@ public:
 	{
 		if (_ref_def) {
 			return _ref_def;
-		} else if (_type_name.empty()) {
+		} else if (_class_name.empty()) {
 			return nullptr;
 		}
 
 		const Shibboleth::ReflectionManager& ref_mgr = Shibboleth::GetApp().getReflectionManager();
-		_ref_def = ref_mgr.getReflection(_type_name.getHash());
+		_ref_def = ref_mgr.getReflection(_class_name.getHash());
 
 		if (!_ref_def) {
 			// $TODO: Log error.
@@ -174,6 +174,8 @@ public:
 	}
 
 	const IReflectionDefinition* get(void) const { return _ref_def; }
+
+	const Shibboleth::HashString64<>& getClassName(void) const { return _class_name; }
 
 
 	template <class U>
@@ -192,7 +194,7 @@ public:
 		_ref_def(ref_def)
 	{
 		if (ref_def) {
-			_type_name = ref_def->getReflectionInstance().getName();
+			_class_name = ref_def->getReflectionInstance().getName();
 		}
 	}
 
@@ -238,9 +240,9 @@ public:
 		_ref_def = ref_def;
 
 		if (ref_def) {
-			_type_name = ref_def->getReflectionInstance().getName();
+			_class_name = ref_def->getReflectionInstance().getName();
 		} else {
-			_type_name.clear();
+			_class_name.clear();
 		}
 
 		return *this;
@@ -266,7 +268,7 @@ public:
 	}
 
 private:
-	Shibboleth::HashString64<> _type_name{ REFLECTION_ALLOCATOR };
+	Shibboleth::HashString64<> _class_name{ REFLECTION_ALLOCATOR };
 	ReflectionOfType<T> _ref_def;
 
 	template <class V, class W>
@@ -315,7 +317,7 @@ DeferredReflectionOfType<Derived> ReflectionCast(DeferredReflectionOfType<Base>&
 		}
 
 		DeferredReflectionOfType<Derived> value;
-		value._type_name = std::move(refl_type._type_name);
+		value._class_name = std::move(refl_type._class_name);
 		value._ref_def = refl_type._ref_def.get();
 
 		return value;
@@ -356,7 +358,7 @@ DeferredReflectionOfType<Derived> ReflectionCast(const DeferredReflectionOfType<
 		}
 
 		DeferredReflectionOfType<Derived> value;
-		value._type_name = refl_type._type_name;
+		value._class_name = refl_type._class_name;
 		value._ref_def = refl_type._ref_def.get();
 
 		return value;

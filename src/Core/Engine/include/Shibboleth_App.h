@@ -84,28 +84,7 @@ public:
 #endif
 
 private:
-	using InitFileSystemModuleFunc = bool (*)(IApp&);
 	using CreateModuleFunc = IModule* (*)(void);
-
-	struct FileSystemData final
-	{
-		FileSystemData(void): file_system(nullptr), destroy_func(nullptr), create_func(nullptr) {}
-
-		using InitFileSystemModuleFunc = bool (*)(IApp&);
-		using CreateFileSystemFunc = IFileSystem* (*)(void);
-		using DestroyFileSystemFunc  = void (*)(IFileSystem*);
-
-		DynamicLoader::ModulePtr file_system_module;
-		IFileSystem* file_system;
-
-		DestroyFileSystemFunc destroy_func;
-		CreateFileSystemFunc create_func;
-	};
-
-	using MainLoopFunc = void (*)(void);
-
-	bool _running = true;
-	IMainLoop* _main_loop = nullptr;
 
 	ReflectionManager _reflection_mgr;
 
@@ -119,13 +98,18 @@ private:
 	RuntimeVarManager _runtime_var_mgr;
 #endif
 
-	FileSystemData _fs;
-
 	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map{ ProxyAllocator("Reflection") };
 	VectorMap< Gaff::Hash64, UniquePtr<IModule> > _module_map{ ProxyAllocator("Reflection") };
 	Gaff::JSON _configs;
 
 	ThreadAllocator _thread_allocator;
+
+	IFileSystem* _file_system = nullptr;
+	IMainLoop* _main_loop = nullptr;
+
+	bool _running = true;
+
+
 
 	bool loadFileSystem(void);
 	bool loadMainLoop(void);
