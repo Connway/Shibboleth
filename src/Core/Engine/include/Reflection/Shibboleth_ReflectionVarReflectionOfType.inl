@@ -43,7 +43,7 @@ const IReflection& VarDeferredReflectionOfType<T, U>::getReflection(void) const
 template <class T, class U>
 const void* VarDeferredReflectionOfType<T, U>::getData(const void* object) const
 {
-	return const_cast<VarDeferredReflectionOfType<T>*>(this)->getData(const_cast<void*>(object));
+	return const_cast<VarDeferredReflectionOfType<T, U>*>(this)->getData(const_cast<void*>(object));
 }
 
 template <class T, class U>
@@ -61,13 +61,19 @@ void VarDeferredReflectionOfType<T, U>::setData(void* object, const void* data)
 	}
 
 	DeferredReflectionOfType<U>* const var = IVar<T>::template get< DeferredReflectionOfType<U> >(object);
-	*var = *reinterpret_cast<DeferredReflectionOfType<U>*>(data);
+	*var = *reinterpret_cast<const DeferredReflectionOfType<U>*>(data);
 }
 
 template <class T, class U>
 void VarDeferredReflectionOfType<T, U>::setDataMove(void* object, void* data)
 {
-	setData(object, data);
+	if (IReflectionVar::isReadOnly()) {
+		// $TODO: Log error.
+		return;
+	}
+
+	DeferredReflectionOfType<U>* const var = IVar<T>::template get< DeferredReflectionOfType<U> >(object);
+	*var = std::move(*reinterpret_cast<DeferredReflectionOfType<U>*>(data));
 }
 
 template <class T, class U>
@@ -134,7 +140,7 @@ const IReflection& VarReflectionOfType<T, U>::getReflection(void) const
 template <class T, class U>
 const void* VarReflectionOfType<T, U>::getData(const void* object) const
 {
-	return const_cast<VarReflectionOfType<T>*>(this)->getData(const_cast<void*>(object));
+	return const_cast<VarReflectionOfType<T, U>*>(this)->getData(const_cast<void*>(object));
 }
 
 template <class T, class U>
