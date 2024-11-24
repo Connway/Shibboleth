@@ -109,10 +109,11 @@ if is_profile
 
 endif
 
-if is_address_sanitization_enabled
-  default_cpp_args +='-fsanitize=address'
-  default_c_args +='-fsanitize=address'
-endif
+# $TODO: Currently Mac has linker errors when enabling this.
+# if is_address_sanitization_enabled and not is_mac
+#   default_cpp_args +='-fsanitize=address'
+#   default_c_args +='-fsanitize=address'
+# endif
 
 if is_windows
   add_project_arguments(
