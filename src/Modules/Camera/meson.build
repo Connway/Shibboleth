@@ -42,6 +42,7 @@ generated_files = [
     command: [code_generator, 'module_header', '-rp', '@SOURCE_ROOT@', '-of', '@OUTPUT@', '-m', 'Camera'],
     depends: [code_generator],
     build_always_stale: true,
+    build_by_default: true,
   ),
 ]
 

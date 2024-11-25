@@ -158,6 +158,7 @@ generated_files = [
     command: [code_generator, 'engine_header', '-rp', '@SOURCE_ROOT@', '-of', '@OUTPUT@'],
     depends: [code_generator],
     build_always_stale: true,
+    build_by_default: true,
   ),
   custom_target(
     'Gen_StaticReflectionInit.h',
@@ -165,6 +166,7 @@ generated_files = [
     command: [code_generator, 'engine_static_header', '-rp', '@SOURCE_ROOT@', '-of', '@OUTPUT@'],
     depends: [code_generator],
     build_always_stale: true,
+    build_by_default: true,
   )
 ]
 
