@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 NS_GAFF
 
-template < class Key, class Value, class Allocator, class Compare = eastl::less<Key> >
+template < class Key, class Value, class Allocator = DefaultAllocator, class Compare = eastl::less<Key> >
 using VectorMap = eastl::vector_map<Key, Value, Compare, Allocator>;
 
 template <class BinaryCompare, class T, class Key, class Value, class Allocator, class Compare>
