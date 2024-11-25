@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "FileSystem/Shibboleth_IFileSystem.h"
+#include "Shibboleth_IFileSystem.h"
 #include "Reflection/Shibboleth_Reflection.h"
 #include <Gaff_IncludeEASTLAtomic.h>
 #include <eathread/eathread_mutex.h>
