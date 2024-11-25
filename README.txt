@@ -23,6 +23,10 @@ Shibboleth is copyrighted under The MIT License. See LICENSE.txt for the full te
     BUILD INSTRUCTIONS
 ==========================
 
-Includes Visual Studio solution/project files and should compile out of the box.
-
-If you wish to generate your own solution files, just run "utils/premake5 vs2022".
+1. Install the Meson build system. (https://mesonbuild.com)
+2. Install the Ninja build system. (https://ninja-build.org)
+    a. Or install Visual Studio 2022.
+3. Run "meson setup build/debug"
+    a. If on Windows, run either: "meson setup build/debug --vsenv" or "meson setup build/debug_vs --vsenv --backend vs2022"
+4. Run "meson compile -C build/debug".
+    a. If using "vs2022" backend, then you can "Shibboleth.sln" in "build/debug_vs" and build from Visual Studio.
