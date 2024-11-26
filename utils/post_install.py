@@ -1,5 +1,6 @@
 import argparse
 import pathlib
+import shutil
 import os
 
 parser = argparse.ArgumentParser(prog="shibboleth_post_install", description="Does some small file cleanup when running install command.")
@@ -19,7 +20,7 @@ root = pathlib.Path(".")
 if args.root:
     root = args.root
 
-os.rmdir(root / "lib")
+shutil.rmtree(root / "lib")
 
 for ext in library_extensions:
     library_files = sorted(root.glob("**/*" + ext))
