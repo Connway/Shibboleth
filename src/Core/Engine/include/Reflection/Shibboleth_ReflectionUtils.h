@@ -44,7 +44,7 @@ Derived* ReflectionCast(Base* object)
 	if constexpr (std::is_same_v<Base, Derived>) {
 		return object;
 	} else {
-		return object->getReflectionDefinition().template getInterface<Derived>(object->getBasePointer());
+		return (?object) ? object->getReflectionDefinition().template getInterface<Derived>(object->getBasePointer()) : nullptr;
 	}
 }
 
@@ -77,7 +77,7 @@ Derived* ReflectionCast(Base* object, Gaff::Hash64 interface_name)
 	if constexpr (std::is_same_v<Base, Derived>) {
 		return object;
 	} else {
-		return reinterpret_cast<Derived*>(object->getReflectionDefinition().getInterface(interface_name, object->getBasePointer()));
+		return (object) ? reinterpret_cast<Derived*>(object->getReflectionDefinition().getInterface(interface_name, object->getBasePointer())) : nullptr;
 	}
 }
 
