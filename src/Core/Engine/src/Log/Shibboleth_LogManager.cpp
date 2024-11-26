@@ -53,8 +53,8 @@ bool LogManager::init(const char8_t* log_dir)
 	}
 
 	// Ensure our log directory path ends with a forward slash.
-	if (_log_dir.back() != u8'/') {
-		_log_dir.push_back(u8'/');
+	if (_log_dir.back() == u8'/') {
+		_log_dir.pop_back();
 	}
 
 	// Create all directories in log path.
@@ -203,7 +203,7 @@ void LogManager::removeExtraLogs(void)
 {
 	int32_t dir_count = 0;
 
-	for (const auto& dir_entry : std::filesystem::directory_iterator((_log_dir + u8"..").data())) {
+	for (const auto& dir_entry : std::filesystem::directory_iterator((_log_dir + u8"/..").data())) {
 		if (!dir_entry.is_directory()) {
 			continue;
 		}
@@ -215,7 +215,7 @@ void LogManager::removeExtraLogs(void)
 		return;
 	}
 
-	for (const auto& dir_entry : std::filesystem::directory_iterator((_log_dir + u8"..").data())) {
+	for (const auto& dir_entry : std::filesystem::directory_iterator((_log_dir + u8"/..").data())) {
 		if (!dir_entry.is_directory()) {
 			continue;
 		}
