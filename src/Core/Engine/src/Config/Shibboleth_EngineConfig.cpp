@@ -41,6 +41,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EngineConfig)
 	.template ctor<>()
 
 	// $TODO: Allocator attribute.
+	.var(u8"manager_creation_order", &Shibboleth::EngineConfig::manager_creation_order, Shibboleth::OptionalAttribute{})
 	.var(u8"module_unload_order", &Shibboleth::EngineConfig::module_unload_order, Shibboleth::OptionalAttribute{})
 	.var(u8"module_load_order", &Shibboleth::EngineConfig::module_load_order, Shibboleth::OptionalAttribute{})
 	.var(u8"module_directories", &Shibboleth::EngineConfig::module_directories, Shibboleth::OptionalAttribute{})
@@ -49,7 +50,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EngineConfig)
 	.var(u8"log_dir", &Shibboleth::EngineConfig::log_dir, Shibboleth::OptionalAttribute{})
 
 	.var(u8"file_system_class", &Shibboleth::EngineConfig::file_system_class, Shibboleth::OptionalAttribute{})
-	.var(u8"main_loop_class", &Shibboleth::EngineConfig::main_loop_class)
+	.var(u8"main_loop_class", &Shibboleth::EngineConfig::main_loop_class, Shibboleth::OptionalAttribute{})
 
 	.var(u8"read_file_threads", &Shibboleth::EngineConfig::read_file_threads, Shibboleth::OptionalAttribute{})
 

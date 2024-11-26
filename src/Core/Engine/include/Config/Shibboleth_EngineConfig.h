@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "FileSystem/Shibboleth_IFileSystem.h"
 #include "Shibboleth_EngineDefines.h"
 #include "Shibboleth_IMainLoop.h"
+#include "Shibboleth_IManager.h"
 #include "Shibboleth_Config.h"
 
 NS_SHIBBOLETH
@@ -48,6 +49,7 @@ public:
 
 	EngineConfig(void);
 
+	Vector< Refl::DeferredReflectionOfType<IManager> > manager_creation_order{ ENGINE_ALLOCATOR };
 	Vector< HashString64<> > module_unload_order{ ENGINE_ALLOCATOR };
 	Vector< HashString64<> > module_load_order{ ENGINE_ALLOCATOR };
 	Vector<U8String> module_directories{ ENGINE_ALLOCATOR };
