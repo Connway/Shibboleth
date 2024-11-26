@@ -78,7 +78,6 @@ header_files = [
   'include/Shibboleth_Error.h',
   'include/Shibboleth_FileWatcher.h',
   'include/Shibboleth_HashString.h',
-  'include/Shibboleth_HashStringFwd.h',
   'include/Shibboleth_IApp.h',
   'include/Shibboleth_IMainLoop.h',
   'include/Shibboleth_IManager.h',
