@@ -360,7 +360,7 @@ bool App::loadModules(void)
 				DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(temp, module_name.data());
 
 				if (!module) {
-					LogWarningDefault("Failed to find or load dynamic module '%s'.", module_name.data());
+					LogWarningDefault("App::loadModules: Failed to find or load dynamic module '%s'.", module_name.data());
 					return false;
 
 				#ifdef INIT_STACKTRACE_SYSTEM
@@ -376,7 +376,7 @@ bool App::loadModules(void)
 					}
 
 				} else {
-					LogErrorDefault("Failed to find function 'CreateModule' in dynamic module '%s'.", module_name.data());
+					LogErrorDefault("App::loadModules: Failed to find function 'CreateModule' in dynamic module '%s'.", module_name.data());
 				}
 			}
 		}
@@ -421,13 +421,20 @@ bool App::loadModules(void)
 		entry.second->initNonOwnedClasses();
 	}
 
-	// Initialize any newly loaded configs.
-	if (!createConfigs()) {
-		return false;
-	}
-
 	// Create manager instances.
 	if (!engine_config.flags.testAll(EngineConfig::Flag::NoManagers)) {
+		for (const Refl::DeferredReflectionOfType<IManager>& manager_class : engine_config.manager_creation_order) {
+			if (const Refl::IReflectionDefinition* const ref_def = const_cast< Refl::DeferredReflectionOfType<IManager>& >(manager_class).retrieve()) {
+				if (!createManager(*ref_def)) {
+					return false;
+				}
+
+			} else if (manager_class.valid()) {
+				LogErrorDefault("App::loadModules: Failed to find reflection for manager '%s'.", manager_class.getClassName().getBuffer());
+				return false;
+			}
+		}
+
 		// Create managers from module load order first.
 		for (const HashString64<>& module_name : engine_config.module_load_order) {
 			const Vector<const Refl::IReflectionDefinition*>* const manager_bucket = _reflection_mgr.getTypeBucket<IManager>(module_name);
@@ -459,10 +466,15 @@ bool App::loadModules(void)
 		}
 	}
 
+	// Initialize any newly loaded configs.
+	if (!createConfigs()) {
+		return false;
+	}
+
 	_job_pool.run();
 
 	// Call initAllModulesLoaded() on all managers.
-	Vector<const Refl::IReflectionDefinition*> already_initialized_managers;
+	Vector<const Refl::IReflectionDefinition*> already_initialized_managers { ENGINE_ALLOCATOR };
 
 	// Call on module load order first.
 	for (const HashString64<>& module_name : engine_config.module_load_order) {
@@ -471,7 +483,7 @@ bool App::loadModules(void)
 		if (manager_bucket) {
 			for (const Refl::IReflectionDefinition* ref_def : *manager_bucket) {
 				if (!_manager_map[ref_def->getReflectionInstance().getNameHash()]->initAllModulesLoaded()) {
-					LogErrorDefault("Failed to initialize manager after all modules loaded '%s'!", ref_def->getReflectionInstance().getName());
+					LogErrorDefault("App::loadModules: Failed to initialize manager after all modules loaded '%s'.", ref_def->getReflectionInstance().getName());
 					return false;
 				}
 			}
@@ -487,7 +499,7 @@ bool App::loadModules(void)
 		}
 
 		if (!mgr_pair.second->initAllModulesLoaded()) {
-			LogErrorDefault("Failed to initialize manager after all modules loaded '%s'!", mgr_pair.second->getReflectionDefinition().getReflectionInstance().getName());
+			LogErrorDefault("App::loadModules: Failed to initialize manager after all modules loaded '%s'.", mgr_pair.second->getReflectionDefinition().getReflectionInstance().getName());
 			return false;
 		}
 	}
@@ -579,35 +591,44 @@ bool App::initApp(void)
 
 bool App::createManagersInternal(const Vector<const Refl::IReflectionDefinition*>& managers)
 {
-	ProxyAllocator allocator;
-
 	for (const Refl::IReflectionDefinition* ref_def : managers) {
-		if (hasManager(ref_def->getReflectionInstance().getNameHash())) {
-			continue;
-		}
-
-		IManager* const manager = ref_def->template createT<IManager>(allocator);
-
-		if (!manager->init()) {
-			LogErrorDefault("Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());
-			SHIB_FREET(manager, GetAllocator());
+		if (!createManager(*ref_def)) {
 			return false;
 		}
-
-		const EA::Thread::ThreadId thread_id = EA::Thread::GetThreadId();
-		const uintptr_t id_int = (uintptr_t)&thread_id;
-
-		if (!manager->initThread(id_int)) {
-			LogErrorDefault("Failed to initialize manager '%s' for main thread!", ref_def->getReflectionInstance().getName());
-			SHIB_FREET(manager, GetAllocator());
-			return false;
-		}
-
-		const Gaff::Hash64 name = ref_def->getReflectionInstance().getNameHash();
-
-		GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
-		_manager_map[name].reset(manager);
 	}
+
+	return true;
+}
+
+bool App::createManager(const Refl::IReflectionDefinition& ref_def)
+{
+	ProxyAllocator allocator{ ENGINE_ALLOCATOR };
+
+	if (hasManager(ref_def.getReflectionInstance().getNameHash())) {
+		return true;
+	}
+
+	IManager* const manager = ref_def.template createT<IManager>(allocator);
+
+	if (!manager->init()) {
+		LogErrorDefault("Failed to initialize manager '%s'.", ref_def.getReflectionInstance().getName());
+		SHIB_FREET(manager, GetAllocator());
+		return false;
+	}
+
+	const EA::Thread::ThreadId thread_id = EA::Thread::GetThreadId();
+	const uintptr_t id_int = (uintptr_t)&thread_id;
+
+	if (!manager->initThread(id_int)) {
+		LogErrorDefault("Failed to initialize manager '%s' for main thread!", ref_def.getReflectionInstance().getName());
+		SHIB_FREET(manager, GetAllocator());
+		return false;
+	}
+
+	const Gaff::Hash64 name = ref_def.getReflectionInstance().getNameHash();
+
+	GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
+	_manager_map[name].reset(manager);
 
 	return true;
 }

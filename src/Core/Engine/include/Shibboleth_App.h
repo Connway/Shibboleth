@@ -117,6 +117,7 @@ private:
 	bool initApp(void);
 
 	bool createManagersInternal(const Vector<const Refl::IReflectionDefinition*>& managers);
+	bool createManager(const Refl::IReflectionDefinition& ref_def);
 	bool hasManager(Gaff::Hash64 name) const;
 
 	bool createModule(CreateModuleFunc create_func, const char8_t* module_name);
