@@ -36,7 +36,7 @@ NS_REFLECTION
 template <class T, class VarType>
 struct VarTypeHelper< T, Shibboleth::DeferredResourcePtr<VarType> > final
 {
-	using ReflectionType = VarTypeHelper<T, VarType>::ReflectionType;
+	using ReflectionType = VarTypeHelper< T, std::decay_t<VarType> >::ReflectionType;
 	using VariableType = VarType;
 	using Type = Shibboleth::VarDeferredResourcePtr<T, VarType>;
 
@@ -54,7 +54,7 @@ template <class T, class VarType>
 class VarDeferredResourcePtr final : public Refl::IVar<T>
 {
 public:
-	using ReflectionType = Refl::VarTypeHelper<T, VarType>::ReflectionType;
+	using ReflectionType = Refl::VarTypeHelper< T, std::decay_t<VarType> >::ReflectionType;
 
 	VarDeferredResourcePtr(DeferredResourcePtr<VarType> T::* ptr);
 	VarDeferredResourcePtr(void) = default;

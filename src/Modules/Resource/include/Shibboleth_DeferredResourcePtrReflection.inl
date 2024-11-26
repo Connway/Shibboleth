@@ -75,7 +75,7 @@ void VarDeferredResourcePtr<T, VarType>::setDataMove(void* object, void* data)
 template <class T, class VarType>
 bool VarDeferredResourcePtr<T, VarType>::load(const ISerializeReader& reader, void* object)
 {
-	GAFF_ASSERT(reader.isNull() || reader.isObject());
+	GAFF_ASSERT(reader.isNull() || reader.isObject() || reader.isString());
 
 	if (reader.isNull()) {
 		return true;
@@ -83,7 +83,9 @@ bool VarDeferredResourcePtr<T, VarType>::load(const ISerializeReader& reader, vo
 
 	const char8_t* resource_path = nullptr;
 
-	{
+	if (reader.isString()) {
+		resource_path = reader.readString();
+	} else {
 		const auto guard = reader.enterElementGuard(u8"path");
 		resource_path = reader.readString();
 	}
@@ -95,17 +97,20 @@ bool VarDeferredResourcePtr<T, VarType>::load(const ISerializeReader& reader, vo
 
 	const char8_t* type_name = nullptr;
 
-	{
+	if (reader.isObject()) {
 		const auto guard = reader.enterElementGuard(u8"type");
 		type_name = reader.readString();
+
+		if (!type_name || !type_name[0]) {
+			// $TODO: Log error.
+			return false;
+		}
 	}
 
-	if (!type_name || !type_name[0]) {
-		// $TODO: Log error.
-		return false;
-	}
+	const Refl::IReflectionDefinition* const ref_def = type_name ?
+		GetApp().getReflectionManager().getReflection(Gaff::FNV1aHash64String(type_name)) :
+		GetApp().getReflectionManager().getReflection(Refl::Reflection<ReflectionType>::GetNameHash());
 
-	const Refl::IReflectionDefinition* const ref_def = GetApp().getReflectionManager().getReflection(Gaff::FNV1aHash64String(type_name));
 	DeferredResourcePtr<VarType>* const var = reinterpret_cast<DeferredResourcePtr<VarType>*>(object);
 
 	if (ref_def) {
@@ -116,9 +121,12 @@ bool VarDeferredResourcePtr<T, VarType>::load(const ISerializeReader& reader, vo
 	}
 
 	reader.freeString(resource_path);
-	reader.freeString(type_name);
 
-	return true;
+	if (type_name) {
+		reader.freeString(type_name);
+	}
+
+	return *var;
 }
 
 template <class T, class VarType>
