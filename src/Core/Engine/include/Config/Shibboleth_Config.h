@@ -30,6 +30,15 @@ NS_SHIBBOLETH
 
 class Config : public Refl::IReflectionObject
 {
+public:
+	const Error& getError(void) const { return _error; }
+
+private:
+	Error _error = Error::k_no_error;
+
+	friend class InitFromConfigAttribute;
+	friend class GlobalConfigAttribute;
+
 	SHIB_REFLECTION_CLASS_DECLARE(Config);
 };
 

@@ -75,13 +75,15 @@ Error GlobalConfigAttribute::createAndLoadConfig(const Refl::IReflectionDefiniti
 			reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())
 		);
 
+		config_instance->_error = Error::k_fatal_error;
+
 		return Error::k_fatal_error;
 	}
 
 	setConfig(config_instance);
 
 	// InitFromConfigAttribute will load the config in the createT call.
-	return Error::k_no_error;
+	return config_instance->_error;
 }
 
 void GlobalConfigAttribute::apply(Refl::IReflectionDefinition& ref_def)
@@ -130,7 +132,12 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 			reinterpret_cast<const char*>(config_data.getErrorText())
 		);
 
-		return Error::k_simple_error;
+		Config* const config = ref_def.template getInterface<Config>(object);
+		GAFF_ASSERT(config);
+
+		config->_error = Error::k_fatal_error;
+
+		return Error::k_fatal_error;
 	}
 
 	auto reader = MakeSerializeReader(config_data);
@@ -157,7 +164,12 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 		}
 
 		if (has_error) {
-			return Error::k_simple_error;
+			Config* const config = ref_def.template getInterface<Config>(object);
+			GAFF_ASSERT(config);
+
+			config->_error = Error::k_fatal_error;
+
+			return Error::k_fatal_error;
 		}
 
 	} else {
@@ -167,7 +179,12 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 				reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName())
 			);
 
-			return Error::k_simple_error;
+			Config* const config = ref_def.template getInterface<Config>(object);
+			GAFF_ASSERT(config);
+
+			config->_error = Error::k_fatal_error;
+
+			return Error::k_fatal_error;
 		}
 	}
 
