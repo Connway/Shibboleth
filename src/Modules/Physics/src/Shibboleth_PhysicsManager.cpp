@@ -35,7 +35,7 @@ THE SOFTWARE.
 	#include <Shibboleth_DebugAttributes.h>
 
 	SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::PhysicsManager::DebugFlag)
-		.entry("Draw Rigid Bodies", Shibboleth::PhysicsManager::DebugFlag::DrawRigidBodies)
+		.entry("DrawRigidBodies", Shibboleth::PhysicsManager::DebugFlag::DrawRigidBodies)
 	SHIB_REFLECTION_DEFINE_END(Shibboleth::PhysicsManager::DebugFlag)
 #endif
 
