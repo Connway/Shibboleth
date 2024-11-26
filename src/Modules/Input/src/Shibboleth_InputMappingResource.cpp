@@ -22,8 +22,14 @@ THE SOFTWARE.
 
 #define SHIB_REFL_IMPL
 #include "Shibboleth_InputMappingResource.h"
+#include <Shibboleth_ResourceAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMappingResource)
+	.classAttrs(
+		Shibboleth::ResourceExtensionAttribute(u8".inputmapping.bin")
+		Shibboleth::ResourceExtensionAttribute(u8".inputmapping")
+	)
+
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
 

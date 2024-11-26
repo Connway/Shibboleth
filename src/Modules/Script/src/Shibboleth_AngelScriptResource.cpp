@@ -19,8 +19,13 @@ THE SOFTWARE.
 
 #define SHIB_REFL_IMPL
 #include "Shibboleth_AngelScriptResource.h"
+#include <Shibboleth_ResourceAttributesCommon.h>
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptResource)
+	.classAttrs(
+		Shibboleth::ResourceExtensionAttribute(u8".as")
+	)
+
 	.template base<Shibboleth::IResource>()
 	.template ctor<>()
 SHIB_REFLECTION_DEFINE_END(Shibboleth::AngelScriptResource)
