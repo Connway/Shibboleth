@@ -35,6 +35,52 @@ SHIB_REFLECTION_DEFINE(float)
 SHIB_REFLECTION_DEFINE(double)
 SHIB_REFLECTION_DEFINE(bool)
 
+SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash32)
+	.classAttrs(
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
+	)
+
+	.template ctor<const Gaff::Hash32&>()
+	.template ctor<>()
+
+	.opGreaterThanOrEqual<>()
+	.opGreaterThan<>()
+
+	.opLessThanOrEqual<>()
+	.opLessThan<>()
+
+	.opNotEqual<>()
+	.opEqual<>()
+
+	.opComparison<>()
+
+	.func("getHash", &Gaff::Hash32::getHash)
+	.func("setHash", &Gaff::Hash32::setHash)
+SHIB_REFLECTION_DEFINE_END(Gaff::Hash32)
+
+SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash64)
+	.classAttrs(
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
+	)
+
+	.template ctor<const Gaff::Hash64&>()
+	.template ctor<>()
+
+	.opGreaterThanOrEqual<>()
+	.opGreaterThan<>()
+
+	.opLessThanOrEqual<>()
+	.opLessThan<>()
+
+	.opNotEqual<>()
+	.opEqual<>()
+
+	.opComparison<>()
+
+	.func("getHash", &Gaff::Hash64::getHash)
+	.func("setHash", &Gaff::Hash64::setHash)
+SHIB_REFLECTION_DEFINE_END(Gaff::Hash64)
+
 // $TODO: May want to reflect the Gaff versions of these in the future.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::U8String)
 	.classAttrs(
@@ -46,19 +92,71 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::U8String)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::U8String)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString32<>)
+	.classAttrs(
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
+	)
+
 	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>)
 	.serialize(
 		Shibboleth::LoadHashString<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>,
 		Shibboleth::SaveHashString<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>
 	)
+
+	.template ctor<const Shibboleth::U8String&>()
+	.template ctor<>()
+
+	.opAssignment< Shibboleth::HashString32<> >()
+	.opAssignment<Shibboleth::U8String>()
+
+	.opGreaterThanOrEqual<>()
+	.opGreaterThan<>()
+
+	.opLessThanOrEqual<>()
+	.opLessThan<>()
+
+	.opNotEqual<>()
+	.opEqual<>()
+
+	.opComparison<>()
+
+	.func("getHash", &Shibboleth::HashString32<>::getHash)
+	.func("clear", &Shibboleth::HashString32<>::clear)
+	.func("empty", &Shibboleth::HashString32<>::empty)
+	.func("size", &Shibboleth::HashString32<>::size)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashString32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString64<>)
+	.classAttrs(
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
+	)
+
 	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>)
 	.serialize(
 		Shibboleth::LoadHashString<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>,
 		Shibboleth::SaveHashString<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>
 	)
+
+	.template ctor<const Shibboleth::U8String&>()
+	.template ctor<>()
+
+	.opAssignment< Shibboleth::HashString64<> >()
+	.opAssignment<Shibboleth::U8String>()
+
+	.opGreaterThanOrEqual<>()
+	.opGreaterThan<>()
+
+	.opLessThanOrEqual<>()
+	.opLessThan<>()
+
+	.opNotEqual<>()
+	.opEqual<>()
+
+	.opComparison<>()
+
+	.func("getHash", &Shibboleth::HashString64<>::getHash)
+	.func("clear", &Shibboleth::HashString64<>::clear)
+	.func("empty", &Shibboleth::HashString64<>::empty)
+	.func("size", &Shibboleth::HashString64<>::size)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashString64<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringNoString32<>)
