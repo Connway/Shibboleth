@@ -72,7 +72,6 @@ include_dirs = [
 build_args = [
   '-DHAVE_ZLIB',
   '-DMZ_ZIP_NO_MAIN',
-  '-DMZ_ZIP_SIGNING',
 ]
 
 if is_windows
@@ -98,7 +97,7 @@ minizip_ng = static_library(
   header_files,
   source_files,
   include_directories: include_dirs,
-  cpp_args: default_cpp_args + build_args,
+  c_args: default_c_args + build_args,
   override_options: {
     'werror': false,
   }
