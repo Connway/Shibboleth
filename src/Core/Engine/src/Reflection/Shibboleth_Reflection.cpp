@@ -93,7 +93,7 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::U8String)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString32<>)
 	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
 	)
 
 	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>)
@@ -102,12 +102,25 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString32<>)
 		Shibboleth::SaveHashString<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>
 	)
 
+	.template ctor<const Shibboleth::HashStringView32<>&>()
+	.template ctor<const Shibboleth::HashString32<>&>()
 	.template ctor<const Shibboleth::U8String&>()
 	.template ctor<>()
 
+	.opAssignment< Shibboleth::HashStringView32<> >()
 	.opAssignment< Shibboleth::HashString32<> >()
 	.opAssignment<Shibboleth::U8String>()
 
+	.opGreaterThanOrEqual< Shibboleth::HashStringView32<> >()
+	.opGreaterThan< Shibboleth::HashStringView32<> >()
+
+	.opLessThanOrEqual< Shibboleth::HashStringView32<> >()
+	.opLessThan< Shibboleth::HashStringView32<> >()
+
+	.opNotEqual< Shibboleth::HashStringView32<> >()
+	.opEqual< Shibboleth::HashStringView32<> >()
+
+	.opComparison< Shibboleth::HashStringView32<> >()
 	.opGreaterThanOrEqual<>()
 	.opGreaterThan<>()
 
@@ -136,11 +149,25 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString64<>)
 		Shibboleth::SaveHashString<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>
 	)
 
+	.template ctor<const Shibboleth::HashStringView64<>&>()
+	.template ctor<const Shibboleth::HashString64<>&>()
 	.template ctor<const Shibboleth::U8String&>()
 	.template ctor<>()
 
+	.opAssignment< Shibboleth::HashStringView64<> >()
 	.opAssignment< Shibboleth::HashString64<> >()
 	.opAssignment<Shibboleth::U8String>()
+
+	.opGreaterThanOrEqual< Shibboleth::HashStringView64<> >()
+	.opGreaterThan< Shibboleth::HashStringView64<> >()
+
+	.opLessThanOrEqual< Shibboleth::HashStringView64<> >()
+	.opLessThan< Shibboleth::HashStringView64<> >()
+
+	.opNotEqual< Shibboleth::HashStringView64<> >()
+	.opEqual< Shibboleth::HashStringView64<> >()
+
+	.opComparison< Shibboleth::HashStringView64<> >()
 
 	.opGreaterThanOrEqual<>()
 	.opGreaterThan<>()
@@ -185,7 +212,7 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringNoString64<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringView32<>)
 	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
 	)
 
 	.setInstanceHash(Shibboleth::HashStringViewInstanceHash< char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >)
@@ -193,11 +220,40 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringView32<>)
 		Shibboleth::LoadHashStringView< char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >,
 		Shibboleth::SaveHashStringView< char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >
 	)
+
+	.template ctor<const Shibboleth::HashStringView32<>&>()
+	.template ctor<const Shibboleth::HashString32<>&>()
+	.template ctor<const Shibboleth::U8String&>()
+	.template ctor<>()
+
+	.opGreaterThanOrEqual< Shibboleth::HashString32<> >()
+	.opGreaterThan< Shibboleth::HashString32<> >()
+
+	.opLessThanOrEqual< Shibboleth::HashString32<> >()
+	.opLessThan< Shibboleth::HashString32<> >()
+
+	.opNotEqual< Shibboleth::HashString32<> >()
+	.opEqual< Shibboleth::HashString32<> >()
+
+	.opComparison< Shibboleth::HashString32<> >()
+
+	.opGreaterThanOrEqual<>()
+	.opGreaterThan<>()
+
+	.opLessThanOrEqual<>()
+	.opLessThan<>()
+
+	.opNotEqual<>()
+	.opEqual<>()
+
+	.opComparison<>()
+
+	.func("getHash", &Shibboleth::HashStringView32<>::getHash)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringView32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringView64<>)
 	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
+		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
 	)
 
 	.setInstanceHash(Shibboleth::HashStringViewInstanceHash< char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >)
@@ -205,4 +261,33 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringView64<>)
 		Shibboleth::LoadHashStringView< char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >,
 		Shibboleth::SaveHashStringView< char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >
 	)
+
+	.template ctor<const Shibboleth::HashStringView64<>&>()
+	.template ctor<const Shibboleth::HashString64<>&>()
+	.template ctor<const Shibboleth::U8String&>()
+	.template ctor<>()
+
+	.opGreaterThanOrEqual< Shibboleth::HashString64<> >()
+	.opGreaterThan< Shibboleth::HashString64<> >()
+
+	.opLessThanOrEqual< Shibboleth::HashString64<> >()
+	.opLessThan< Shibboleth::HashString64<> >()
+
+	.opNotEqual< Shibboleth::HashString64<> >()
+	.opEqual< Shibboleth::HashString64<> >()
+
+	.opComparison< Shibboleth::HashString64<> >()
+
+	.opGreaterThanOrEqual<>()
+	.opGreaterThan<>()
+
+	.opLessThanOrEqual<>()
+	.opLessThan<>()
+
+	.opNotEqual<>()
+	.opEqual<>()
+
+	.opComparison<>()
+
+	.func("getHash", &Shibboleth::HashStringView64<>::getHash)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringView64<>)
