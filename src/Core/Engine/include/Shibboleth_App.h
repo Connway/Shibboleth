@@ -112,8 +112,9 @@ private:
 
 
 
-	bool loadFileSystem(void);
-	bool loadMainLoop(void);
+	bool createFileSystem(void);
+	bool createMainLoop(void);
+	bool createManagers(void);
 	bool loadModules(void);
 	bool initApp(void);
 
