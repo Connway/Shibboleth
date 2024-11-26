@@ -29,14 +29,14 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfigWindow)
 
 	.var("width", &Type::width)
 	.var("height", &Type::height)
-	.var("refresh_rate", &Type::refresh_rate)
-	.var("vsync", &Type::vsync)
+	.var("refresh_rate", &Type::refresh_rate, Shibboleth::OptionalAttribute{})
+	.var("vsync", &Type::vsync, Shibboleth::OptionalAttribute{})
 
-	.var("pos_x", &Type::pos_x)
-	.var("pos_y", &Type::pos_y)
-	.var("windowed", &Type::windowed)
+	.var("pos_x", &Type::pos_x, Shibboleth::OptionalAttribute{})
+	.var("pos_y", &Type::pos_y, Shibboleth::OptionalAttribute{})
+	.var("windowed", &Type::windowed, Shibboleth::OptionalAttribute{})
 
-	.var("tags", &Type::tags)
+	.var("tags", &Type::tags, Shibboleth::OptionalAttribute{})
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfigWindow)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)
@@ -51,7 +51,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GraphicsConfig)
 	.var("texture_filtering_sampler", &Type::texture_filtering_sampler)
 	.var("icon", &Type::icon, Shibboleth::OptionalAttribute{})
 
-	.var("windows", &Type::windows, Shibboleth::OptionalAttribute{})
+	.var("windows", &Type::windows)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::GraphicsConfig)
 
 
