@@ -274,7 +274,7 @@ void IResource::failed(void)
 
 const IFile* IResource::loadFile(const char8_t* file_path)
 {
-	U8String final_path(ProxyAllocator("Resource"));
+	U8String final_path{ RESOURCE_ALLOCATOR };
 	final_path.sprintf(u8"Resources/%s", file_path);
 
 	const IFile* const file = GetApp().getFileSystem().openFile(final_path.data());
