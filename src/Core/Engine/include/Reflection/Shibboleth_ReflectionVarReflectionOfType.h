@@ -79,6 +79,7 @@ public:
 template <class T, class U>
 struct VarTypeHelper< T, DeferredReflectionOfType<U> > final
 {
+	using ReflectionType = VarTypeHelper< T, std::decay_t<U> >::ReflectionType;
 	using Type = VarDeferredReflectionOfType<T, U>;
 	static constexpr bool k_can_copy = true;
 	static constexpr bool k_can_move = true;
@@ -87,6 +88,7 @@ struct VarTypeHelper< T, DeferredReflectionOfType<U> > final
 template <class T, class U>
 struct VarTypeHelper< T, ReflectionOfType<U> > final
 {
+	using ReflectionType = VarTypeHelper< T, std::decay_t<U> >::ReflectionType;
 	using Type = VarReflectionOfType<T, U>;
 	static constexpr bool k_can_copy = true;
 	static constexpr bool k_can_move = true;

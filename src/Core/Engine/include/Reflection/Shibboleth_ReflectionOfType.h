@@ -177,6 +177,8 @@ public:
 
 	const Shibboleth::HashString64<>& getClassName(void) const { return _class_name; }
 
+	bool valid(void) const { return _ref_def || !_class_name.empty(); }
+
 
 	template <class U>
 	DeferredReflectionOfType(const ReflectionDefinition<U>& ref_def):
