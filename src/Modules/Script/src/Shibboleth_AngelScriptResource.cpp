@@ -23,7 +23,7 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptResource)
 	.classAttrs(
-		Shibboleth::ResourceExtensionAttribute(u8".as")
+		Shibboleth::ResourceExtensionAttribute{ u8".as" }
 	)
 
 	.template base<Shibboleth::IResource>()
