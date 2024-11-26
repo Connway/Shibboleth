@@ -44,7 +44,7 @@ Derived* ReflectionCast(Base* object)
 	if constexpr (std::is_same_v<Base, Derived>) {
 		return object;
 	} else {
-		return (?object) ? object->getReflectionDefinition().template getInterface<Derived>(object->getBasePointer()) : nullptr;
+		return (object) ? object->getReflectionDefinition().template getInterface<Derived>(object->getBasePointer()) : nullptr;
 	}
 }
 
