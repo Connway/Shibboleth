@@ -51,11 +51,11 @@ bool RegisterScriptArray_Native(asIScriptEngine *engine)
 {
 	RegisterScriptArray(engine, true);
 
-	int result = engine->RegisterObjectType("Shibboleth::Span<class T>", sizeof(std::span<int32_t>), asOBJ_VALUE | asOBJ_TEMPLATE | asGetTypeTraits< std::span<int32_t> >()); CHECK_RESULT(result)
-	result = engine->RegisterObjectMethod("Shibboleth::Span<T>", "uint64 get_size() const", asFUNCTION(SpanGetSize), asCALL_CDECL_OBJFIRST); CHECK_RESULT(result)
-	result = engine->RegisterObjectMethod("Shibboleth::Span<T>", "bool get_empty() const", asFUNCTION(SpanIsEmpty), asCALL_CDECL_OBJFIRST); CHECK_RESULT(result)
+	int result = engine->RegisterObjectType("Span<class T>", sizeof(std::span<int32_t>), asOBJ_VALUE | asOBJ_TEMPLATE | asGetTypeTraits< std::span<int32_t> >()); CHECK_RESULT(result)
+	result = engine->RegisterObjectMethod("Span<T>", "uint64 get_size() const", asFUNCTION(SpanGetSize), asCALL_CDECL_OBJFIRST); CHECK_RESULT(result)
+	result = engine->RegisterObjectMethod("Span<T>", "bool get_empty() const", asFUNCTION(SpanIsEmpty), asCALL_CDECL_OBJFIRST); CHECK_RESULT(result)
 
-	result = engine->RegisterObjectMethod("array<T>", "Shibboleth::Span<T> opImplConv() const", asFUNCTION(ScriptArrayConvertToSpan), asCALL_CDECL_OBJFIRST); CHECK_RESULT(result)
+	result = engine->RegisterObjectMethod("array<T>", "Span<T> opImplConv() const", asFUNCTION(ScriptArrayConvertToSpan), asCALL_CDECL_OBJFIRST); CHECK_RESULT(result)
 
 	return true;
 }
