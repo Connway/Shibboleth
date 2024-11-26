@@ -81,18 +81,26 @@ public:
 	template <class Allocator>
 	bool operator!=(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) const;
 	template <class Allocator>
+	bool operator<=(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) const;
+	template <class Allocator>
 	bool operator<(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) const;
+	template <class Allocator>
+	bool operator>=(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) const;
 	template <class Allocator>
 	bool operator>(const HashString<T, HashType, HashingFunc, Allocator, true>& rhs) const;
 
 	bool operator==(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 	bool operator!=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator<=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 	bool operator<(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator>=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 	bool operator>(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 
 	bool operator==(HashType rhs) const;
 	bool operator!=(HashType rhs) const;
+	bool operator<=(HashType rhs) const;
 	bool operator<(HashType rhs) const;
+	bool operator>=(HashType rhs) const;
 	bool operator>(HashType rhs) const;
 
 	const T* getBuffer(void) const;
@@ -137,19 +145,29 @@ public:
 	bool operator!=(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
 	template <bool HasString>
+	bool operator<=(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
+
+	template <bool HasString>
 	bool operator<(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
+
+	template <bool HasString>
+	bool operator>=(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
 	template <bool HasString>
 	bool operator>(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
 	bool operator==(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 	bool operator!=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator<=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 	bool operator<(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator>=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 	bool operator>(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 
 	bool operator==(HashType rhs) const;
 	bool operator!=(HashType rhs) const;
+	bool operator<=(HashType rhs) const;
 	bool operator<(HashType rhs) const;
+	bool operator>=(HashType rhs) const;
 	bool operator>(HashType rhs) const;
 
 	operator HashStringView<T, HashType, HashingFunc>(void) const;
@@ -205,19 +223,29 @@ public:
 	bool operator!=(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
 	template <bool HasString>
+	bool operator<=(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
+
+	template <bool HasString>
 	bool operator<(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
+
+	template <bool HasString>
+	bool operator>=(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
 	template <bool HasString>
 	bool operator>(const HashString<T, HashType, HashingFunc, Allocator, HasString>& rhs) const;
 
 	bool operator==(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 	bool operator!=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator<=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 	bool operator<(const HashStringView<T, HashType, HashingFunc>& rhs) const;
+	bool operator>=(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 	bool operator>(const HashStringView<T, HashType, HashingFunc>& rhs) const;
 
 	bool operator==(HashType rhs) const;
 	bool operator!=(HashType rhs) const;
+	bool operator<=(HashType rhs) const;
 	bool operator<(HashType rhs) const;
+	bool operator>=(HashType rhs) const;
 	bool operator>(HashType rhs) const;
 
 	HashType getHash(void) const;
@@ -268,7 +296,13 @@ template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> Hashing
 bool operator!=(HashTypeA lhs, const HashString<T, HashTypeB, HashingFunc, Allocator, contains_string>& rhs);
 
 template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc, class Allocator, bool contains_string>
+bool operator<=(HashTypeA lhs, const HashString<T, HashTypeB, HashingFunc, Allocator, contains_string>& rhs);
+
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc, class Allocator, bool contains_string>
 bool operator<(HashTypeA lhs, const HashString<T, HashTypeB, HashingFunc, Allocator, contains_string>& rhs);
+
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc, class Allocator, bool contains_string>
+bool operator>=(HashTypeA lhs, const HashString<T, HashTypeB, HashingFunc, Allocator, contains_string>& rhs);
 
 template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc, class Allocator, bool contains_string>
 bool operator>(HashTypeA lhs, const HashString<T, HashTypeB, HashingFunc, Allocator, contains_string>& rhs);
@@ -281,7 +315,13 @@ template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> Hashing
 bool operator!=(HashTypeA lhs, const HashStringView<T, HashTypeB, HashingFunc>& rhs);
 
 template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
+bool operator<=(HashTypeA lhs, const HashStringView<T, HashTypeB, HashingFunc>& rhs);
+
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
 bool operator<(HashTypeA lhs, const HashStringView<T, HashTypeB, HashingFunc>& rhs);
+
+template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
+bool operator>=(HashTypeA lhs, const HashStringView<T, HashTypeB, HashingFunc>& rhs);
 
 template <class HashTypeA, class T, class HashTypeB, HashFunc<HashTypeB> HashingFunc>
 bool operator>(HashTypeA lhs, const HashStringView<T, HashTypeB, HashingFunc>& rhs);
