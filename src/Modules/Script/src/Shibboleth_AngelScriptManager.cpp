@@ -271,10 +271,10 @@ namespace
 			return false;
 		}
 
-		asQWORD flags = asOBJ_APP_CLASS;
+		asQWORD flags = 0;
 
 		if (script_flags && script_flags->isValueType()) {
-			flags |= asOBJ_VALUE | asOBJ_APP_CLASS_DESTRUCTOR;
+			flags |= asOBJ_APP_CLASS | asOBJ_VALUE | asOBJ_APP_CLASS_DESTRUCTOR;
 
 			int32_t ctor_count = 0;
 
@@ -701,17 +701,19 @@ AngelScriptManager::ScriptInfo AngelScriptManager::modifySource(const char8_t* s
 
 void AngelScriptManager::messageCallback(const asSMessageInfo* msg, void* /*param*/)
 {
-	GAFF_REF(msg);
+	switch (msg->type) {
+		case asMSGTYPE_INFORMATION:
+			LogErrorScript("%s (%d, %d) : %s", msg->section, msg->row, msg->col, msg->message);
+			break;
 
-	LogType log_type = LogType::Error;
+		case asMSGTYPE_WARNING:
+			LogWarningScript("%s (%d, %d) : %s", msg->section, msg->row, msg->col, msg->message);
+			break;
 
-	if (msg->type == asMSGTYPE_WARNING) {
-		log_type = LogType::Warning;
-	} else if (msg->type == asMSGTYPE_INFORMATION) {
-		log_type = LogType::Info;
+		case asMSGTYPE_ERROR:
+			LogInfoScript("%s (%d, %d) : %s", msg->section, msg->row, msg->col, msg->message);
+			break;
 	}
-
-	LogWithApp(Shibboleth::GetApp(), log_type, Shibboleth::k_log_channel_script, "%s (%d, %d) : %s", msg->section, msg->row, msg->col, msg->message);
 }
 
 NS_END
