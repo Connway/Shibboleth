@@ -71,7 +71,7 @@ RenderManager::~RenderManager(void)
 }
 
 // $TODO: Break this function down.
-bool RenderManager::init(void)
+bool RenderManager::initAllModulesLoaded(void)
 {
 	if (!Gleam::Window::GlobalInit()) {
 		// $TODO: Log error.

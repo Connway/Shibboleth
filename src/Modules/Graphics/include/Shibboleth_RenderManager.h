@@ -69,7 +69,7 @@ public:
 
 	~RenderManager(void);
 
-	bool init(void) override;
+	bool initAllModulesLoaded(void) override;
 
 	void manageRenderDevice(Gleam::RenderDevice& device);
 
