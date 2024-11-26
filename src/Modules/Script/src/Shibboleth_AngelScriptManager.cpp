@@ -551,9 +551,6 @@ void AngelScriptManager::InitModuleThread(void)
 AngelScriptManager::~AngelScriptManager(void)
 {
 	_engine->ShutDownAndRelease();
-	_engine = nullptr;
-
-	asUnprepareMultithread();
 }
 
 bool AngelScriptManager::initAllModulesLoaded(void)
