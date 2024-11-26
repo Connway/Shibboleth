@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::InputMappingResource)
 	.classAttrs(
-		Shibboleth::ResourceExtensionAttribute(u8".inputmapping.bin")
-		Shibboleth::ResourceExtensionAttribute(u8".inputmapping")
+		Shibboleth::ResourceExtensionAttribute{ u8".inputmapping.bin" },
+		Shibboleth::ResourceExtensionAttribute{ u8".inputmapping" }
 	)
 
 	.template base<Shibboleth::IResource>()

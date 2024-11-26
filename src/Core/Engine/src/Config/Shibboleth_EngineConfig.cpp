@@ -41,7 +41,10 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::EngineConfig)
 	.template ctor<>()
 
 	// $TODO: Allocator attribute.
+	.var(u8"manager_init_order_post_config", &Shibboleth::EngineConfig::manager_init_order_post_config, Shibboleth::OptionalAttribute{})
+	.var(u8"manager_init_order_pre_config", &Shibboleth::EngineConfig::manager_init_order_pre_config, Shibboleth::OptionalAttribute{})
 	.var(u8"manager_creation_order", &Shibboleth::EngineConfig::manager_creation_order, Shibboleth::OptionalAttribute{})
+
 	.var(u8"module_unload_order", &Shibboleth::EngineConfig::module_unload_order, Shibboleth::OptionalAttribute{})
 	.var(u8"module_load_order", &Shibboleth::EngineConfig::module_load_order, Shibboleth::OptionalAttribute{})
 	.var(u8"module_directories", &Shibboleth::EngineConfig::module_directories, Shibboleth::OptionalAttribute{})

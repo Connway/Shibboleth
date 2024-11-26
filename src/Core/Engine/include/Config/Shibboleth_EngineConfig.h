@@ -49,7 +49,10 @@ public:
 
 	EngineConfig(void);
 
+	Vector< Refl::DeferredReflectionOfType<IManager> > manager_init_order_post_config{ ENGINE_ALLOCATOR };
+	Vector< Refl::DeferredReflectionOfType<IManager> > manager_init_order_pre_config{ ENGINE_ALLOCATOR };
 	Vector< Refl::DeferredReflectionOfType<IManager> > manager_creation_order{ ENGINE_ALLOCATOR };
+
 	Vector< HashString64<> > module_unload_order{ ENGINE_ALLOCATOR };
 	Vector< HashString64<> > module_load_order{ ENGINE_ALLOCATOR };
 	Vector<U8String> module_directories{ ENGINE_ALLOCATOR };

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Reflection/Shibboleth_ReflectionManager.h"
+#include "Containers/Shibboleth_VectorSet.h"
 #include "Shibboleth_RuntimeVarManager.h"
 #include "Shibboleth_ThreadAllocator.h"
 #include "Shibboleth_DynamicLoader.h"
@@ -99,7 +100,7 @@ private:
 #endif
 
 	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map{ ProxyAllocator("Reflection") };
-	VectorMap< Gaff::Hash64, UniquePtr<IModule> > _module_map{ ProxyAllocator("Reflection") };
+	VectorMap< HashString64<>, UniquePtr<IModule> > _module_map{ ProxyAllocator("Reflection") };
 	Gaff::JSON _configs;
 
 	ThreadAllocator _thread_allocator;
@@ -116,6 +117,7 @@ private:
 	bool loadModules(void);
 	bool initApp(void);
 
+	bool initAllModulesLoaded(VectorSet<const Refl::IReflectionDefinition*>& already_initialized_managers, const Vector< Refl::DeferredReflectionOfType<IManager> >& manager_classes);
 	bool createManagersInternal(const Vector<const Refl::IReflectionDefinition*>& managers);
 	bool createManager(const Refl::IReflectionDefinition& ref_def);
 	bool hasManager(Gaff::Hash64 name) const;
