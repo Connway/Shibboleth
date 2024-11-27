@@ -61,6 +61,8 @@ is_address_sanitization_enabled = is_debug or get_option('address-sanitizer')
 
 is_wayland = is_linux and get_option('wayland')
 
+config_override_directory = get_option('config-override-directory')
+
 assert(is_windows or is_linux or is_mac, 'Unsupported OS: ' + host_machine.system())
 assert(is_msvc or is_gcc or is_clang, 'Unsupported compiler: ' + compiler.get_id())
 assert(is_x64 or is_arm64, 'Unsupported CPU architecture: ' + host_machine.cpu_family())
@@ -97,14 +99,14 @@ elif is_release
     '-D_HAS_ITERATOR_DEBUGGING=0',
     '-D_ITERATOR_DEBUG_LEVEL=0',
     '-DNDEBUG',
-    language: ['c', 'cpp']
+    language: ['c', 'cpp'],
   )
 endif
 
 if is_profile
   add_project_arguments(
    '-DSHIB_PROFILE',
-   language: ['c', 'cpp']
+   language: ['c', 'cpp'],
   )
 
 endif
@@ -115,12 +117,19 @@ endif
 #   default_c_args +='-fsanitize=address'
 # endif
 
+if config_override_directory != ''
+  add_project_arguments(
+    '-DSHIB_CONFIG_OVERRIDE_DIRECTORY="' + config_override_directory + '"',
+    language: ['cpp'],
+  )
+endif
+
 if is_windows
   add_project_arguments(
     '-DWIN32',
     '-DWIN64',
     '-D_WINDOWS',
-    language: ['c', 'cpp']
+    language: ['c', 'cpp'],
   )
 
 elif is_mac
@@ -142,7 +151,7 @@ else
   add_project_arguments(
     '-fchar8_t',
     '-Wno-extra-semi',
-    language: ['c', 'cpp']
+    language: ['c', 'cpp'],
   )
 endif
 
@@ -150,7 +159,7 @@ if is_x64
   add_project_arguments(
     #'-DGLM_FORCE_SSE42',
     '-DGGLM_FORCE_SILENT_WARNINGS',
-    language: ['c', 'cpp']
+    language: ['c', 'cpp'],
   )
 endif
 

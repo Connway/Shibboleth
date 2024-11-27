@@ -1,6 +1,7 @@
 option('wayland', type: 'boolean', value: false, description: 'On Linux, use Wayland instead of X11 window system.')
 option('profile', type: 'boolean', value: false, description: 'Enable profiling support.')
 option('address-sanitizer', type: 'boolean', value: false, description: 'Enable address sanitization.')
+option('config-override-directory', type: 'string', value: '', description: 'Specifies a subdirectory under \'cfg\' to apply overrides to base configs.')
 
 option(
   'renderer',

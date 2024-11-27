@@ -27,7 +27,17 @@ THE SOFTWARE.
 #include "Shibboleth_SerializeReader.h"
 #include "Shibboleth_EngineDefines.h"
 #include <Gaff_JSON.h>
+#include <filesystem>
 #include <cctype>
+
+#ifndef SHIB_CONFIG_OVERRIDE_DIRECTORY
+	#ifdef _DEBUG
+		#define SHIB_CONFIG_OVERRIDE_DIRECTORY "Debug"
+	#else
+		#define SHIB_CONFIG_OVERRIDE_DIRECTORY "Release"
+	#endif
+#endif
+
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::GlobalConfigAttribute)
 	.classAttrs(
@@ -122,6 +132,8 @@ void InitFromConfigAttribute::instantiated(void* object, const Refl::IReflection
 
 Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionDefinition& ref_def, const U8String& relative_cfg_path) const
 {
+	// $TODO: In final packaged builds, this might be binary instead.
+
 	const U8String config_path = u8"cfg/" + relative_cfg_path + u8".cfg";
 	Gaff::JSON config_data;
 
@@ -138,6 +150,34 @@ Error InitFromConfigAttribute::loadConfig(void* object, const Refl::IReflectionD
 		config->_error = Error::k_fatal_error;
 
 		return Error::k_fatal_error;
+	}
+
+	// Load overrides if any.
+	const U8String override_config_path = u8"cfg/overrides/" SHIB_CONFIG_OVERRIDE_DIRECTORY u8"/" + relative_cfg_path + u8".cfg";
+
+	if (std::filesystem::exists(override_config_path.data())) {
+		Gaff::JSON override_config_data;
+
+		if (!override_config_data.parseFile(override_config_path.data())) {
+			LogErrorDefault(
+				"InitFromConfigAttribute::LoadConfig: Failed to parse config '%s'. %s",
+				reinterpret_cast<const char*>(config_path.data()),
+				reinterpret_cast<const char*>(config_data.getErrorText())
+			);
+
+			Config* const config = ref_def.template getInterface<Config>(object);
+			GAFF_ASSERT(config);
+
+			config->_error = Error::k_fatal_error;
+
+			return Error::k_fatal_error;
+		}
+
+		override_config_data.forEachInObject([&](const char8_t* key, const Gaff::JSON& value) -> bool
+		{
+			config_data.setObject(key, value);
+			return false;
+		});
 	}
 
 	auto reader = MakeSerializeReader(config_data);
