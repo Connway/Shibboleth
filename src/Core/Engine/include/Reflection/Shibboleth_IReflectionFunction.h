@@ -93,6 +93,10 @@ struct FunctionArg final
 
 		arg_str += name.data();
 
+		if (Gaff::EndsWith(name.data(), u8"_t")) {
+			arg_str.erase(arg_str.end() - 2, arg_str.end());
+		}
+
 		if (flags.testAll(Flag::Pointer)) {
 			arg_str += u8'*';
 		}
