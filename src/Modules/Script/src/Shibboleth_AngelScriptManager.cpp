@@ -323,7 +323,7 @@ namespace
 			asECallConvTypes call_conv = asCALL_CDECL;
 
 			// Is an operator function
-			if (Gaff::Find(func_name.getBuffer(), u8"__") == 0) {
+			if (Gaff::StartsWith(func_name.getBuffer(), u8"__")) {
 				const int32_t index = Gaff::IndexOfArray(Gaff::k_op_hashes, func_name.getHash());
 
 				if (index == -1) {
