@@ -59,7 +59,7 @@ namespace
 		nullptr, // OP_LESS_THAN_NAME
 		nullptr, // OP_GREATER_THAN_NAME
 		nullptr, // OP_LESS_THAN_OR_EQUAL_NAME
-		nullptr, //OP_GREATER_THAN_OR_EQUAL_NAME
+		nullptr, // OP_GREATER_THAN_OR_EQUAL_NAME
 		u8"opNeg",
 		nullptr, // OP_PLUS_NAME
 		u8"opCall",
@@ -83,6 +83,50 @@ namespace
 		u8"opShrAssign",
 	};
 	static_assert(std::size(k_op_names) == static_cast<size_t>(Gaff::Operator::Count));
+
+	static constexpr bool k_op_is_const[] = {
+		true, // Add
+		true, // Sub
+		true, // Mul
+		true, // Div
+		true, // Mod
+		true, // And
+		true, // Or
+		true, // Xor
+		true, // Com
+		true, // Shl
+		true, // Shr
+		false, // OP_LOGIC_AND_NAME
+		false, // OP_LOGIC_OR_NAME
+		true, // Equals
+		false, // OP_NOT_EQUALS_NAME
+		false, // OP_LESS_THAN_NAME
+		false, // OP_GREATER_THAN_NAME
+		false, // OP_LESS_THAN_OR_EQUAL_NAME
+		false, // OP_GREATER_THAN_OR_EQUAL_NAME
+		true, // Neg
+		false, // OP_PLUS_NAME
+		true, // Call
+		false, // Index
+		false, // OP_TO_STRING_NAME
+		true, // Cmp
+		false, // PreInc
+		false, // PostInc
+		false, // PreDec
+		false, // PostDec
+		false, // Assign
+		false, // AddAssign
+		false, // SubAssign
+		false, // MulAssign
+		false, // DivAssign
+		false, // ModAssign
+		false, // AndAssign
+		false, // OrAssign
+		false, // XorAssign
+		false, // ShlAssign
+		false, // ShrAssign
+	};
+	static_assert(std::size(k_op_is_const) == static_cast<size_t>(Gaff::Operator::Count));
 
 	static Shibboleth::ProxyAllocator s_allocator{ SCRIPT_ALLOCATOR };
 
@@ -321,6 +365,8 @@ namespace
 			const Shibboleth::HashStringView32<> func_name = ref_def.getStaticFuncName(i);
 			const char8_t* raw_name = func_name.getBuffer();
 			asECallConvTypes call_conv = asCALL_CDECL;
+			Gaff::Operator op = Gaff::Operator::Count;
+			bool is_op_const = false;
 
 			// Is an operator function
 			if (Gaff::StartsWith(func_name.getBuffer(), u8"__")) {
@@ -335,7 +381,10 @@ namespace
 				}
 
 				call_conv = asCALL_CDECL_OBJFIRST;
+				is_op_const = k_op_is_const[index];
 				raw_name = k_op_names[index];
+
+				op = static_cast<Gaff::Operator>(index);
 			}
 
 			const int32_t num_overrides = ref_def.getNumStaticFuncOverrides(i);
@@ -343,7 +392,13 @@ namespace
 			for (int32_t j = 0; j < num_overrides; ++j) {
 				const Refl::IReflectionStaticFunctionBase* const func = ref_def.getStaticFunc(i, j);
 				const Refl::FunctionSignature sig = func->getSignature();
-				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
+				Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
+
+				if (op != Gaff::Operator::Count) {
+					if (is_op_const || (op == Gaff::Operator::Index && sig.return_value.isConst() && sig.return_value.isReference())) {
+						decl += u8" const";
+					}
+				}
 
 				if (call_conv == asCALL_CDECL) {
 					// $TODO: Register static function.

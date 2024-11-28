@@ -93,8 +93,15 @@ struct FunctionArg final
 
 		arg_str += name.data();
 
+		// Treat default templated types as just a normal type.
+		// $TODO: Maybe turn this into option flags.
+		if (Gaff::EndsWith(name.data(), u8"<>")) {
+			arg_str.erase(arg_str.size() - 2);
+		}
+
+		// Strip _t from built-ins like int32_t.
 		if (Gaff::EndsWith(name.data(), u8"_t")) {
-			arg_str.erase(arg_str.end() - 2, arg_str.end());
+			arg_str.erase(arg_str.size() - 2);
 		}
 
 		if (flags.testAll(Flag::Pointer)) {
@@ -175,9 +182,9 @@ FunctionArg GetFunctionArg(void)
 		arg.flags.set(FunctionArg::Flag::Reference);
 	}
 
-	if constexpr (!std::is_void_v<T>) {
+	//if constexpr (!std::is_void_v<T>) {
 		arg.name = Hash::ClassHashable<V>::GetName().data.data();
-	}
+	//}
 
 	return arg;
 }
