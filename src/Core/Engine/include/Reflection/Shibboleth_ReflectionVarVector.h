@@ -136,8 +136,8 @@ private:
 
 	using RefVarType = VarTypeHelper<T, VarType>::Type;
 
-	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };
-	Shibboleth::Vector<RefVarType> _elements{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ REFLECTION_ALLOCATOR };
+	Shibboleth::Vector<RefVarType> _elements{ REFLECTION_ALLOCATOR };
 	eastl::u8string_view _base_name;
 };
 

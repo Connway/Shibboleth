@@ -107,8 +107,8 @@ private:
 		const Refl::IReflection* _reflection = &Refl::Reflection<ReflectionType>::GetInstance();
 	};
 
-	Vector<Refl::IReflectionVar::SubVarData> _cached_element_vars{ ProxyAllocator("Reflection") };
-	Vector<VarElementWrapper> _elements{ ProxyAllocator("Reflection") };
+	Vector<Refl::IReflectionVar::SubVarData> _cached_element_vars{ REFLECTION_ALLOCATOR };
+	Vector<VarElementWrapper> _elements{ REFLECTION_ALLOCATOR };
 	eastl::u8string_view _base_name;
 };
 

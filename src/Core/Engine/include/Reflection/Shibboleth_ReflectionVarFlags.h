@@ -78,7 +78,7 @@ public:
 private:
 	using RefVarType = VarFlagBit<T, Enum>;
 
-	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::Vector<IReflectionVar::SubVarData> _cached_element_vars{ REFLECTION_ALLOCATOR };
 	eastl::array<RefVarType, static_cast<size_t>(Enum::Count)> _elements;
 };
 

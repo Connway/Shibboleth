@@ -99,8 +99,8 @@ private:
 	RuntimeVarManager _runtime_var_mgr;
 #endif
 
-	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map{ ProxyAllocator("Reflection") };
-	VectorMap< HashString64<>, UniquePtr<IModule> > _module_map{ ProxyAllocator("Reflection") };
+	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map{ REFLECTION_ALLOCATOR };
+	VectorMap< HashString64<>, UniquePtr<IModule> > _module_map{ REFLECTION_ALLOCATOR };
 	Gaff::JSON _configs;
 
 	ThreadAllocator _thread_allocator;

@@ -68,7 +68,7 @@ struct FunctionArg final
 		Count
 	};
 
-	Gaff::U8StringView name;
+	Shibboleth::U8String name{ REFLECTION_ALLOCATOR };
 	Gaff::Flags<Flag> flags;
 
 	bool isReference(void) const { return flags.testAll(Flag::Reference); }
@@ -77,7 +77,7 @@ struct FunctionArg final
 
 	Shibboleth::U8String getArgString(bool return_void_string) const
 	{
-		Shibboleth::U8String arg_str{ Shibboleth::ProxyAllocator{ "Reflection" } };
+		Shibboleth::U8String arg_str{ REFLECTION_ALLOCATOR };
 
 		if (!name.data()) {
 			if (return_void_string) {
@@ -114,7 +114,7 @@ struct FunctionSignature final
 		Count
 	};
 
-	Shibboleth::Vector<FunctionArg> args{ Shibboleth::ProxyAllocator{ "Reflection" } };
+	Shibboleth::Vector<FunctionArg> args{ REFLECTION_ALLOCATOR };
 	FunctionArg return_value;
 	Gaff::Flags<Flag> flags;
 
@@ -122,7 +122,7 @@ struct FunctionSignature final
 
 	Shibboleth::U8String getSignatureString(const Gaff::U8StringView& name = Gaff::U8StringView{}) const
 	{
-		Shibboleth::U8String sig_str{ Shibboleth::ProxyAllocator{ "Reflection" } };
+		Shibboleth::U8String sig_str{ REFLECTION_ALLOCATOR };
 
 		sig_str = return_value.getArgString(true) + u8' ';
 

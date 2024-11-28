@@ -254,7 +254,7 @@ void VarFlags<T, Enum>::setSubVarBaseName(eastl::u8string_view base_name)
 	for (int32_t i = 0; i < num_entries; ++i) {
 		const Shibboleth::HashStringView32<> flag_name = ref_def.getEntryNameFromIndex(i);
 
-		Shibboleth::U8String flag_path(Shibboleth::ProxyAllocator("Reflection"));
+		Shibboleth::U8String flag_path(REFLECTION_ALLOCATOR);
 		flag_path.append_sprintf(u8"%s/%s", base_name.data(), flag_name.getBuffer());
 
 		_cached_element_vars[i].first = Shibboleth::HashString32<>(flag_path);

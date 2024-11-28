@@ -472,7 +472,7 @@ template <class T, class ContainerType>
 void MapVar<T, ContainerType>::regenerateSubVars(int32_t range_begin, int32_t range_end)
 {
 	for (int32_t i = range_begin; i < range_end; ++i) {
-		//Shibboleth::U8String element_path(Shibboleth::ProxyAllocator("Reflection"));
+		//Shibboleth::U8String element_path(REFLECTION_ALLOCATOR);
 		//element_path.append_sprintf(u8"%s[%s]", _base_name.data(), i);
 
 		_elements[i].first.setOffset(static_cast<ptrdiff_t>(i));

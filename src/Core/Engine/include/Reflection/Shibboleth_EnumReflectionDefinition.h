@@ -96,8 +96,8 @@ public:
 	void finish(void);
 
 private:
-	Shibboleth::VectorMap<Shibboleth::HashString32<>, Enum> _entries{ Shibboleth::ProxyAllocator("Reflection") };
-	Shibboleth::Vector<IAttributePtr> _enum_attrs{ Shibboleth::ProxyAllocator("Reflection") };
+	Shibboleth::VectorMap<Shibboleth::HashString32<>, Enum> _entries{ REFLECTION_ALLOCATOR };
+	Shibboleth::Vector<IAttributePtr> _enum_attrs{ REFLECTION_ALLOCATOR };
 
 	Shibboleth::ProxyAllocator _allocator;
 

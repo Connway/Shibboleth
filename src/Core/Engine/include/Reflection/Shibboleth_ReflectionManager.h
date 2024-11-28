@@ -154,15 +154,15 @@ public:
 private:
 	using TypeBucketMap = VectorMap<Gaff::Hash64, TypeBucket>;
 
-	VectorMap< Gaff::Hash64, UniquePtr<Refl::IEnumReflectionDefinition> > _enum_reflection_map{ ProxyAllocator("Reflection") };
-	VectorMap< Gaff::Hash64, UniquePtr<Refl::IReflectionDefinition> > _reflection_map{ ProxyAllocator("Reflection") };
+	VectorMap< Gaff::Hash64, UniquePtr<Refl::IEnumReflectionDefinition> > _enum_reflection_map{ REFLECTION_ALLOCATOR };
+	VectorMap< Gaff::Hash64, UniquePtr<Refl::IReflectionDefinition> > _reflection_map{ REFLECTION_ALLOCATOR };
 
-	TypeBucketMap _attr_buckets{ ProxyAllocator("Reflection") };
-	TypeBucketMap _type_buckets{ ProxyAllocator("Reflection") };
+	TypeBucketMap _attr_buckets{ REFLECTION_ALLOCATOR };
+	TypeBucketMap _type_buckets{ REFLECTION_ALLOCATOR };
 
-	VectorMap< HashString64<>, Vector<const Refl::IEnumReflectionDefinition*> > _module_enum_owners{ ProxyAllocator("Reflection") };
-	//VectorMap<HashString64<>, TypeBucketMap> _module_attribute_owners{ ProxyAllocator("Reflection") };
-	VectorMap<HashString64<>, TypeBucketMap> _module_owners{ ProxyAllocator("Reflection") };
+	VectorMap< HashString64<>, Vector<const Refl::IEnumReflectionDefinition*> > _module_enum_owners{ REFLECTION_ALLOCATOR };
+	//VectorMap<HashString64<>, TypeBucketMap> _module_attribute_owners{ REFLECTION_ALLOCATOR };
+	VectorMap<HashString64<>, TypeBucketMap> _module_owners{ REFLECTION_ALLOCATOR };
 
 	void insertType(TypeBucket& bucket, const Refl::IReflectionDefinition* ref_def);
 	void removeType(TypeBucket& bucket, const Refl::IReflectionDefinition* ref_def);

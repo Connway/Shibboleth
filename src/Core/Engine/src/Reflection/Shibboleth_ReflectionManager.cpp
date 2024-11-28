@@ -99,7 +99,7 @@ void ReflectionManager::registerEnumOwningModule(Gaff::Hash64 name, const char8_
 	Vector<const Refl::IEnumReflectionDefinition*>& module_bucket = (it_module == _module_enum_owners.end()) ? _module_enum_owners[name_hash] : it_module->second;
 
 	if (it_module == _module_enum_owners.end()) {
-		module_bucket.set_allocator(ProxyAllocator("Reflection"));
+		module_bucket.set_allocator(REFLECTION_ALLOCATOR);
 	}
 
 	const auto it = eastl::lower_bound(module_bucket.begin(), module_bucket.end(), it_enum->second.get());
@@ -138,7 +138,7 @@ void ReflectionManager::registerOwningModule(Gaff::Hash64 name, const char8_t* m
 	TypeBucketMap& module_types = (it_module == _module_owners.end()) ? _module_owners[name_hash] : it_module->second;
 
 	if (it_module == _module_owners.end()) {
-		module_types.set_allocator(ProxyAllocator("Reflection"));
+		module_types.set_allocator(REFLECTION_ALLOCATOR);
 	}
 
 	// If the type is found in a global type bucket, then put it in the module type bucket.
@@ -150,7 +150,7 @@ void ReflectionManager::registerOwningModule(Gaff::Hash64 name, const char8_t* m
 			TypeBucket& type_bucket = (it_bucket == module_types.end()) ? module_types[bucket_pair.first] : it_bucket->second;
 
 			if (it_bucket == module_types.end()) {
-				type_bucket.set_allocator(ProxyAllocator("Reflection"));
+				type_bucket.set_allocator(REFLECTION_ALLOCATOR);
 			}
 
 			insertType(module_types[bucket_pair.first], it_refl->second.get());
@@ -203,10 +203,10 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 	// Add new type bucket to global type bucket list.
 	TypeBucket& global_unbucketed = _type_buckets.find(Gaff::FNV1aHash64Const(u8"**"))->second;
 
-	_type_buckets.insert(eastl::make_pair(name, TypeBucket(ProxyAllocator("Reflection"))));
+	_type_buckets.insert(eastl::make_pair(name, TypeBucket(REFLECTION_ALLOCATOR)));
 	TypeBucket& global_types = _type_buckets[name];
 
-	global_types.set_allocator(ProxyAllocator("Reflection"));
+	global_types.set_allocator(REFLECTION_ALLOCATOR);
 
 	for (const auto& ref_map_pair : _reflection_map) {
 		const UniquePtr<Refl::IReflectionDefinition>& ref_def = ref_map_pair.second;
@@ -263,7 +263,7 @@ void ReflectionManager::registerAttributeBucket(Gaff::Hash64 attr_name)
 	GAFF_ASSERT(_attr_buckets.find(attr_name) == _attr_buckets.end());
 
 	TypeBucket& bucket = _attr_buckets[attr_name];
-	bucket.set_allocator(ProxyAllocator("Reflection"));
+	bucket.set_allocator(REFLECTION_ALLOCATOR);
 
 	for (const auto& ref_map_pair : _reflection_map) {
 		const UniquePtr<Refl::IReflectionDefinition>& ref_def = ref_map_pair.second;

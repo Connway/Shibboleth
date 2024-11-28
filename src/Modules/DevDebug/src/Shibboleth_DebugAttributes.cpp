@@ -50,7 +50,7 @@ void DebugMenuClassAttribute::instantiated(void* object, const Refl::IReflection
 
 
 DebugMenuItemAttribute::DebugMenuItemAttribute(const char8_t* path, bool is_imgui_update_function):
-	_path(path, ProxyAllocator("Reflection")),
+	_path(path, REFLECTION_ALLOCATOR),
 	_is_imgui_update_function(is_imgui_update_function)
 {
 }

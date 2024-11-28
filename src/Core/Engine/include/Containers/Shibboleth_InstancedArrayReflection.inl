@@ -336,7 +336,7 @@ void VarInstancedArray<T, VarType>::regenerateSubVars(const void* object, int32_
 	const InstancedArray<VarType>* const var = Refl::IVar<T>::template get< InstancedArray<VarType> >(&object);
 
 	for (int32_t i = range_begin; i < range_end; ++i) {
-		U8String element_path(ProxyAllocator("Reflection"));
+		U8String element_path(REFLECTION_ALLOCATOR);
 		element_path.append_sprintf(u8"%s[%i]", _base_name.data(), i);
 
 		_elements[i].setReflection(var->getReflectionDefinition(i)->getReflectionInstance());
