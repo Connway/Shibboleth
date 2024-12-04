@@ -41,6 +41,8 @@ root = pathlib.Path(".")
 
 if args.root:
     root = args.root
+elif os.environ["DESTDIR"]:
+    root = pathlib.Path(os.environ["DESTDIR"])
 
 shutil.rmtree(root / "lib")
 

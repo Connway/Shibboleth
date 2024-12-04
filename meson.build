@@ -326,3 +326,9 @@ if is_windows
     install_dir: 'bin',
   )
 endif
+
+python = find_program('python3', required : false)
+
+if python.found()
+	meson.add_install_script(python, meson.project_source_root() + '/utils/post_install.py')
+endif
