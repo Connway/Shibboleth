@@ -233,7 +233,7 @@ namespace
 		return true;
 	}
 
-	static bool RegisterInterface(asIScriptEngine& engine, const Refl::IReflectionDefinition& ref_def)
+	static bool RegisterInterfaceInfo(asIScriptEngine& engine, const Refl::IReflectionDefinition& ref_def)
 	{
 		Shibboleth::U8String name_space{ ref_def.getReflectionInstance().getName(), SCRIPT_ALLOCATOR };
 		Shibboleth::U8String class_name{ SCRIPT_ALLOCATOR };
@@ -242,16 +242,11 @@ namespace
 		int result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_space.data()));
 
 		if (result < 0) {
-			LogErrorScript("RegisterInterface: Failed to set default namespace to '%s'.", reinterpret_cast<const char*>(name_space.data()));
+			LogErrorScript("RegisterInterfaceInfo: Failed to set default namespace to '%s'.", reinterpret_cast<const char*>(name_space.data()));
 			return false;
 		}
 
-		result = engine.RegisterInterface(reinterpret_cast<const char*>(class_name.data()));
-
-		if (result < 0) {
-			LogErrorScript("RegisterInterface: Failed to interface '%s'.", reinterpret_cast<const char*>(class_name.data()));
-			return false;
-		}
+		// $TODO: Static functions.
 
 		const int32_t num_funcs = ref_def.getNumFuncs();
 
@@ -276,8 +271,295 @@ namespace
 				);
 
 				if (result < 0) {
-					LogErrorScript("RegisterInterface: Failed to register interface method '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(func_name.getBuffer()));
+					LogErrorScript("RegisterInterfaceInfo: Failed to register interface method '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(func_name.getBuffer()));
 					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	static bool RegisterInterface(asIScriptEngine& engine, const Refl::IReflectionDefinition& ref_def)
+	{
+		Shibboleth::U8String name_space{ ref_def.getReflectionInstance().getName(), SCRIPT_ALLOCATOR };
+		Shibboleth::U8String class_name{ SCRIPT_ALLOCATOR };
+		GetNamespaceAndName(name_space, class_name);
+
+		int result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_space.data()));
+
+		if (result < 0) {
+			LogErrorScript("RegisterInterface: Failed to set default namespace to '%s'.", reinterpret_cast<const char*>(name_space.data()));
+			return false;
+		}
+
+		result = engine.RegisterInterface(reinterpret_cast<const char*>(class_name.data()));
+
+		if (result < 0) {
+			LogErrorScript("RegisterInterface: Failed to interface '%s'.", reinterpret_cast<const char*>(class_name.data()));
+			return false;
+		}
+
+		return true;
+	}
+
+	static bool RegisterTypeInfo(asIScriptEngine& engine, const Refl::IReflectionDefinition& ref_def)
+	{
+		// We do not need to register attributes or built-in types.
+		if (ref_def.isBuiltIn() || ref_def.hasInterface<Refl::IAttribute>()) {
+			return true;
+		}
+
+		const Shibboleth::ScriptFlagsAttribute* const script_flags = ref_def.template getClassAttr<Shibboleth::ScriptFlagsAttribute>();
+
+		if (script_flags) {
+			if (!script_flags->canRegister()) {
+				return true;
+			}
+
+			if (script_flags->isInterface()) {
+				return RegisterInterfaceInfo(engine, ref_def);
+			}
+		}
+
+		Shibboleth::U8String name_space{ ref_def.getReflectionInstance().getName(), SCRIPT_ALLOCATOR };
+		Shibboleth::U8String class_name{ SCRIPT_ALLOCATOR };
+		GetNamespaceAndName(name_space, class_name);
+
+		int result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_space.data()));
+
+		if (result < 0) {
+			LogErrorScript("RegisterTypeInfo: Failed to set default namespace to '%s'.", reinterpret_cast<const char*>(name_space.data()));
+			return false;
+		}
+
+		// Register static functions and operators.
+		const int32_t num_static_funcs = ref_def.getNumStaticFuncs();
+
+		for (int32_t i = 0; i < num_static_funcs; ++i) {
+			const Shibboleth::HashStringView32<> func_name = ref_def.getStaticFuncName(i);
+			const char8_t* raw_name = func_name.getBuffer();
+			asECallConvTypes call_conv = asCALL_CDECL;
+			Gaff::Operator op = Gaff::Operator::Count;
+			bool is_op_const = false;
+
+			// Is an operator function
+			if (Gaff::StartsWith(func_name.getBuffer(), u8"__")) {
+				const int32_t index = Gaff::IndexOfArray(Gaff::k_op_hashes, func_name.getHash());
+
+				if (index == -1) {
+					continue;
+				}
+
+				if (!k_op_names[index]) {
+					continue;
+				}
+
+				call_conv = asCALL_CDECL_OBJFIRST;
+				is_op_const = k_op_is_const[index];
+				raw_name = k_op_names[index];
+
+				op = static_cast<Gaff::Operator>(index);
+			}
+
+			const int32_t num_overrides = ref_def.getNumStaticFuncOverrides(i);
+
+			for (int32_t j = 0; j < num_overrides; ++j) {
+				const Refl::IReflectionStaticFunctionBase* const func = ref_def.getStaticFunc(i, j);
+				const Refl::FunctionSignature sig = func->getSignature();
+				Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
+
+				if (op != Gaff::Operator::Count) {
+					if (is_op_const || (op == Gaff::Operator::Index && sig.return_value.isConst() && sig.return_value.isReference())) {
+						decl += u8" const";
+					}
+				}
+
+				if (call_conv == asCALL_CDECL) {
+					result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName()));
+
+					if (result < 0) {
+						LogErrorScript("RegisterTypeInfo: Failed to set default namespace to '%s'.", reinterpret_cast<const char*>(ref_def.getReflectionInstance().getName()));
+						return false;
+					}
+
+					result = engine.RegisterGlobalFunction(
+						reinterpret_cast<const char*>(decl.data()),
+						asFunctionPtr(func->getFunc()),
+						call_conv
+					);
+
+				} else {
+					result = engine.RegisterObjectMethod(
+						reinterpret_cast<const char*>(class_name.data()),
+						reinterpret_cast<const char*>(decl.data()),
+						asFunctionPtr(func->getFunc()),
+						call_conv
+					);
+				}
+
+				if (result < 0) {
+					LogErrorScript("RegisterTypeInfo: Failed to register static function '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(raw_name));
+					return false;
+				}
+
+				result = engine.SetDefaultNamespace(reinterpret_cast<const char*>(name_space.data()));
+
+				if (result < 0) {
+					LogErrorScript("RegisterTypeInfo: Failed to set default namespace to '%s'.", reinterpret_cast<const char*>(name_space.data()));
+					return false;
+				}
+			}
+		}
+
+
+
+		// Register regular functions and operators.
+		const int32_t num_funcs = ref_def.getNumFuncs();
+
+		for (int32_t i = 0; i < num_funcs; ++i) {
+			const Shibboleth::HashStringView32<> func_name = ref_def.getFuncName(i);
+			const char8_t* raw_name = func_name.getBuffer();
+
+			// Is an operator function
+			if (Gaff::Find(func_name.getBuffer(), u8"__") == 0) {
+				const int32_t index = Gaff::IndexOfArray(Gaff::k_op_hashes, func_name.getHash());
+
+				if (index == -1) {
+					continue;
+				}
+
+				if (!k_op_names[index]) {
+					continue;
+				}
+
+				raw_name = k_op_names[index];
+			}
+
+			const int32_t num_overrides = ref_def.getNumFuncOverrides(i);
+
+			for (int32_t j = 0; j < num_overrides; ++j) {
+				const Refl::IReflectionFunctionBase* const func = ref_def.getFunc(i, j);
+				const Refl::FunctionSignature sig = func->getSignature();
+				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
+
+				if (func->isExtensionFunction()) {
+					result = engine.RegisterObjectMethod(
+						reinterpret_cast<const char*>(class_name.data()),
+						reinterpret_cast<const char*>(decl.data()),
+						asFunctionPtr(*reinterpret_cast<const Refl::IReflectionStaticFunctionBase::VoidFunc*>(func->getFunctionPointer())),
+						asCALL_CDECL_OBJFIRST
+					);
+
+				} else {
+					const size_t func_ptr_size = func->getFunctionPointerSize();
+
+					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
+						LogErrorScript("RegisterTypeInfo: Method pointer size is not a valid size for '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(raw_name));
+						return false;
+					}
+
+					// Mark this as a class method
+					asSFuncPtr func_ptr(3);
+					func_ptr.CopyMethodPtr(func->getFunctionPointer(), func_ptr_size);
+
+					result = engine.RegisterObjectMethod(
+						reinterpret_cast<const char*>(class_name.data()),
+						reinterpret_cast<const char*>(decl.data()),
+						func_ptr,
+						asCALL_THISCALL
+					);
+				}
+
+				if (result < 0) {
+					LogErrorScript("RegisterTypeInfo: Failed to register method '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(raw_name));
+					return false;
+				}
+			}
+		}
+
+
+
+		// Register properties.
+		const int32_t num_vars = ref_def.getNumVars();
+
+		for (int32_t i = 0; i < num_vars; ++i) {
+			const Shibboleth::HashStringView32<> var_name = ref_def.getVarName(i);
+			const Refl::IReflectionVar* const var = ref_def.getVar(i);
+
+			if (const int32_t offset = var->getOffset(); offset >= 0) {
+				Shibboleth::U8String decl = ref_def.getReflectionInstance().getName();
+				decl += Shibboleth::U8String{ u8' ' } + var_name.getBuffer();
+
+				result = engine.RegisterObjectProperty(
+					reinterpret_cast<const char*>(class_name.data()),
+					reinterpret_cast<const char*>(decl.data()),
+					offset
+				);
+
+				if (result < 0) {
+					LogErrorScript("RegisterTypeInfo: Failed to register property '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
+					return false;
+				}
+
+			// Uses getter/setter functions.
+			} else {
+				// Getter
+				if (const void* getter_function = var->getGetterFunctionPointer()) {
+					const size_t func_ptr_size = var->getGetterFunctionPointerSize();
+
+					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
+						LogErrorScript("RegisterTypeInfo: Method pointer size is not a valid size for property getter '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
+						return false;
+					}
+
+					const Refl::FunctionSignature sig = var->getGetterSignature();
+					const Shibboleth::U8String decl = GetFunctionDeclaration(sig, (Shibboleth::U8String{ u8"get_" } + var_name.getBuffer()).data()) + u8" property";
+
+					// Mark this as a class method
+					asSFuncPtr func_ptr(3);
+					func_ptr.CopyMethodPtr(getter_function, func_ptr_size);
+
+					result = engine.RegisterObjectMethod(
+						reinterpret_cast<const char*>(class_name.data()),
+						reinterpret_cast<const char*>(decl.data()),
+						func_ptr,
+						asCALL_THISCALL
+					);
+
+					if (result < 0) {
+						LogErrorScript("RegisterTypeInfo: Failed to register getter for property '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
+						return false;
+					}
+				}
+
+				// Setter
+				if (const void* setter_function = var->getSetterFunctionPointer()) {
+					const size_t func_ptr_size = var->getSetterFunctionPointerSize();
+
+					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
+						LogErrorScript("RegisterTypeInfo: Method pointer size is not a valid size for property setter '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
+						return false;
+					}
+
+					const Refl::FunctionSignature sig = var->getSetterSignature();
+					const Shibboleth::U8String decl = GetFunctionDeclaration(sig, (Shibboleth::U8String{ u8"get_" } + var_name.getBuffer()).data()) + u8" property";
+
+					// Mark this as a class method
+					asSFuncPtr func_ptr(3);
+					func_ptr.CopyMethodPtr(setter_function, func_ptr_size);
+
+					result = engine.RegisterObjectMethod(
+						reinterpret_cast<const char*>(class_name.data()),
+						reinterpret_cast<const char*>(decl.data()),
+						func_ptr,
+						asCALL_THISCALL
+					);
+
+					if (result < 0) {
+						LogErrorScript("RegisterTypeInfo: Failed to register setter for property '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
+						return false;
+					}
 				}
 			}
 		}
@@ -288,7 +570,7 @@ namespace
 	static bool RegisterType(asIScriptEngine& engine, const Refl::IReflectionDefinition& ref_def)
 	{
 		// We do not need to register attributes or built-in types.
-		if (ref_def.hasInterface<Refl::IAttribute>() || ref_def.isBuiltIn()) {
+		if (ref_def.isBuiltIn() || ref_def.hasInterface<Refl::IAttribute>()) {
 			return true;
 		}
 
@@ -354,228 +636,6 @@ namespace
 		if (result < 0) {
 			LogErrorScript("RegisterType: Failed to register object type '%s'.", reinterpret_cast<const char*>(class_name.data()));
 			return false;
-		}
-
-
-
-		// Register static functions and operators.
-		const int32_t num_static_funcs = ref_def.getNumStaticFuncs();
-
-		for (int32_t i = 0; i < num_static_funcs; ++i) {
-			const Shibboleth::HashStringView32<> func_name = ref_def.getStaticFuncName(i);
-			const char8_t* raw_name = func_name.getBuffer();
-			asECallConvTypes call_conv = asCALL_CDECL;
-			Gaff::Operator op = Gaff::Operator::Count;
-			bool is_op_const = false;
-
-			// Is an operator function
-			if (Gaff::StartsWith(func_name.getBuffer(), u8"__")) {
-				const int32_t index = Gaff::IndexOfArray(Gaff::k_op_hashes, func_name.getHash());
-
-				if (index == -1) {
-					continue;
-				}
-
-				if (!k_op_names[index]) {
-					continue;
-				}
-
-				call_conv = asCALL_CDECL_OBJFIRST;
-				is_op_const = k_op_is_const[index];
-				raw_name = k_op_names[index];
-
-				op = static_cast<Gaff::Operator>(index);
-			}
-
-			const int32_t num_overrides = ref_def.getNumStaticFuncOverrides(i);
-
-			for (int32_t j = 0; j < num_overrides; ++j) {
-				const Refl::IReflectionStaticFunctionBase* const func = ref_def.getStaticFunc(i, j);
-				const Refl::FunctionSignature sig = func->getSignature();
-				Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
-
-				if (op != Gaff::Operator::Count) {
-					if (is_op_const || (op == Gaff::Operator::Index && sig.return_value.isConst() && sig.return_value.isReference())) {
-						decl += u8" const";
-					}
-				}
-
-				if (call_conv == asCALL_CDECL) {
-					// $TODO: Register static function.
-
-					// result = engine.RegisterObjectMethod(
-					// 	reinterpret_cast<const char*>(class_name.data()),
-					// 	reinterpret_cast<const char*>(decl.data()),
-					// 	asFunctionPtr(func->getFunc()),
-					// 	call_conv
-					// );
-
-				} else {
-					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(class_name.data()),
-						reinterpret_cast<const char*>(decl.data()),
-						asFunctionPtr(func->getFunc()),
-						call_conv
-					);
-				}
-
-				if (result < 0) {
-					LogErrorScript("RegisterType: Failed to register static function '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(raw_name));
-					return false;
-				}
-			}
-		}
-
-
-
-		// Register regular functions and operators.
-		const int32_t num_funcs = ref_def.getNumFuncs();
-
-		for (int32_t i = 0; i < num_funcs; ++i) {
-			const Shibboleth::HashStringView32<> func_name = ref_def.getFuncName(i);
-			const char8_t* raw_name = func_name.getBuffer();
-
-			// Is an operator function
-			if (Gaff::Find(func_name.getBuffer(), u8"__") == 0) {
-				const int32_t index = Gaff::IndexOfArray(Gaff::k_op_hashes, func_name.getHash());
-
-				if (index == -1) {
-					continue;
-				}
-
-				if (!k_op_names[index]) {
-					continue;
-				}
-
-				raw_name = k_op_names[index];
-			}
-
-			const int32_t num_overrides = ref_def.getNumFuncOverrides(i);
-
-			for (int32_t j = 0; j < num_overrides; ++j) {
-				const Refl::IReflectionFunctionBase* const func = ref_def.getFunc(i, j);
-				const Refl::FunctionSignature sig = func->getSignature();
-				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
-
-				if (func->isExtensionFunction()) {
-					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(class_name.data()),
-						reinterpret_cast<const char*>(decl.data()),
-						asFunctionPtr(*reinterpret_cast<const Refl::IReflectionStaticFunctionBase::VoidFunc*>(func->getFunctionPointer())),
-						asCALL_CDECL_OBJFIRST
-					);
-
-				} else {
-					const size_t func_ptr_size = func->getFunctionPointerSize();
-
-					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
-						LogErrorScript("RegisterType: Method pointer size is not a valid size for '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(raw_name));
-						return false;
-					}
-
-					// Mark this as a class method
-					asSFuncPtr func_ptr(3);
-					func_ptr.CopyMethodPtr(func->getFunctionPointer(), func_ptr_size);
-
-					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(class_name.data()),
-						reinterpret_cast<const char*>(decl.data()),
-						func_ptr,
-						asCALL_THISCALL
-					);
-				}
-
-				if (result < 0) {
-					LogErrorScript("RegisterType: Failed to register method '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(raw_name));
-					return false;
-				}
-			}
-		}
-
-
-
-		// Register properties.
-		const int32_t num_vars = ref_def.getNumVars();
-
-		for (int32_t i = 0; i < num_vars; ++i) {
-			const Shibboleth::HashStringView32<> var_name = ref_def.getVarName(i);
-			const Refl::IReflectionVar* const var = ref_def.getVar(i);
-
-			if (const int32_t offset = var->getOffset(); offset >= 0) {
-				Shibboleth::U8String decl = ref_def.getReflectionInstance().getName();
-				decl += Shibboleth::U8String{ u8' ' } + var_name.getBuffer();
-
-				result = engine.RegisterObjectProperty(
-					reinterpret_cast<const char*>(class_name.data()),
-					reinterpret_cast<const char*>(decl.data()),
-					offset
-				);
-
-				if (result < 0) {
-					LogErrorScript("RegisterType: Failed to register property '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
-					return false;
-				}
-
-			// Uses getter/setter functions.
-			} else {
-				// Getter
-				if (const void* getter_function = var->getGetterFunctionPointer()) {
-					const size_t func_ptr_size = var->getGetterFunctionPointerSize();
-
-					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
-						LogErrorScript("RegisterType: Method pointer size is not a valid size for property getter '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
-						return false;
-					}
-
-					const Refl::FunctionSignature sig = var->getGetterSignature();
-					const Shibboleth::U8String decl = GetFunctionDeclaration(sig, (Shibboleth::U8String{ u8"get_" } + var_name.getBuffer() + Shibboleth::U8String{ u8" property" }).data());
-
-					// Mark this as a class method
-					asSFuncPtr func_ptr(3);
-					func_ptr.CopyMethodPtr(getter_function, func_ptr_size);
-
-					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(class_name.data()),
-						reinterpret_cast<const char*>(decl.data()),
-						func_ptr,
-						asCALL_THISCALL
-					);
-
-					if (result < 0) {
-						LogErrorScript("RegisterType: Failed to register getter for property '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
-						return false;
-					}
-				}
-
-				// Setter
-				if (const void* setter_function = var->getSetterFunctionPointer()) {
-					const size_t func_ptr_size = var->getSetterFunctionPointerSize();
-
-					if (!CheckMemberFunctionPointerSize(func_ptr_size)) {
-						LogErrorScript("RegisterType: Method pointer size is not a valid size for property setter '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
-						return false;
-					}
-
-					const Refl::FunctionSignature sig = var->getSetterSignature();
-					const Shibboleth::U8String decl = GetFunctionDeclaration(sig, (Shibboleth::U8String{ u8"set_" } + var_name.getBuffer() + Shibboleth::U8String{ u8" property" }).data());
-
-					// Mark this as a class method
-					asSFuncPtr func_ptr(3);
-					func_ptr.CopyMethodPtr(setter_function, func_ptr_size);
-
-					result = engine.RegisterObjectMethod(
-						reinterpret_cast<const char*>(class_name.data()),
-						reinterpret_cast<const char*>(decl.data()),
-						func_ptr,
-						asCALL_THISCALL
-					);
-
-					if (result < 0) {
-						LogErrorScript("RegisterType: Failed to register setter for property '%s::%s'.", reinterpret_cast<const char*>(class_name.data()), reinterpret_cast<const char*>(var_name.getBuffer()));
-						return false;
-					}
-				}
-			}
 		}
 
 		return true;
@@ -688,7 +748,15 @@ bool AngelScriptManager::init(void)
 
 	if (ref_defs) {
 		for (const Refl::IReflectionDefinition* ref_def : *ref_defs) {
+			// Register the type names first.
 			if (!RegisterType(*_engine, *ref_def)) {
+				success = false;
+			}
+		}
+
+		// Then register all their properties/functions/etc.
+		for (const Refl::IReflectionDefinition* ref_def : *ref_defs) {
+			if (!RegisterTypeInfo(*_engine, *ref_def)) {
 				success = false;
 			}
 		}

@@ -31,7 +31,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::SceneConfig)
 	.template base<Shibboleth::Config>()
 	.template ctor<>()
 
-	.var("starting_scene", &Type::starting_scene)
+	//.var("starting_scene", &Type::starting_scene)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::SceneConfig)
 
 

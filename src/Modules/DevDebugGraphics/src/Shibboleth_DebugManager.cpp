@@ -451,7 +451,7 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::DebugManager)
 	.template ctor<>()
 
 	.var(
-		"Debug Flags",
+		"DebugFlags",
 		&Type::_debug_flags,
 		Shibboleth::DebugMenuItemAttribute{ u8"Debug" }
 	)
