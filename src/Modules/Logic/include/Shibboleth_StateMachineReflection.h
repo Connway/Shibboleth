@@ -46,7 +46,7 @@ SHIB_REFLECTION_DECLARE(Esprit::IProcess)
 
 	SHIB_REFLECTION_BUILD_BEGIN(Esprit::ICondition)
 		.classAttrs(
-			Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::Interface },
+			//Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::Interface },
 			Shibboleth::ClassBucketAttribute{}
 		)
 
@@ -56,7 +56,7 @@ SHIB_REFLECTION_DECLARE(Esprit::IProcess)
 
 	SHIB_REFLECTION_BUILD_BEGIN(Esprit::IProcess)
 		.classAttrs(
-			Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::Interface },
+			//Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::Interface },
 			Shibboleth::ClassBucketAttribute{}
 		)
 
