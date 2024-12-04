@@ -293,6 +293,13 @@ int32_t ReflectionDefinition<T>::getNumVarAttrs(Gaff::Hash32 name) const
 }
 
 template <class T>
+int32_t ReflectionDefinition<T>::getNumVarAttrs(int32_t var_index) const
+{
+	GAFF_ASSERT(var_index >= 0 && var_index < getNumVars());
+	return static_cast<int32_t>(_data.vars.at(var_index).second.attrs.size());
+}
+
+template <class T>
 const IAttribute* ReflectionDefinition<T>::getVarAttr(Gaff::Hash32 name, Gaff::Hash64 attr_name) const
 {
 	const auto it = _data.vars.find(name);
@@ -310,6 +317,24 @@ const IAttribute* ReflectionDefinition<T>::getVarAttr(Gaff::Hash32 name, int32_t
 	GAFF_ASSERT(index >= 0 && index < static_cast<int32_t>(it->second.attrs.size()));
 
 	return it->second.attrs[index].get();
+}
+
+template <class T>
+const IAttribute* ReflectionDefinition<T>::getVarAttr(int32_t var_index, Gaff::Hash64 attr_name) const
+{
+	GAFF_ASSERT(var_index >= 0 && var_index < getNumVars());
+	return getAttribute(_data.vars.at(var_index).second.attrs, attr_name);
+}
+
+template <class T>
+const IAttribute* ReflectionDefinition<T>::getVarAttr(int32_t var_index, int32_t attr_index) const
+{
+	GAFF_ASSERT(var_index >= 0 && var_index < getNumVars());
+	const auto& var_entry = _data.vars.at(var_index);
+
+	GAFF_ASSERT(attr_index >= 0 && attr_index < static_cast<int32_t>(var_entry.second.attrs.size()));
+
+	return var_entry.second.attrs[attr_index].get();
 }
 
 template <class T>
@@ -376,6 +401,48 @@ bool ReflectionDefinition<T>::hasFuncAttr(Gaff::Hash64 attr_name) const
 }
 
 template <class T>
+int32_t ReflectionDefinition<T>::getNumFuncAttrs(int32_t func_index, int32_t override_index) const
+{
+	GAFF_ASSERT(func_index >= 0 && func_index < getNumFuncs());
+
+	const auto& func_entry = _data.funcs.at(func_index);
+
+	GAFF_ASSERT(override_index >= 0 && override_index < static_cast<int32_t>(func_entry.second.overrides.size()));
+
+	const auto& override_entry = func_entry.second.overrides.at(override_index);
+	return static_cast<int32_t>(override_entry.second.attrs.size());
+}
+
+template <class T>
+const IAttribute* ReflectionDefinition<T>::getFuncAttr(int32_t func_index, int32_t override_index, Gaff::Hash64 attr_name) const
+{
+	GAFF_ASSERT(func_index >= 0 && func_index < getNumFuncs());
+
+	const auto& func_entry = _data.funcs.at(func_index);
+
+	GAFF_ASSERT(override_index >= 0 && override_index < static_cast<int32_t>(func_entry.second.overrides.size()));
+
+	const auto& override_entry = func_entry.second.overrides.at(override_index);
+	return getAttribute(override_entry.second.attrs, attr_name);
+}
+
+template <class T>
+const IAttribute* ReflectionDefinition<T>::getFuncAttr(int32_t func_index, int32_t override_index, int32_t attr_index) const
+{
+	GAFF_ASSERT(func_index >= 0 && func_index < getNumFuncs());
+
+	const auto& func_entry = _data.funcs.at(func_index);
+
+	GAFF_ASSERT(override_index >= 0 && override_index < static_cast<int32_t>(func_entry.second.overrides.size()));
+
+	const auto& override_entry = func_entry.second.overrides.at(override_index);
+
+	GAFF_ASSERT(attr_index >= 0 && attr_index < static_cast<int32_t>(override_entry.second.attrs.size()));
+
+	return override_entry.second.attrs[attr_index].get();
+}
+
+template <class T>
 int32_t ReflectionDefinition<T>::getNumStaticFuncAttrs(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash) const
 {
 	const auto it = _data.static_funcs.find(name_hash);
@@ -424,6 +491,48 @@ bool ReflectionDefinition<T>::hasStaticFuncAttr(Gaff::Hash64 attr_name) const
 	}
 
 	return false;
+}
+
+template <class T>
+int32_t ReflectionDefinition<T>::getNumStaticFuncAttrs(int32_t func_index, int32_t override_index) const
+{
+	GAFF_ASSERT(func_index >= 0 && func_index < getNumStaticFuncs());
+
+	const auto& func_entry = _data.static_funcs.at(func_index);
+
+	GAFF_ASSERT(override_index >= 0 && override_index < static_cast<int32_t>(func_entry.second.overrides.size()));
+
+	const auto& override_entry = func_entry.second.overrides.at(override_index);
+	return static_cast<int32_t>(override_entry.second.attrs.size());
+}
+
+template <class T>
+const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(int32_t func_index, int32_t override_index, Gaff::Hash64 attr_name) const
+{
+	GAFF_ASSERT(func_index >= 0 && func_index < getNumStaticFuncs());
+
+	const auto& func_entry = _data.static_funcs.at(func_index);
+
+	GAFF_ASSERT(override_index >= 0 && override_index < static_cast<int32_t>(func_entry.second.overrides.size()));
+
+	const auto& override_entry = func_entry.second.overrides.at(override_index);
+	return getAttribute(override_entry.second.attrs, attr_name);
+}
+
+template <class T>
+const IAttribute* ReflectionDefinition<T>::getStaticFuncAttr(int32_t func_index, int32_t override_index, int32_t attr_index) const
+{
+	GAFF_ASSERT(func_index >= 0 && func_index < getNumStaticFuncs());
+
+	const auto& func_entry = _data.static_funcs.at(func_index);
+
+	GAFF_ASSERT(override_index >= 0 && override_index < static_cast<int32_t>(func_entry.second.overrides.size()));
+
+	const auto& override_entry = func_entry.second.overrides.at(override_index);
+
+	GAFF_ASSERT(attr_index >= 0 && attr_index < static_cast<int32_t>(override_entry.second.attrs.size()));
+
+	return override_entry.second.attrs[attr_index].get();
 }
 
 template <class T>

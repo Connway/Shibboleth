@@ -198,6 +198,13 @@ public:
 	}
 
 	template <class T>
+	const T* getVarAttr(int32_t var_index) const
+	{
+		const auto* const attr = getVarAttr(var_index, Refl::Reflection<T>::GetNameHash());
+		return (attr) ? static_cast<const T*>(attr) : nullptr;
+	}
+
+	template <class T>
 	const T* getFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const
 	{
 		const auto* const attr = getFuncAttr(name_hash, args_hash, attr_name);
@@ -208,6 +215,20 @@ public:
 	const T* getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const
 	{
 		const auto* const attr = getStaticFuncAttr(name_hash, args_hash, attr_name);
+		return (attr) ? static_cast<const T*>(attr) : nullptr;
+	}
+
+	template <class T>
+	const T* getFuncAttr(int32_t func_index, int32_t override_index) const
+	{
+		const auto* const attr = getFuncAttr(func_index, override_index, Refl::Reflection<T>::GetNameHash());
+		return (attr) ? static_cast<const T*>(attr) : nullptr;
+	}
+
+	template <class T>
+	const T* getStaticFuncAttr(int32_t func_index, int32_t override_index) const
+	{
+		const auto* const attr = getStaticFuncAttr(func_index, override_index, Refl::Reflection<T>::GetNameHash());
 		return (attr) ? static_cast<const T*>(attr) : nullptr;
 	}
 
@@ -657,8 +678,11 @@ public:
 	virtual bool hasClassAttr(Gaff::Hash64 attr_name) const = 0;
 
 	virtual int32_t getNumVarAttrs(Gaff::Hash32 name) const = 0;
+	virtual int32_t getNumVarAttrs(int32_t var_index) const = 0;
 	virtual const IAttribute* getVarAttr(Gaff::Hash32 name, Gaff::Hash64 attr_name) const = 0;
 	virtual const IAttribute* getVarAttr(Gaff::Hash32 name, int32_t index) const = 0;
+	virtual const IAttribute* getVarAttr(int32_t var_index, Gaff::Hash64 attr_name) const = 0;
+	virtual const IAttribute* getVarAttr(int32_t var_index, int32_t attr_index) const = 0;
 	virtual bool hasVarAttr(Gaff::Hash64 attr_name) const = 0;
 
 	virtual int32_t getNumFuncAttrs(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash) const = 0;
@@ -666,10 +690,18 @@ public:
 	virtual const IAttribute* getFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, int32_t index) const = 0;
 	virtual bool hasFuncAttr(Gaff::Hash64 attr_name) const = 0;
 
+	virtual int32_t getNumFuncAttrs(int32_t func_index, int32_t override_index) const = 0;
+	virtual const IAttribute* getFuncAttr(int32_t func_index, int32_t override_index, Gaff::Hash64 attr_name) const = 0;
+	virtual const IAttribute* getFuncAttr(int32_t func_index, int32_t override_index, int32_t attr_index) const = 0;
+
 	virtual int32_t getNumStaticFuncAttrs(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash) const = 0;
 	virtual const IAttribute* getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const = 0;
 	virtual const IAttribute* getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, int32_t index) const = 0;
 	virtual bool hasStaticFuncAttr(Gaff::Hash64 attr_name) const = 0;
+
+	virtual int32_t getNumStaticFuncAttrs(int32_t func_index, int32_t override_index) const = 0;
+	virtual const IAttribute* getStaticFuncAttr(int32_t func_index, int32_t override_index, Gaff::Hash64 attr_name) const = 0;
+	virtual const IAttribute* getStaticFuncAttr(int32_t func_index, int32_t override_index, int32_t attr_index) const = 0;
 
 	virtual int32_t getNumConstructors(void) const = 0;
 	virtual IReflectionStaticFunctionBase* getConstructor(int32_t index) const = 0;

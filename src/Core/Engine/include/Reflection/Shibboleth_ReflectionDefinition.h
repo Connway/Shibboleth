@@ -83,8 +83,11 @@ public:
 	void addClassAttr(IAttribute& attribute) override;
 
 	int32_t getNumVarAttrs(Gaff::Hash32 name) const override;
+	int32_t getNumVarAttrs(int32_t var_index) const override;
 	const IAttribute* getVarAttr(Gaff::Hash32 name, Gaff::Hash64 attr_name) const override;
 	const IAttribute* getVarAttr(Gaff::Hash32 name, int32_t index) const override;
+	const IAttribute* getVarAttr(int32_t var_index, Gaff::Hash64 attr_name) const override;
+	const IAttribute* getVarAttr(int32_t var_index, int32_t attr_index) const override;
 	bool hasVarAttr(Gaff::Hash64 attr_name) const override;
 
 	int32_t getNumFuncAttrs(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash) const override;
@@ -92,10 +95,18 @@ public:
 	const IAttribute* getFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, int32_t index) const override;
 	bool hasFuncAttr(Gaff::Hash64 attr_name) const override;
 
+	int32_t getNumFuncAttrs(int32_t func_index, int32_t override_index) const override;
+	const IAttribute* getFuncAttr(int32_t func_index, int32_t override_index, Gaff::Hash64 attr_name) const override;
+	const IAttribute* getFuncAttr(int32_t func_index, int32_t override_index, int32_t attr_index) const override;
+
 	int32_t getNumStaticFuncAttrs(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash) const override;
 	const IAttribute* getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, Gaff::Hash64 attr_name) const override;
 	const IAttribute* getStaticFuncAttr(Gaff::Hash32 name_hash, Gaff::Hash64 args_hash, int32_t index) const override;
 	bool hasStaticFuncAttr(Gaff::Hash64 attr_name) const override;
+
+	int32_t getNumStaticFuncAttrs(int32_t func_index, int32_t override_index) const override;
+	const IAttribute* getStaticFuncAttr(int32_t func_index, int32_t override_index, Gaff::Hash64 attr_name) const override;
+	const IAttribute* getStaticFuncAttr(int32_t func_index, int32_t override_index, int32_t attr_index) const override;
 
 	int32_t getNumConstructors(void) const override;
 	IReflectionStaticFunctionBase* getConstructor(int32_t index) const override;
@@ -183,16 +194,25 @@ private:
 		bool hasClassAttr(Gaff::Hash64) const override { return false; } \
 		void addClassAttr(IAttribute&) override {} \
 		int32_t getNumVarAttrs(Gaff::Hash32) const override { return 0; } \
+		int32_t getNumVarAttrs(int32_t) const override { return 0; } \
 		const IAttribute* getVarAttr(Gaff::Hash32, Gaff::Hash64) const override { return nullptr; } \
 		const IAttribute* getVarAttr(Gaff::Hash32, int32_t) const override { return nullptr; } \
+		const IAttribute* getVarAttr(int32_t, Gaff::Hash64) const override { return nullptr; } \
+		const IAttribute* getVarAttr(int32_t, int32_t) const override { return nullptr; } \
 		bool hasVarAttr(Gaff::Hash64) const override { return false; } \
 		int32_t getNumFuncAttrs(Gaff::Hash32, Gaff::Hash64) const override { return 0; } \
 		const IAttribute* getFuncAttr(Gaff::Hash32, Gaff::Hash64, Gaff::Hash64) const override { return nullptr; } \
 		const IAttribute* getFuncAttr(Gaff::Hash32, Gaff::Hash64, int32_t) const override { return nullptr; } \
+		int32_t getNumFuncAttrs(int32_t, int32_t) const override { return 0; } \
+		const IAttribute* getFuncAttr(int32_t, int32_t, Gaff::Hash64) const override { return nullptr; } \
+		const IAttribute* getFuncAttr(int32_t, int32_t, int32_t) const override { return nullptr; } \
 		bool hasFuncAttr(Gaff::Hash64) const override { return false; } \
 		int32_t getNumStaticFuncAttrs(Gaff::Hash32, Gaff::Hash64) const override { return 0; } \
 		const IAttribute* getStaticFuncAttr(Gaff::Hash32, Gaff::Hash64, Gaff::Hash64) const override { return nullptr; } \
 		const IAttribute* getStaticFuncAttr(Gaff::Hash32, Gaff::Hash64, int32_t) const override { return nullptr; } \
+		int32_t getNumStaticFuncAttrs(int32_t, int32_t) const override { return 0; } \
+		const IAttribute* getStaticFuncAttr(int32_t, int32_t, Gaff::Hash64) const override { return nullptr; } \
+		const IAttribute* getStaticFuncAttr(int32_t, int32_t, int32_t) const override { return nullptr; } \
 		bool hasStaticFuncAttr(Gaff::Hash64) const override { return false; } \
 		int32_t getNumConstructors(void) const override { return 0; } \
 		IReflectionStaticFunctionBase* getConstructor(int32_t) const override { return nullptr; } \
