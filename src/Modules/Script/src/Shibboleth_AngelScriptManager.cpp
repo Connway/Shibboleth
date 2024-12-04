@@ -190,7 +190,8 @@ namespace
 	{
 		const Shibboleth::ScriptFlagsAttribute* const script_flags = enum_ref_def.template getEnumAttr<Shibboleth::ScriptFlagsAttribute>();
 
-		if (script_flags && !script_flags->canRegister()) {
+		// Not registerable.
+		if (!script_flags || !script_flags->canRegister()) {
 			return true;
 		}
 
@@ -261,6 +262,12 @@ namespace
 			const int32_t num_overrides = ref_def.getNumFuncOverrides(i);
 
 			for (int32_t j = 0; j < num_overrides; ++j) {
+				const Shibboleth::ScriptFlagsAttribute* const func_script_flags = ref_def.template getFuncAttr<Shibboleth::ScriptFlagsAttribute>(i, j);
+
+				if (func_script_flags && !func_script_flags->canRegister()) {
+					continue;
+				}
+
 				const Refl::IReflectionFunctionBase* const func = ref_def.getFunc(i, j);
 				const Refl::FunctionSignature sig = func->getSignature();
 				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, func_name.getBuffer());
@@ -305,21 +312,15 @@ namespace
 
 	static bool RegisterTypeInfo(asIScriptEngine& engine, const Refl::IReflectionDefinition& ref_def)
 	{
-		// We do not need to register attributes or built-in types.
-		if (ref_def.isBuiltIn() || ref_def.hasInterface<Refl::IAttribute>()) {
+		const Shibboleth::ScriptFlagsAttribute* const script_flags = ref_def.template getClassAttr<Shibboleth::ScriptFlagsAttribute>();
+
+		// Not registerable.
+		if (!script_flags || !script_flags->canRegister()) {
 			return true;
 		}
 
-		const Shibboleth::ScriptFlagsAttribute* const script_flags = ref_def.template getClassAttr<Shibboleth::ScriptFlagsAttribute>();
-
-		if (script_flags) {
-			if (!script_flags->canRegister()) {
-				return true;
-			}
-
-			if (script_flags->isInterface()) {
-				return RegisterInterfaceInfo(engine, ref_def);
-			}
+		if (script_flags->isInterface()) {
+			return RegisterInterfaceInfo(engine, ref_def);
 		}
 
 		Shibboleth::U8String name_space{ ref_def.getReflectionInstance().getName(), SCRIPT_ALLOCATOR };
@@ -365,6 +366,12 @@ namespace
 			const int32_t num_overrides = ref_def.getNumStaticFuncOverrides(i);
 
 			for (int32_t j = 0; j < num_overrides; ++j) {
+				const Shibboleth::ScriptFlagsAttribute* const func_script_flags = ref_def.template getStaticFuncAttr<Shibboleth::ScriptFlagsAttribute>(i, j);
+
+				if (func_script_flags && !func_script_flags->canRegister()) {
+					continue;
+				}
+
 				const Refl::IReflectionStaticFunctionBase* const func = ref_def.getStaticFunc(i, j);
 				const Refl::FunctionSignature sig = func->getSignature();
 				Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
@@ -439,6 +446,12 @@ namespace
 			const int32_t num_overrides = ref_def.getNumFuncOverrides(i);
 
 			for (int32_t j = 0; j < num_overrides; ++j) {
+				const Shibboleth::ScriptFlagsAttribute* const func_script_flags = ref_def.template getFuncAttr<Shibboleth::ScriptFlagsAttribute>(i, j);
+
+				if (func_script_flags && !func_script_flags->canRegister()) {
+					continue;
+				}
+
 				const Refl::IReflectionFunctionBase* const func = ref_def.getFunc(i, j);
 				const Refl::FunctionSignature sig = func->getSignature();
 				const Shibboleth::U8String decl = GetFunctionDeclaration(sig, raw_name);
@@ -484,6 +497,12 @@ namespace
 		const int32_t num_vars = ref_def.getNumVars();
 
 		for (int32_t i = 0; i < num_vars; ++i) {
+			const Shibboleth::ScriptFlagsAttribute* const var_script_flags = ref_def.template getVarAttr<Shibboleth::ScriptFlagsAttribute>(i);
+
+			if (var_script_flags && !var_script_flags->canRegister()) {
+				continue;
+			}
+
 			const Shibboleth::HashStringView32<> var_name = ref_def.getVarName(i);
 			const Refl::IReflectionVar* const var = ref_def.getVar(i);
 
@@ -569,21 +588,15 @@ namespace
 
 	static bool RegisterType(asIScriptEngine& engine, const Refl::IReflectionDefinition& ref_def)
 	{
-		// We do not need to register attributes or built-in types.
-		if (ref_def.isBuiltIn() || ref_def.hasInterface<Refl::IAttribute>()) {
+		const Shibboleth::ScriptFlagsAttribute* const script_flags = ref_def.template getClassAttr<Shibboleth::ScriptFlagsAttribute>();
+
+		// Not registerable.
+		if (!script_flags || !script_flags->canRegister()) {
 			return true;
 		}
 
-		const Shibboleth::ScriptFlagsAttribute* const script_flags = ref_def.template getClassAttr<Shibboleth::ScriptFlagsAttribute>();
-
-		if (script_flags) {
-			if (!script_flags->canRegister()) {
-				return true;
-			}
-
-			if (script_flags->isInterface()) {
-				return RegisterInterface(engine, ref_def);
-			}
+		if (script_flags->isInterface()) {
+			return RegisterInterface(engine, ref_def);
 		}
 
 		Shibboleth::U8String name_space{ ref_def.getReflectionInstance().getName(), SCRIPT_ALLOCATOR };
@@ -627,8 +640,13 @@ namespace
 			}
 
 		} else {
-			// $TODO: Support for ref-counted classes.
-			flags |= asOBJ_REF | asOBJ_NOCOUNT;
+			// $TODO: Add operators for GC ref counting.
+			// Not sure if we should scope limit these objects, but doesn't seem to be a real reason not to right now.
+			flags |= asOBJ_REF | asOBJ_NOCOUNT | asOBJ_SCOPED;
+		}
+
+		if (!script_flags->canInherit()) {
+			flags |= asOBJ_NOINHERIT;
 		}
 
 		result = engine.RegisterObjectType(reinterpret_cast<const char*>(class_name.data()), ref_def.size(), flags);
@@ -715,6 +733,37 @@ bool AngelScriptManager::init(void)
 		LogErrorScript("AngelScriptManager::init: Failed to set engine property 'asEP_COMPILER_WARNINGS'.");
 		return false;
 	}
+
+	// Allow value types to be passed by reference.
+	result = _engine->SetEngineProperty(asEP_ALLOW_UNSAFE_REFERENCES, 1);
+
+	if (result < 0) {
+		LogErrorScript("AngelScriptManager::init: Failed to set engine property 'asEP_ALLOW_UNSAFE_REFERENCES'.");
+		return false;
+	}
+
+	result = _engine->SetEngineProperty(asEP_REQUIRE_ENUM_SCOPE, 1);
+
+	if (result < 0) {
+		LogErrorScript("AngelScriptManager::init: Failed to set engine property 'asEP_REQUIRE_ENUM_SCOPE'.");
+		return false;
+	}
+
+	result = _engine->SetEngineProperty(asEP_DISALLOW_VALUE_ASSIGN_FOR_REF_TYPE, 1);
+
+	if (result < 0) {
+		LogErrorScript("AngelScriptManager::init: Failed to set engine property 'asEP_DISALLOW_VALUE_ASSIGN_FOR_REF_TYPE'.");
+		return false;
+	}
+
+#ifndef _DEBUG
+	result = _engine->SetEngineProperty(asEP_BUILD_WITHOUT_LINE_CUES, 1);
+
+	if (result < 0) {
+		LogErrorScript("AngelScriptManager::init: Failed to set engine property 'asEP_BUILD_WITHOUT_LINE_CUES'.");
+		return false;
+	}
+#endif
 
 	if (!RegisterScriptMath_Native(_engine)) {
 		LogErrorScript("AngelScriptManager::init: Failed to register math functions.");
@@ -815,10 +864,9 @@ AngelScriptManager::CompileResult AngelScriptManager::compile(AngelScriptResourc
 	return CompileResult::Success;
 }
 
-AngelScriptManager::ScriptInfo AngelScriptManager::modifySource(const char8_t* section_name, U8String& source)
+AngelScriptManager::ScriptInfo AngelScriptManager::modifySource(const char8_t* /*section_name*/, U8String& /*source*/)
 {
 	// $TODO: Parse file and modify source if necessary.
-	GAFF_REF(section_name, source);
 	return ScriptInfo{};
 }
 

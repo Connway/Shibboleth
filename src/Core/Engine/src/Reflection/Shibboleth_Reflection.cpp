@@ -37,7 +37,6 @@ SHIB_REFLECTION_DEFINE(bool)
 SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash32)
 	.classAttrs(
 		Shibboleth::ScriptFlagsAttribute{
-			Shibboleth::ScriptFlagsAttribute::Flag::Register,
 			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
 		}
 	)
@@ -63,7 +62,6 @@ SHIB_REFLECTION_DEFINE_END(Gaff::Hash32)
 SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash64)
 	.classAttrs(
 		Shibboleth::ScriptFlagsAttribute{
-			Shibboleth::ScriptFlagsAttribute::Flag::Register,
 			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
 		}
 	)
@@ -96,7 +94,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString32<>)
 	// $TODO: String factory support?
 	.classAttrs(
 		Shibboleth::ScriptFlagsAttribute{
-			Shibboleth::ScriptFlagsAttribute::Flag::Register,
 			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
 		}
 	)
@@ -146,7 +143,6 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::HashString32<>)
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString64<>)
 	.classAttrs(
 		Shibboleth::ScriptFlagsAttribute{
-			Shibboleth::ScriptFlagsAttribute::Flag::Register,
 			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
 		}
 	)
@@ -213,7 +209,6 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringNoString64<>)
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringView32<>)
 	.classAttrs(
 		Shibboleth::ScriptFlagsAttribute{
-			Shibboleth::ScriptFlagsAttribute::Flag::Register,
 			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
 		}
 	)
@@ -257,7 +252,6 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringView32<>)
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringView64<>)
 	.classAttrs(
 		Shibboleth::ScriptFlagsAttribute{
-			Shibboleth::ScriptFlagsAttribute::Flag::Register,
 			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
 		}
 	)
