@@ -20,7 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Reflection/Shibboleth_Reflection.h"
 #include "Attributes/Shibboleth_EngineAttributesCommon.h"
 
 SHIB_REFLECTION_DEFINE(int8_t)
@@ -37,7 +36,10 @@ SHIB_REFLECTION_DEFINE(bool)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash32)
 	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
+		Shibboleth::ScriptFlagsAttribute{
+			Shibboleth::ScriptFlagsAttribute::Flag::Register,
+			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
+		}
 	)
 
 	.template ctor<const Gaff::Hash32&>()
@@ -60,7 +62,10 @@ SHIB_REFLECTION_DEFINE_END(Gaff::Hash32)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Gaff::Hash64)
 	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
+		Shibboleth::ScriptFlagsAttribute{
+			Shibboleth::ScriptFlagsAttribute::Flag::Register,
+			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
+		}
 	)
 
 	.template ctor<const Gaff::Hash64&>()
@@ -83,17 +88,17 @@ SHIB_REFLECTION_DEFINE_END(Gaff::Hash64)
 
 // $TODO: May want to reflect the Gaff versions of these in the future.
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::U8String)
-	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
-	)
-
 	.setInstanceHash(Shibboleth::HashStringInstance<Shibboleth::ProxyAllocator>)
 	.serialize(Shibboleth::LoadString<Shibboleth::ProxyAllocator>, Shibboleth::SaveString<Shibboleth::ProxyAllocator>)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::U8String)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString32<>)
+	// $TODO: String factory support?
 	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
+		Shibboleth::ScriptFlagsAttribute{
+			Shibboleth::ScriptFlagsAttribute::Flag::Register,
+			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
+		}
 	)
 
 	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>)
@@ -140,7 +145,10 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::HashString32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString64<>)
 	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
+		Shibboleth::ScriptFlagsAttribute{
+			Shibboleth::ScriptFlagsAttribute::Flag::Register,
+			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
+		}
 	)
 
 	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>)
@@ -187,10 +195,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashString64<>)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashString64<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringNoString32<>)
-	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
-	)
-
 	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>)
 	.serialize(
 		Shibboleth::LoadHashString<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Shibboleth::ProxyAllocator>,
@@ -199,10 +203,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringNoString32<>)
 SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringNoString32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringNoString64<>)
-	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::NoRegister)
-	)
-
 	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>)
 	.serialize(
 		Shibboleth::LoadHashString<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Shibboleth::ProxyAllocator>,
@@ -212,7 +212,10 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringNoString64<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringView32<>)
 	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
+		Shibboleth::ScriptFlagsAttribute{
+			Shibboleth::ScriptFlagsAttribute::Flag::Register,
+			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
+		}
 	)
 
 	.setInstanceHash(Shibboleth::HashStringViewInstanceHash< char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32> >)
@@ -253,7 +256,10 @@ SHIB_REFLECTION_DEFINE_END(Shibboleth::HashStringView32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::HashStringView64<>)
 	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute(Shibboleth::ScriptFlagsAttribute::Flag::ValueType)
+		Shibboleth::ScriptFlagsAttribute{
+			Shibboleth::ScriptFlagsAttribute::Flag::Register,
+			Shibboleth::ScriptFlagsAttribute::Flag::ValueType
+		}
 	)
 
 	.setInstanceHash(Shibboleth::HashStringViewInstanceHash< char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64> >)

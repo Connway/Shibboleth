@@ -122,8 +122,8 @@ class ScriptFlagsAttribute final : public Refl::IAttribute
 public:
 	enum class Flag
 	{
+		Register,
 		ValueType,
-		NoRegister,
 		NoInherit,
 		Interface,
 
@@ -131,14 +131,12 @@ public:
 	};
 
 	template <class... Flags>
-	ScriptFlagsAttribute(Flags... flags)
+	ScriptFlagsAttribute(Flags... flags):
+		ScriptFlagsAttribute(Gaff::Flags<Flag>{ flags... })
 	{
-		if constexpr (sizeof...(Flags) > 0) {
-			_flags.set(true, flags...);
-		}
 	}
 
-	ScriptFlagsAttribute(Gaff::Flags<Flag> flags):
+	explicit ScriptFlagsAttribute(Gaff::Flags<Flag> flags):
 		_flags(flags)
 	{
 	}
@@ -147,7 +145,7 @@ public:
 
 	bool canInherit(void) const override { return !_flags.testAll(Flag::NoInherit); }
 	bool isValueType(void) const { return _flags.testAll(Flag::ValueType); }
-	bool canRegister(void) const { return !_flags.testAll(Flag::NoRegister); }
+	bool canRegister(void) const { return _flags.testAll(Flag::Register); }
 	bool isInterface(void) const { return _flags.testAll(Flag::Interface); }
 
 	const Gaff::Flags<Flag>& getFlags(void) const { return _flags; }

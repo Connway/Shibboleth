@@ -29,19 +29,11 @@ THE SOFTWARE.
 #endif
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::U8String)
-	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::NoRegister }
-	)
-
 	.setInstanceHash(Shibboleth::HashStringInstance<Esprit::ProxyAllocator>)
 	.serialize(Shibboleth::LoadString<Esprit::ProxyAllocator>, Shibboleth::SaveString<Esprit::ProxyAllocator>)
 SHIB_REFLECTION_DEFINE_END(Esprit::U8String)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashString32<>)
-	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::NoRegister }
-	)
-
 	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>)
 	.serialize(
 		Shibboleth::LoadHashString<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>,
@@ -50,10 +42,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashString32<>)
 SHIB_REFLECTION_DEFINE_END(Esprit::HashString32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashString64<>)
-	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::NoRegister }
-	)
-
 	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>)
 	.serialize(
 		Shibboleth::LoadHashString<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>,
@@ -62,10 +50,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashString64<>)
 SHIB_REFLECTION_DEFINE_END(Esprit::HashString64<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashStringNoString32<>)
-	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::NoRegister }
-	)
-
 	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>)
 	.serialize(
 		Shibboleth::LoadHashString<char8_t, Gaff::Hash32, Gaff::DefaultHashFunc<Gaff::Hash32>, Esprit::ProxyAllocator>,
@@ -74,10 +58,6 @@ SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashStringNoString32<>)
 SHIB_REFLECTION_DEFINE_END(Esprit::HashStringNoString32<>)
 
 SHIB_REFLECTION_DEFINE_BEGIN(Esprit::HashStringNoString64<>)
-	.classAttrs(
-		Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::NoRegister }
-	)
-
 	.setInstanceHash(Shibboleth::HashStringInstanceHash<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>)
 	.serialize(
 		Shibboleth::LoadHashString<char8_t, Gaff::Hash64, Gaff::DefaultHashFunc<Gaff::Hash64>, Esprit::ProxyAllocator>,
