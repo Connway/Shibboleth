@@ -144,6 +144,10 @@ if is_debug
   angelscript_defines += ['-DAS_DEBUG']
 endif
 
+if not is_msvc
+	build_args += '-fno-strict-aliasing'
+endif
+
 if is_windows
   ml64 = find_program('ml64')
   file_no_extension = ''
