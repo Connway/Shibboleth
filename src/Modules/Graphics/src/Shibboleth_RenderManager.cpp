@@ -84,15 +84,6 @@ bool RenderManager::initAllModulesLoaded(void)
 	const GraphicsConfig& config = GetConfigRef<GraphicsConfig>();
 	GAFF_ASSERT(config.texture_filtering_sampler);
 
-	const_cast<GraphicsConfig&>(config).texture_filtering_sampler->requestLoad();
-
-	if (!config.texture_filtering_sampler->waitUntilLoaded()) {
-		// $TODO: Log error.
-		return false;
-	}
-
-	_default_sampler = config.texture_filtering_sampler;
-
 	GLFWimage icon;
 
 	if (config.icon) {
@@ -298,6 +289,15 @@ bool RenderManager::initAllModulesLoaded(void)
 			context_map[id].reset(static_cast<Gleam::RenderDevice*>(deferred_device));
 		}
 	}
+
+	const_cast<GraphicsConfig&>(config).texture_filtering_sampler->requestLoad();
+
+	if (!config.texture_filtering_sampler->waitUntilLoaded()) {
+		// $TODO: Log error.
+		return false;
+	}
+
+	_default_sampler = config.texture_filtering_sampler;
 
 	if (!_render_pipeline.init(*this)) {
 		return false;
