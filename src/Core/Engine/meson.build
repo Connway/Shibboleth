@@ -189,6 +189,7 @@ static_dependencies = [
   memory_static_dep,
 ]
 
+# Version of engine lib for static binaries (eg: tests and tools)
 engine_static = static_library(
   'EngineStatic',
   header_files,
