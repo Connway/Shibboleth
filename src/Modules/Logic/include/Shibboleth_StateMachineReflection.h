@@ -45,20 +45,24 @@ SHIB_REFLECTION_DECLARE(Esprit::IProcess)
 	#include <Attributes/Shibboleth_EngineAttributesCommon.h>
 
 	SHIB_REFLECTION_BUILD_BEGIN(Esprit::ICondition)
-		.classAttrs(
-			//Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::Interface },
-			Shibboleth::ClassBucketAttribute{}
-		)
+		.baseOnlyStart()
+			.classAttrs(
+				Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::Interface },
+				Shibboleth::ClassBucketAttribute{}
+			)
+		.baseOnlyEnd()
 
 		.func("init", &Type::init)
 		.func("evaluate", &Type::evaluate)
 	SHIB_REFLECTION_BUILD_END(Esprit::ICondition)
 
 	SHIB_REFLECTION_BUILD_BEGIN(Esprit::IProcess)
-		.classAttrs(
-			//Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::Interface },
-			Shibboleth::ClassBucketAttribute{}
-		)
+		.baseOnlyStart()
+			.classAttrs(
+				Shibboleth::ScriptFlagsAttribute{ Shibboleth::ScriptFlagsAttribute::Flag::Interface },
+				Shibboleth::ClassBucketAttribute{}
+			)
+		.baseOnlyEnd()
 
 		.func("init", &Type::init)
 		// .func("update", &Type::update)

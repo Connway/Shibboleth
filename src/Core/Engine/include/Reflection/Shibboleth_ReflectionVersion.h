@@ -248,6 +248,9 @@ public:
 
 	void finish(void);
 
+	ReflectionVersionClass& baseOnlyStart(void);
+	ReflectionVersionClass& baseOnlyEnd(void);
+
 private:
 	Gaff::Hash64 _hash = Gaff::k_init_hash64;
 

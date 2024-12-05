@@ -681,6 +681,18 @@ void ReflectionVersionClass<T>::finish(void)
 }
 
 template <class T>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::baseOnlyStart(void)
+{
+	return *this;
+}
+
+template <class T>
+ReflectionVersionClass<T>& ReflectionVersionClass<T>::baseOnlyEnd(void)
+{
+	return *this;
+}
+
+template <class T>
 template <class First, class... Rest>
 Gaff::Hash64 ReflectionVersionClass<T>::getAttributeHashes(Gaff::Hash64 hash, const First& first, const Rest&... rest) const
 {

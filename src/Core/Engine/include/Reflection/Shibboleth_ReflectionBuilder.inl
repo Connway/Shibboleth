@@ -51,6 +51,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::base(const char8
 {
 	static_assert(std::is_base_of_v<Base, T>, "Class is not a base class of T.");
 
+	if (!_can_apply) {
+		return *this;
+	}
+
 	Shibboleth::HashString64<> name_hash_str{ name, REFLECTION_ALLOCATOR };
 	GAFF_ASSERT(Gaff::Find(_data.base_classes, name_hash_str) == _data.base_classes.end());
 
@@ -67,6 +71,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::base(void)
 {
 	static_assert(Reflection<Base>::k_has_reflection || Hash::ClassHashable<Base>::k_is_hashable, "Base class has no reflection and is not hashable.");
 	static_assert(std::is_base_of_v<Base, T>, "Class is not a base class of T.");
+
+	if (!_can_apply) {
+		return *this;
+	}
 
 	if constexpr (Reflection<Base>::k_has_reflection) {
 		Shibboleth::HashString64<> name_hash_str{ Reflection<Base>::GetName(), REFLECTION_ALLOCATOR };
@@ -90,6 +98,10 @@ template <class T, class BaseType>
 template <class... Args>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::ctor(Gaff::Hash64 factory_hash)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	if constexpr (k_is_initial_type) {
 		GAFF_ASSERT(_data.factories.find(factory_hash) == _data.factories.end());
 
@@ -113,6 +125,10 @@ template <class T, class BaseType>
 template <class... Args>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::ctor(void)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	constexpr Gaff::Hash64 hash = Gaff::CalcTemplateHash<Args...>(Gaff::k_init_hash64);
 	return ctor<Args...>(hash);
 }
@@ -125,6 +141,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::var(const char8_
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	using RefVarType = VarTypeHelper<T, Var>::Type;
+
+	if (!_can_apply) {
+		return *this;
+	}
 
 	Shibboleth::HashString32<> name_hash_str{ name, name_size - 1, REFLECTION_ALLOCATOR };
 	GAFF_ASSERT(_data.vars.find(name_hash_str) == _data.vars.end());
@@ -161,6 +181,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::varFunc(const ch
 	using FuncStorage = GetterSetterFuncs<GetFunc, SetFunc>;
 	using RefVarType = VarTypeHelper<T, FuncStorage>::Type;
 
+	if (!_can_apply) {
+		return *this;
+	}
+
 	Shibboleth::HashString32<> name_hash_str{ name, name_size - 1, REFLECTION_ALLOCATOR };
 	GAFF_ASSERT(_data.vars.find(name_hash_str) == _data.vars.end());
 
@@ -192,6 +216,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+
+	if (!_can_apply) {
+		return *this;
+	}
 
 	auto it = _data.funcs.find(Gaff::FNV1aHash32Const(name));
 
@@ -237,6 +265,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8
 
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 
+	if (!_can_apply) {
+		return *this;
+	}
+
 	auto it = _data.funcs.find(Gaff::FNV1aHash32Const(name));
 
 	if (it == _data.funcs.end()) {
@@ -280,6 +312,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8
 	static_assert(name_size > 0, "Name cannot be an empty string.");
 
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
+
+	if (!_can_apply) {
+		return *this;
+	}
 
 	auto it = _data.funcs.find(Gaff::FNV1aHash32Const(name));
 
@@ -325,6 +361,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::func(const char8
 
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 
+	if (!_can_apply) {
+		return *this;
+	}
+
 	auto it = _data.funcs.find(Gaff::FNV1aHash32Const(name));
 
 	if (it == _data.funcs.end()) {
@@ -368,6 +408,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::staticFunc(const
 
 	constexpr Gaff::Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(Gaff::k_init_hash64);
 
+	if (!_can_apply) {
+		return *this;
+	}
+
 	auto it = _data.static_funcs.find(Gaff::FNV1aHash32Const(name));
 
 	if (it == _data.static_funcs.end()) {
@@ -407,6 +451,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opAdd(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(+, OP_ADD_NAME, operator+, Gaff::Add, T)
 }
 
@@ -414,6 +462,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opSub(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(-, OP_SUB_NAME, operator-, Gaff::Sub, T)
 }
 
@@ -421,6 +473,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opMul(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(*, OP_MUL_NAME, operator*, Gaff::Mul, T)
 }
 
@@ -428,6 +484,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opDiv(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(/, OP_DIV_NAME, operator/, Gaff::Div, T)
 }
 
@@ -435,6 +495,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opMod(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(%, OP_SUB_NAME, operator%, Gaff::Mod, T)
 }
 
@@ -442,6 +506,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opBitAnd(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(&, OP_BIT_AND_NAME, operator&, Gaff::BitAnd, T)
 }
 
@@ -449,6 +517,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opBitOr(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(|, OP_BIT_OR_NAME, operator|, Gaff::BitOr, T)
 }
 
@@ -456,6 +528,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opBitXor(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(^, OP_BIT_XOR_NAME, operator^, Gaff::BitXor, T)
 }
 
@@ -463,6 +539,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opBitShiftLeft(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(<<, OP_BIT_SHIFT_LEFT_NAME, operator<<, Gaff::BitShiftLeft, T)
 }
 
@@ -470,6 +550,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opBitShiftRight(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(>>, OP_BIT_SHIFT_RIGHT_NAME, operator>>, Gaff::BitShiftRight, T)
 }
 
@@ -477,6 +561,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opAnd(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(&&, OP_LOGIC_AND_NAME, operator&&, Gaff::LogicAnd, bool)
 }
 
@@ -484,6 +572,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opOr(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(||, OP_LOGIC_OR_NAME, operator||, Gaff::LogicOr, bool)
 }
 
@@ -491,6 +583,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opEqual(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(==, OP_EQUAL_NAME, operator==, Gaff::Equal, bool)
 }
 
@@ -498,6 +594,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opNotEqual(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(!=, OP_NOT_EQUAL_NAME, operator!=, Gaff::NotEqual, bool)
 }
 
@@ -505,6 +605,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opLessThan(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(<, OP_LESS_THAN_NAME, operator<, Gaff::LessThan, bool)
 }
 
@@ -512,6 +616,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opGreaterThan(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(>, OP_GREATER_THAN_NAME, operator>, Gaff::GreaterThan, bool)
 }
 
@@ -519,6 +627,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opLessThanOrEqual(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(<=, OP_LESS_THAN_OR_EQUAL_NAME, operator<=, Gaff::LessThanOrEqual, bool)
 }
 
@@ -526,6 +638,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opGreaterThanOrEqual(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL_CONST(>=, OP_GREATER_THAN_OR_EQUAL_NAME, operator>=, Gaff::GreaterThanOrEqual, bool)
 }
 
@@ -535,6 +651,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opCall(const Att
 {
 	static constexpr bool k_can_perform_op = requires(T lhs, Args&&... args) { lhs(std::forward<Args>(args)...); };
 	static_assert(k_can_perform_op, "Cannot perform `T(Args...)`.");
+
+	if (!_can_apply) {
+		return *this;
+	}
 
 	if constexpr (is_const) {
 		static constexpr bool k_is_method = requires(void) { static_cast<Ret (T::*)(Args...) const>(&T::operator()); };
@@ -568,6 +688,10 @@ ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opIndex(const At
 	using NoRef = std::remove_reference_t<Ret>;
 	using NoPtr = std::remove_pointer_t<NoRef>;
 
+	if (!_can_apply) {
+		return *this;
+	}
+
 	if constexpr (std::is_const_v<NoPtr>) {
 		static constexpr bool k_is_method = requires(void) { static_cast<Ret (T::*)(Other) const>(&T::operator[]); };
 
@@ -597,6 +721,10 @@ template <class T, class BaseType>
 template <class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opBitNot(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_UNARY_OP_IMPL_CONST(~, ~value, OP_BIT_NOT_NAME, operator~, Gaff::BitNot, T)
 }
 
@@ -611,6 +739,10 @@ template <class T, class BaseType>
 template <class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opMinus(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_UNARY_OP_IMPL_CONST(-, -value, OP_MINUS_NAME, operator-, Gaff::Minus, T)
 }
 
@@ -618,6 +750,10 @@ template <class T, class BaseType>
 template <class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opPlus(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_UNARY_OP_IMPL_CONST(+, +value, OP_PLUS_NAME, operator+, Gaff::Plus, T)
 }
 
@@ -639,6 +775,10 @@ template <class T, class BaseType>
 template <class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opPreIncrement(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_UNARY_OP_IMPL(++, ++value, OP_PRE_INC_NAME, operator++, Gaff::PreIncrement, T&, void)
 }
 
@@ -646,6 +786,10 @@ template <class T, class BaseType>
 template <class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opPostIncrement(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_UNARY_OP_IMPL(++, value++, OP_POST_INC_NAME, operator++, Gaff::PostIncrement, T, int)
 }
 
@@ -653,6 +797,10 @@ template <class T, class BaseType>
 template <class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opPreDecrement(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_UNARY_OP_IMPL(--, --value, OP_PRE_DEC_NAME, operator--, Gaff::PreDecrement, T&, void)
 }
 
@@ -660,6 +808,10 @@ template <class T, class BaseType>
 template <class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opPostDecrement(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_UNARY_OP_IMPL(--, value--, OP_POST_DEC_NAME, operator--, Gaff::PostDecrement, T, int)
 }
 
@@ -667,6 +819,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opAssignment(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL(=, OP_ASSIGN_NAME, operator=, Gaff::Assignment, T&)
 }
 
@@ -674,6 +830,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opAddAssignment(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL(+=, OP_ADD_ASSIGN_NAME, operator+=, Gaff::AddAssignment, T&)
 }
 
@@ -681,6 +841,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opSubAssignment(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL(-=, OP_SUB_ASSIGN_NAME, operator-=, Gaff::SubAssignment, T&)
 }
 
@@ -688,6 +852,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opMulAssignment(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL(*=, OP_MUL_ASSIGN_NAME, operator*=, Gaff::MulAssignment, T&)
 }
 
@@ -695,6 +863,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opDivAssignment(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL(/=, OP_DIV_ASSIGN_NAME, operator/=, Gaff::DivAssignment, T&)
 }
 
@@ -702,6 +874,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opModAssignment(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL(%=, OP_MOD_ASSIGN_NAME, operator%=, Gaff::ModAssignment, T&)
 }
 
@@ -709,6 +885,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opBitAndAssignment(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL(&=, OP_BIT_AND_ASSIGN_NAME, operator&=, Gaff::BitAndAssignment, T&)
 }
 
@@ -716,6 +896,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opBitOrAssignment(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL(|=, OP_BIT_OR_ASSIGN_NAME, operator|=, Gaff::BitOrAssignment, T&)
 }
 
@@ -723,6 +907,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opBitXorAssignment(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL(^=, OP_BIT_XOR_ASSIGN_NAME, operator^=, Gaff::BitXorAssignment, T&)
 }
 
@@ -730,6 +918,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opBitShiftLeftAssignment(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL(<<=, OP_BIT_SHIFT_LEFT_ASSIGN_NAME, operator<<=, Gaff::BitShiftLeftAssignment, T&)
 }
 
@@ -737,6 +929,10 @@ template <class T, class BaseType>
 template <class Other, class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::opBitShiftRightAssignment(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	SHIB_REFL_BINARY_OP_IMPL(>>=, OP_BIT_SHIFT_RIGHT_ASSIGN_NAME, operator>>=, Gaff::BitShiftRightAssignment, T&)
 }
 
@@ -745,6 +941,10 @@ template <class T, class BaseType>
 template <class... Attrs>
 ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::classAttrs(const Attrs&... attributes)
 {
+	if (!_can_apply) {
+		return *this;
+	}
+
 	if constexpr (sizeof...(Attrs) > 0) {
 		addAttributes(_data.class_attrs, attributes...);
 	}
@@ -811,6 +1011,20 @@ void ReflectionBuilder<T, BaseType>::finish(void)
 			}
 		}
 	}
+}
+
+template <class T, class BaseType>
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::baseOnlyStart(void)
+{
+	_can_apply = k_is_initial_type;
+	return *this;
+}
+
+template <class T, class BaseType>
+ReflectionBuilder<T, BaseType>& ReflectionBuilder<T, BaseType>::baseOnlyEnd(void)
+{
+	_can_apply = true;
+	return *this;
 }
 
 // Variables

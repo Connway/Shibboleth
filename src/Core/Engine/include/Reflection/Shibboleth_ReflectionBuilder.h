@@ -312,6 +312,9 @@ public:
 
 	void finish(void);
 
+	ReflectionBuilder& baseOnlyStart(void);
+	ReflectionBuilder& baseOnlyEnd(void);
+
 private:
 	template <bool is_const, class Ret, class... Args>
 	class ReflectionExtensionFunction final : public IReflectionFunction<Ret, Args...>
@@ -375,6 +378,8 @@ private:
 
 	IReflectionDefinition& _ref_def;
 	ReflectionData<T>& _data;
+
+	bool _can_apply = true;
 
 
 	// Variables
