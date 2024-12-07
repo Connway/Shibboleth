@@ -209,14 +209,18 @@ bool VarInstancedArray<T, VarType>::load(const ISerializeReader& reader, void* o
 			const Refl::IReflectionDefinition* const ref_def = ref_mgr.getReflection(Gaff::FNV1aHash64String(stripped_class_name));
 
 			if (ref_def) {
-				VarType& instance = var->push(*ref_def);
+				auto& instance = var->push(*ref_def);
 
 				if (reader.isObject()) {
 					const auto guard = reader.enterElementGuard(u8"data");
 					GAFF_ASSERT(reader.isNull() || reader.isObject());
 
 					if (!reader.isNull()) {
-						success = ref_def->load(reader, ref_def->getBasePointer(&instance)) && success;
+						if constexpr (std::is_same_v<VarType, void>) {
+							success = ref_def->load(reader, ref_def->getBasePointer(instance)) && success;
+						} else {
+							success = ref_def->load(reader, ref_def->getBasePointer(&instance)) && success;
+						}
 					}
 				}
 
