@@ -24,7 +24,7 @@ project(
   'Shibboleth',
   'c', 'cpp',
   version: 'dev',
-  meson_version: '1.6.0',
+  meson_version: '1.6.1',
   default_options: {
     'warning_level': '3',
     'werror': true,
@@ -269,7 +269,7 @@ all_tests_target = alias_target('tests', all_tests)
 
 if is_windows
   qmake = find_program('qmake')
-  qt_root= qmake.full_path().to_lower()
+  qt_root = qmake.full_path().to_lower()
 
   if is_windows and qt_root.endswith('.exe')
     qt_root = qt_root.substring(0, -4)
@@ -327,7 +327,7 @@ if is_windows
   )
 endif
 
-python = find_program('python3', required : false)
+python = find_program('python3', required: false)
 
 if python.found()
 	meson.add_install_script(python, meson.project_source_root() + '/utils/post_install.py')
