@@ -38,7 +38,6 @@ header_files = [
   'include/Direct3D11/Gleam_ShaderResourceView_Direct3D11.h',
   'include/Direct3D11/Gleam_Shader_Direct3D11.h',
   'include/Direct3D11/Gleam_Texture_Direct3D11.h',
-  'include/Vulkan/Gleam_IncludeVulkan.h',
   'include/Vulkan/Gleam_Texture_Vulkan.h',
   'include/Gleam_AABB.h',
   'include/Gleam_BitVector.h',

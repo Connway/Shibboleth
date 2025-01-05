@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IncludeVulkan.h"
 #include "Gleam_ITexture.h"
+#include <volk.h>
 
 NS_GLEAM
 
