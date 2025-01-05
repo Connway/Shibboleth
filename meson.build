@@ -187,6 +187,8 @@ subdir('src/Dependencies/mimalloc')
 subdir('src/Dependencies/minizip-ng')
 subdir('src/Dependencies/mpack')
 subdir('src/Dependencies/rapidjson')
+subdir('src/Dependencies/volk')
+subdir('src/Dependencies/VulkanMemoryAllocator')
 subdir('src/Dependencies/zlib-ng')
 subdir('src/Dependencies/zstd')
 
