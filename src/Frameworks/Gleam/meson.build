@@ -38,6 +38,8 @@ header_files = [
   'include/Direct3D11/Gleam_ShaderResourceView_Direct3D11.h',
   'include/Direct3D11/Gleam_Shader_Direct3D11.h',
   'include/Direct3D11/Gleam_Texture_Direct3D11.h',
+  'include/Vulkan/Gleam_IncludeVulkan.h',
+  'include/Vulkan/Gleam_Texture_Vulkan.h',
   'include/Gleam_AABB.h',
   'include/Gleam_BitVector.h',
   'include/Gleam_BlendState.h',
@@ -65,7 +67,6 @@ header_files = [
   'include/Gleam_IShaderResourceView.h',
   'include/Gleam_ITexture.h',
   'include/Gleam_IncludeGLFWNative.h',
-  'include/Gleam_IncludeVulkan.h',
   'include/Gleam_Keyboard.h',
   'include/Gleam_Layout.h',
   'include/Gleam_Matrix3x3.h',
@@ -98,7 +99,6 @@ header_files = [
   'include/Gleam_Vec4.h',
   'include/Gleam_Vector.h',
   'include/Gleam_VectorMap.h',
-  'include/Gleam_VulkanWrangler.h',
   'include/Gleam_Window.h',
   'include/Gleam_Window_Defines.h',
 ]
@@ -120,6 +120,7 @@ source_files = [
   'src/Direct3D11/Gleam_ShaderResourceView_Direct3D11.cpp',
   'src/Direct3D11/Gleam_Shader_Direct3D11.cpp',
   'src/Direct3D11/Gleam_Texture_Direct3D11.cpp',
+  'src/Vulkan/Gleam_Texture_Vulkan.cpp',
   'src/Gleam_AABB.cpp',
   'src/Gleam_Frustum.cpp',
   'src/Gleam_Global.cpp',
@@ -128,7 +129,6 @@ source_files = [
   'src/Gleam_Plane.cpp',
   'src/Gleam_ShaderInclude.cpp',
   'src/Gleam_Transform.cpp',
-  'src/Gleam_VulkanWrangler.cpp',
   'src/Gleam_Window.cpp',
 ]
 
@@ -185,10 +185,13 @@ elif is_mac
   # renderer = get_option('renderer')
 
   # if renderer == 'vulkan'
-  #   gleam_defines += ['-DGLEAM_USE_VULKAN']
-  #    dependencies += [] # $TODO: Fill in Vulkan libraries to link against.
+    gleam_defines += ['-DGLEAM_USE_VULKAN']
+
+    dependencies += [
+      volk_dep
+    ]
   # else
-    gleam_defines += ['-DGLEAM_USE_METAL']
+  #   gleam_defines += ['-DGLEAM_USE_METAL']
   # endif
 endif
 

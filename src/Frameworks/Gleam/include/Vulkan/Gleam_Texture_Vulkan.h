@@ -22,33 +22,27 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef PLATFORM_WINDOWS
-	#define VULKAN_MODULE_NAME "vulkan-1.dll"
-	#define VK_USE_PLATFORM_WIN32_KHR
-#elif defined(PLATFORM_LINUX)
-	#define VULKAN_MODULE_NAME ".so"
+#include "Gleam_IncludeVulkan.h"
+#include "Gleam_ITexture.h"
 
-	#ifdef VULKAN_USE_WAYLAND
-	#else
-		#define VK_USE_PLATFORM_XLIB_KHR
+NS_GLEAM
 
-		#ifdef VULKAN_USE_XRANDR
-			#define VK_USE_PLATFORM_XLIB_XRANDR_EXT
-		#endif
-	#endif
-#elif defined(PLATFORM_MAC)
-	#define VULKAN_MODULE_NAME ".dylib"
-	#define VK_USE_PLATFORM_MACOS_MVK
-#endif
+class Texture final : public ITexture
+{
+public:
+	~Texture(void);
 
-#define VK_NO_PROTOTYPES
-#include <vulkan.h>
+	void destroy(void) override;
 
-#ifdef PLATFORM_WINDOWS
-	#define VULKAN_SURFACE_EXT VK_KHR_WIN32_SURFACE_EXTENSION_NAME
-#elif defined(PLATFORM_LINUX)
-	#define VULKAN_SURFACE_EXT VK_KHR_XLIB_SURFACE_EXTENSION_NAME
-	//#define VULKAN_SURFACE_EXT VK_EXT_ACQUIRE_XLIB_DISPLAY_EXTENSION_NAME
-#elif defined(PLATFORM_MAC)
-	#define VULKAN_SURFACE_EXT VK_MVK_MACOS_SURFACE_EXTENSION_NAME
-#endif
+	bool init2DArray(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t num_elements, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool init1DArray(IRenderDevice& rd, int32_t width, Format format, int32_t num_elements, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool init1D(IRenderDevice& rd, int32_t width, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height, Format format) override;
+
+	RendererType getRendererType(void) const override;
+};
+
+NS_END

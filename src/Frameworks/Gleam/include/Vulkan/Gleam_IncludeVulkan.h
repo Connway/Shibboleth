@@ -20,44 +20,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifdef GLEAM_USE_VULKAN
+#pragma once
 
-#include "Gleam_VulkanWrangler.h"
-#include <Gaff_DynamicModule.h>
-#include <Gaff_Assert.h>
+#ifdef PLATFORM_WINDOWS
+	#define VULKAN_MODULE_NAME "vulkan-1.dll"
+	#define VK_USE_PLATFORM_WIN32_KHR
+#elif defined(PLATFORM_LINUX)
+	#define VULKAN_MODULE_NAME ".so"
 
-PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = nullptr;
-PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr = nullptr;
+	#ifdef VULKAN_USE_WAYLAND
+	#else
+		#define VK_USE_PLATFORM_XLIB_KHR
 
-VULKAN_IMPL;
-VULKAN_IMPL_EXT;
-VULKAN_IMPL_OS;
-
-namespace Gleam
-{
-	bool WrangleVulkanFunctions(Gaff::DynamicModule& mod)
-	{
-		vkGetInstanceProcAddr = mod.getFunc<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
-		vkGetDeviceProcAddr = mod.getFunc<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr");
-
-		if (!vkGetInstanceProcAddr || !vkGetDeviceProcAddr) {
-			return false;
-		}
-
-		VULKAN_GET_PROC_LIST(VULKAN_FUNC_IMPORT_GET_INST, nullptr);
-
-		bool success = true;
-		VULKAN_GET_PROC_LIST(VULKAN_FUNC_SUCCESS, success);
-
-		return success;
-	}
-
-	void WrangleVulkanFunctions(VkInstance instance)
-	{
-		VULKAN_IMPORT(instance);
-		VULKAN_IMPORT_EXT(instance);
-		VULKAN_IMPORT_OS(instance);
-	}
-}
-
+		#ifdef VULKAN_USE_XRANDR
+			#define VK_USE_PLATFORM_XLIB_XRANDR_EXT
+		#endif
+	#endif
+#elif defined(PLATFORM_MAC)
+	#define VULKAN_MODULE_NAME ".dylib"
+	#define VK_USE_PLATFORM_MACOS_MVK
 #endif
+
+#define VK_NO_PROTOTYPES
+#include <vulkan/vulkan.h>
+
+#ifdef PLATFORM_WINDOWS
+	#define VULKAN_SURFACE_EXT VK_KHR_WIN32_SURFACE_EXTENSION_NAME
+#elif defined(PLATFORM_LINUX)
+	#define VULKAN_SURFACE_EXT VK_KHR_XLIB_SURFACE_EXTENSION_NAME
+	//#define VULKAN_SURFACE_EXT VK_EXT_ACQUIRE_XLIB_DISPLAY_EXTENSION_NAME
+#elif defined(PLATFORM_MAC)
+	#define VULKAN_SURFACE_EXT VK_MVK_MACOS_SURFACE_EXTENSION_NAME
+#endif
+
