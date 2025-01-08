@@ -1,3 +1,5 @@
+This branch is way behind. Currently doing a large refactor in the 'refactor' branch. That branch currently is not up and running completely yet, but should be looked at for the latest code.
+
 ==============================
     Shibboleth Game Engine
 ==============================
