@@ -40,6 +40,7 @@ THE SOFTWARE.
 #include <Gleam_CommandList.h>
 #include <Gleam_Texture.h>
 #include <Gleam_Window.h>
+#include <Gleam_Init.h>
 #include <Gaff_Function.h>
 #include <Gaff_Assert.h>
 #include <Gaff_JSON.h>
@@ -77,6 +78,8 @@ bool RenderManager::initAllModulesLoaded(void)
 		// $TODO: Log error.
 		return false;
 	}
+
+	Gleam::Init();
 
 	IApp& app = GetApp();
 	app.getLogManager().addChannel(HashStringView32<>(k_log_channel_name_graphics));
