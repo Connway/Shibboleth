@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #define SHIB_REFL_IMPL
-#include "Shibboleth_StateMachineResource.h"
+#include "StateMachine/Shibboleth_StateMachineResource.h"
 #include "Shibboleth_StateMachineReflection.h"
 #include <FileSystem/Shibboleth_IFileSystem.h>
 #include <Shibboleth_ResourceAttributesCommon.h>

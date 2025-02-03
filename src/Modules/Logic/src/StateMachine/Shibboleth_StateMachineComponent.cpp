@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #define SHIB_REFL_IMPL
-#include "Shibboleth_StateMachineComponent.h"
+#include "StateMachine/Shibboleth_StateMachineComponent.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachineComponent)
 	.template base<Shibboleth::EntityComponent>()

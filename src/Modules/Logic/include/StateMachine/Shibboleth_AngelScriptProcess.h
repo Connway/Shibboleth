@@ -19,17 +19,17 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "StateMachine/Shibboleth_IProcess.h"
 #include <Shibboleth_AngelScriptResource.h>
 #include <Shibboleth_ResourcePtr.h>
-#include <Esprit_IProcess.h>
 
 NS_SHIBBOLETH
 
-class AngelScriptProcess final : public Esprit::IProcess, public Refl::IReflectionObject
+class AngelScriptProcess final : public IProcess
 {
 public:
-	bool init(const Esprit::StateMachine& owner) override;
-	void update(const Esprit::StateMachine& owner, Esprit::VariableSet::Instance& variables) override;
+	bool init(const StateMachine& owner) override;
+	void update(const StateMachine& owner, InstancedArrayAny& instance_data) override;
 
 private:
 	ResourcePtr<AngelScriptResource> _script;

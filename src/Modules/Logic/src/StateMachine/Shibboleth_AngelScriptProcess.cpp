@@ -18,12 +18,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #define SHIB_REFL_IMPL
-#include "Shibboleth_AngelScriptProcess.h"
+#include "StateMachine/Shibboleth_AngelScriptProcess.h"
 #include "Shibboleth_StateMachineReflection.h"
-#include "Shibboleth_VariableSet.h"
 
 SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::AngelScriptProcess)
-	.template base<Esprit::IProcess>()
+	.template base<Shibboleth::IProcess>()
 	.template ctor<>()
 
 	.var("script", &Type::_script)
@@ -33,7 +32,7 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE(AngelScriptProcess)
 
-bool AngelScriptProcess::init(const Esprit::StateMachine& owner)
+bool AngelScriptProcess::init(const StateMachine& owner)
 {
 	// $TODO: Create instance of script class.
 	// $TODO: Call script class instance.
@@ -41,10 +40,10 @@ bool AngelScriptProcess::init(const Esprit::StateMachine& owner)
 	return true;
 }
 
-void AngelScriptProcess::update(const Esprit::StateMachine& owner, Esprit::VariableSet::Instance& variables)
+void AngelScriptProcess::update(const StateMachine& owner, InstancedArrayAny& instance_data)
 {
 	// $TODO: Call script class instance.
-	GAFF_REF(owner, variables);
+	GAFF_REF(owner, instance_data);
 }
 
 NS_END
