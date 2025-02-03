@@ -24,7 +24,7 @@ project(
   'Shibboleth',
   'c', 'cpp',
   version: 'dev',
-  meson_version: '1.6.1',
+  meson_version: '1.7.0',
   default_options: {
     'warning_level': '3',
     'werror': true,
