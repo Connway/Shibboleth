@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_Hash.h"
 #include "Reflection/Shibboleth_IReflectionObject.h"
 #include "Reflection/Shibboleth_Reflection.h"
 
@@ -237,7 +238,10 @@ public:
 	InstancedArray(InstancedArray<void>&& instanced_array) = default;
 	InstancedArray(void) = default;
 
+	InstancedArray(const InstancedArray<void>& instanced_array) = delete;
+
 	InstancedArray& operator=(InstancedArray<void>&& instanced_array) = default;
+	InstancedArray& operator=(const InstancedArray<void>& instanced_array) = delete;
 
 	const void* operator[](int32_t index) const
 	{
@@ -369,6 +373,11 @@ public:
 		erase(size() - 1);
 	}
 
+	void erase(const ConstIterator& iterator)
+	{
+		eraseInternal(iterator.getIndex(), true);
+	}
+
 	void erase(int32_t index)
 	{
 		eraseInternal(index, true);
@@ -427,6 +436,35 @@ public:
 
 		eraseInternal(index_b, false);
 		insertInternal(index_b, metadata_a, value_a);
+	}
+
+	// If an element can't be copy constructed, then we just push a default constructed element.
+	InstancedArray<void> clone(void) const
+	{
+		InstancedArray<void> copy{ _metadata.get_allocator() };
+		copy._instances.resize(_instances.size());
+		copy._metadata = _metadata;
+
+		for (const Metadata& metadata : _metadata) {
+			Gaff::Hash64 ctor_hash = CLASS_HASH("const");
+			ctor_hash = Gaff::FNV1aHash64String(metadata.ref_def->getReflectionInstance().getName(), ctor_hash);
+			ctor_hash = Gaff::FNV1aHash64String("&", ctor_hash);
+
+			const auto ctor = reinterpret_cast<void (*)(void*)>(metadata.ref_def->getConstructor(ctor_hash));
+
+			if (!ctor) {
+				// $TODO: Log error.
+
+				// Attempt to default construct.
+				if (!metadata.ref_def->construct(copy._instances.data() +  metadata.start)) {
+					// $TODO: Log error.
+				}
+
+				continue;
+			}
+		}
+
+		return copy;
 	}
 
 private:
@@ -840,6 +878,11 @@ public:
 		erase(size() - 1);
 	}
 
+	void erase(const ConstIterator& iterator)
+	{
+		eraseInternal(iterator.getIndex(), true);
+	}
+
 	void erase(int32_t index)
 	{
 		eraseInternal(index, true);
@@ -953,6 +996,8 @@ private:
 	template <class U, class VarType>
 	friend class VarInstancedArray;
 };
+
+using InstancedArrayAny = InstancedArray<void>;
 
 NS_END
 
