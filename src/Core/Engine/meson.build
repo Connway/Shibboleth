@@ -107,6 +107,7 @@ source_files = [
   'src/Attributes/Shibboleth_InstancedAttributes.cpp',
   'src/Config/Shibboleth_Config.cpp',
   'src/Config/Shibboleth_EngineConfig.cpp',
+  'src/Containers/Shibboleth_InstancedArray.cpp',
   'src/FileSystem/Shibboleth_LooseFileSystem.cpp',
   'src/Log/Shibboleth_LogManager.cpp',
   'src/Reflection/Shibboleth_Reflection.cpp',

@@ -28,6 +28,9 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+template <class T>
+class VarInstancedArrayAny;
+
 template <class T, class VarType>
 class VarInstancedArray;
 
@@ -35,6 +38,17 @@ NS_END
 
 
 NS_REFLECTION
+
+template <class T>
+struct VarTypeHelper<T, Shibboleth::InstancedArrayAny> final
+{
+	using ReflectionType = void;
+	using VariableType = void;
+	using Type = Shibboleth::VarInstancedArrayAny<T>;
+
+	static constexpr bool k_can_copy = false;
+	static constexpr bool k_can_move = true;
+};
 
 template <class T, class VarType>
 struct VarTypeHelper< T, Shibboleth::InstancedArray<VarType> > final
@@ -52,17 +66,20 @@ NS_END
 
 NS_SHIBBOLETH
 
-template <class T, class VarType>
-class VarInstancedArray final : public Refl::IVar<T>
+template <class T>
+class VarInstancedArrayAny : public Refl::IVar<T>
 {
 public:
-	using ReflectionType = Refl::VarTypeHelper<T, VarType>::ReflectionType;
+	template <class VarType>
+	VarInstancedArrayAny(InstancedArray<VarType> T::* ptr);
 
-	VarInstancedArray(InstancedArray<VarType> T::* ptr);
-	VarInstancedArray(void) = default;
+	VarInstancedArrayAny(InstancedArrayAny T::* ptr);
+	VarInstancedArrayAny(void) = default;
 
-	static const Refl::Reflection<ReflectionType>& GetReflection(void);
+	const Refl::IReflection& getReflection(const void* object, int32_t index) const override;
+
 	const Refl::IReflection& getReflection(void) const override;
+	bool hasReflection(void) const override;
 
 	const void* getData(const void* object) const override;
 	void* getData(void* object) override;
@@ -91,13 +108,65 @@ public:
 
 	const Vector<Refl::IReflectionVar::SubVarData>& getSubVars(void) override;
 	void setSubVarBaseName(eastl::u8string_view base_name) override;
-	void regenerateSubVars(const void* object, int32_t range_begin, int32_t range_end);
+	virtual void regenerateSubVars(const void* object, int32_t range_begin, int32_t range_end);
+
+protected:
+	Vector<Refl::IReflectionVar::SubVarData> _cached_element_vars{ REFLECTION_ALLOCATOR };
+	eastl::u8string_view _base_name;
+
+private:
+	class VarElementWrapper final : public Refl::IVar<T>
+	{
+	public:
+		const Refl::IReflection& getReflection(void) const override { GAFF_ASSERT(_reflection); return *_reflection; }
+		void setReflection(const Refl::IReflection& reflection) { _reflection = &reflection; }
+
+		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool load(const Shibboleth::ISerializeReader& reader, void* object) override;
+		void save(Shibboleth::ISerializeWriter& writer, const void* object) override;
+
+		bool load(const Shibboleth::ISerializeReader& reader, T& object) override;
+		void save(Shibboleth::ISerializeWriter& writer, const T& object) override;
+
+	private:
+		const Refl::IReflection* _reflection = nullptr;
+	};
+
+	Vector<VarElementWrapper> _elements{ REFLECTION_ALLOCATOR };
+};
+
+
+template <class T, class VarType>
+class VarInstancedArray final : public VarInstancedArrayAny<T>
+{
+public:
+	using ReflectionType = Refl::VarTypeHelper<T, VarType>::ReflectionType;
+
+	VarInstancedArray(InstancedArray<VarType> T::* ptr);
+	VarInstancedArray(void) = default;
+
+	static const Refl::Reflection<ReflectionType>& GetReflection(void);
+	const Refl::IReflection& getReflection(void) const override;
+
+	const void* getData(const void* object) const override;
+	void* getData(void* object) override;
+	void setData(void* object, const void* data) override;
+	void setDataMove(void* object, void* data) override;
+
+	void setElement(void* object, int32_t index, const void* data) override;
+	void setElementMove(void* object, int32_t index, void* data) override;
+
+	void regenerateSubVars(const void* object, int32_t range_begin, int32_t range_end) override;
 
 private:
 	// $TODO: Make a var type that wraps this and overrides the adjust functions.
 	using RefVarType = Refl::VarTypeHelper<T, VarType>::Type;
 
-	class VarElementWrapper final : public RefVarType
+	class VarElementWrapperT final : public RefVarType
 	{
 	public:
 		const Refl::IReflection& getReflection(void) const override { GAFF_ASSERT(_reflection); return *_reflection; }
@@ -107,9 +176,7 @@ private:
 		const Refl::IReflection* _reflection = &Refl::Reflection<ReflectionType>::GetInstance();
 	};
 
-	Vector<Refl::IReflectionVar::SubVarData> _cached_element_vars{ REFLECTION_ALLOCATOR };
-	Vector<VarElementWrapper> _elements{ REFLECTION_ALLOCATOR };
-	eastl::u8string_view _base_name;
+	Vector<VarElementWrapperT> _elements_typed{ REFLECTION_ALLOCATOR };
 };
 
 NS_END

@@ -723,8 +723,9 @@ public:
 	virtual bool isConstructible(void) const = 0;
 	virtual bool isDestructible(void) const = 0;
 
-private:
 	virtual ptrdiff_t getBasePointerOffset(Gaff::Hash64 interface_name) const = 0;
+
+private:
 	virtual void instantiated(void* object) const = 0;
 };
 

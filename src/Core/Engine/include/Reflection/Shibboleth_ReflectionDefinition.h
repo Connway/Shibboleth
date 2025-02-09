@@ -131,10 +131,11 @@ public:
 	IVar<T>* getVarT(int32_t index) const;
 	IVar<T>* getVarT(Gaff::Hash32 name) const;
 
+	ptrdiff_t getBasePointerOffset(Gaff::Hash64 interface_name) const override;
+
 private:
 	ReflectionData<T> _data;
 
-	ptrdiff_t getBasePointerOffset(Gaff::Hash64 interface_name) const override;
 	void instantiated(void* object) const override;
 
 	const IAttribute* getAttribute(const AttributeList& attributes, Gaff::Hash64 attr_name) const;
@@ -250,8 +251,8 @@ private:
 		bool isDestructible(void) const override { return std::is_destructible_v<class_type> && !std::is_trivially_destructible_v<class_type>; } \
 		ReflectionDefinition& getInitialBuilder(void) { return *this; } \
 		void finish(void) {} \
-	private: \
 		ptrdiff_t getBasePointerOffset(Gaff::Hash64) const override { return 0; } \
+	private: \
 		void instantiated(void*) const override {} \
 	}
 
