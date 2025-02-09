@@ -1,4 +1,3 @@
-
 /************************************************************************************
 Copyright (C) by Nicholas LaCroix
 
@@ -24,8 +23,18 @@ THE SOFTWARE.
 #include "StateMachine/Shibboleth_StateMachine.h"
 #include "Gaff_Assert.h"
 #include "Gaff_Math.h"
-#include "Gleam_Window_Defines.h"
-#include "Reflection/Shibboleth_IReflectionDefinition.h"
+
+SHIB_REFLECTION_DEFINE_BEGIN(Shibboleth::StateMachine)
+	.template ctor<>()
+
+	.var("data", &Shibboleth::StateMachine::_data)
+
+	.func("getParent", static_cast<const Shibboleth::StateMachine* (Shibboleth::StateMachine::*)(void) const>(&Shibboleth::StateMachine::getParent))
+	.func("getParent", static_cast<Shibboleth::StateMachine* (Shibboleth::StateMachine::*)(void)>(&Shibboleth::StateMachine::getParent))
+
+	/*.func("getData", static_cast<const Shibboleth::InstancedArrayAny& (Shibboleth::StateMachine::*)(void) const>(&Shibboleth::StateMachine::getData))*/
+	/*.func("getData", static_cast<Shibboleth::InstancedArrayAny& (Shibboleth::StateMachine::*)(void)>(&Shibboleth::StateMachine::getData))*/
+SHIB_REFLECTION_DEFINE_END(Shibboleth::StateMachine)
 
 namespace
 {
@@ -112,11 +121,12 @@ StateMachine* StateMachine::getParent(void)
 
 StateMachine::Instance StateMachine::createInstance(void) const
 {
-	return Instance
-	{
-		_data.clone(),
-		static_cast<int32_t>(SpecialStates::StartState)
-	};
+	Instance instance;
+
+	instance.current_state = static_cast<int32_t>(SpecialStates::StartState);
+	_data.clone(instance.data);
+
+	return instance;
 }
 
 void StateMachine::destroyInstance(Instance& instance)

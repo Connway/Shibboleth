@@ -122,6 +122,10 @@ private:
 
 	int32_t findStateIndex(const HashStringView32<>& state_name) const;
 	bool doState(State& state, Instance& instance);
+
+	SHIB_REFLECTION_ALLOW_PRIVATE_ACCESS(StateMachine);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(Shibboleth::StateMachine)
