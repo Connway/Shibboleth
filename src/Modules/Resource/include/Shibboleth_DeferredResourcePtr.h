@@ -96,18 +96,18 @@ public:
 	DeferredResourcePtr(DeferredResourcePtr<T>&& res_ptr) = default;
 	DeferredResourcePtr(void) = default;
 
-	std::strong_ordering operator<=>(const T* rhs) const
+	auto operator<=>(const T* rhs) const
 	{
 		return get() <=> rhs;
 	}
 
-	std::strong_ordering operator<=>(const DeferredResourcePtr<T>& rhs) const
+	auto operator<=>(const DeferredResourcePtr<T>& rhs) const
 	{
 		return (*this) <=> rhs.get();
 	}
 
 	template <class U>
-	std::strong_ordering operator<=>(const U* rhs) const
+	auto operator<=>(const U* rhs) const
 	{
 		static_assert(std::is_base_of_v<T, U>, "Comparing unrelated pointer types.");
 
@@ -116,7 +116,7 @@ public:
 	}
 
 	template <class U>
-	std::strong_ordering operator<=>(const DeferredResourcePtr<U>& rhs) const
+	auto operator<=>(const DeferredResourcePtr<U>& rhs) const
 	{
 		static_assert(std::is_base_of_v<T, U>, "Comparing unrelated pointer types.");
 
