@@ -62,6 +62,7 @@ public:
 	VarInstancedPtr(void) = default;
 
 	const Refl::IReflection& getReflection(void) const override;
+	const Refl::IReflection& getReflection(const void* object) const override;
 
 	const void* getData(const void* object) const override;
 	void* getData(void* object) override;

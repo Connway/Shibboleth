@@ -38,6 +38,13 @@ const Refl::IReflection& VarInstancedPtr<T, VarType>::getReflection(void) const
 }
 
 template <class T, class VarType>
+const Refl::IReflection& VarInstancedPtr<T, VarType>::getReflection(const void* object) const
+{
+	const InstancedPtr<VarType>* const ptr = Refl::IVar<T>::template get< InstancedPtr<VarType> >(object);
+	return ptr->getReflectionDefinition()->getReflectionInstance();
+}
+
+template <class T, class VarType>
 const void* VarInstancedPtr<T, VarType>::getData(const void* object) const
 {
 	return const_cast<VarInstancedPtr<T, VarType>*>(this)->getData(const_cast<void*>(object));
