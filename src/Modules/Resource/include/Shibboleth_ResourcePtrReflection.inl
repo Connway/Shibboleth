@@ -43,6 +43,13 @@ const Refl::IReflection& VarResourcePtr<T, VarType>::getReflection(void) const
 }
 
 template <class T, class VarType>
+const Refl::IReflection& VarResourcePtr<T, VarType>::getReflection(const void* object) const
+{
+	const ResourcePtr<VarType>* const res_ptr = Refl::IVar<T>::template get< ResourcePtr<VarType> >(object);
+	return (*res_ptr) ? (*res_ptr)->getReflectionDefinition().getReflectionInstance() : GetReflection();
+}
+
+template <class T, class VarType>
 const void* VarResourcePtr<T, VarType>::getData(const void* object) const
 {
 	return const_cast<VarResourcePtr<T, VarType>*>(this)->getData(const_cast<void*>(object));
