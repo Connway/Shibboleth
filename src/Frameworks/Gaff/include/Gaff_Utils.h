@@ -75,8 +75,6 @@ constexpr ptrdiff_t OffsetOfClass(void);
 template <typename T, typename M> M GetMemberType(M T::*);
 template <typename T, typename M> T GetClassType(M T::*);
 
-#define OFFSET_OF(x) Gaff::OffsetOfMember<decltype(Gaff::GetClassType(x)), decltype(Gaff::GetMemberType(x)), x>()
-
 template <size_t SizeA, size_t SizeB>
 constexpr eastl::array<char, SizeA + SizeB - 1> ConcatConst(const eastl::array<char, SizeA>& lhs, const char(&rhs)[SizeB]);
 
