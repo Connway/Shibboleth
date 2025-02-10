@@ -268,6 +268,9 @@ public:
 	virtual bool hasReflection(void) const { return true; }
 	virtual const IReflection& getReflection(void) const = 0;
 
+	virtual const IReflection& getReflection(const void* object) const { GAFF_REF(object); return getReflection(); }
+	virtual bool hasReflection(const void* object) const { GAFF_REF(object); return hasReflection(); }
+
 	// Used for array style types.
 	virtual const IReflection& getReflection(const void* object, int32_t index) const
 	{
