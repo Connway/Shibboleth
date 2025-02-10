@@ -21,19 +21,20 @@
 #####################################################################################
 
 header_files = [
-  'include/StateMachine/Shibboleth_AngelScriptProcess.h',
+  'include/StateMachine/Processes/Shibboleth_StateMachineProcess.h',
+  'include/StateMachine/Processes/Shibboleth_AngelScriptProcess.h',
   'include/StateMachine/Shibboleth_StateMachineComponent.h',
+  'include/StateMachine/Shibboleth_StateMachineResource.h',
   'include/StateMachine/Shibboleth_StateMachine.h',
   'include/StateMachine/Shibboleth_ICondition.h',
   'include/StateMachine/Shibboleth_IProcess.h',
   'include/Shibboleth_StateMachineReflection.h',
-  'include/StateMachine/Shibboleth_StateMachineResource.h',
   'include/Shibboleth_VariableSet.h',
 ]
 
 source_files = [
-  'src/StateMachine/Shibboleth_AngelScriptProcess.cpp',
-  'src/Shibboleth_LogicModule.cpp',
+  'src/StateMachine/Processes/Shibboleth_StateMachineProcess.cpp',
+  'src/StateMachine/Processes/Shibboleth_AngelScriptProcess.cpp',
   'src/StateMachine/Shibboleth_StateMachineComponent.cpp',
   'src/StateMachine/Shibboleth_StateMachine.cpp',
   'src/StateMachine/Shibboleth_ICondition.cpp',
@@ -41,6 +42,7 @@ source_files = [
   'src/Shibboleth_StateMachineReflection.cpp',
   'src/StateMachine/Shibboleth_StateMachineResource.cpp',
   'src/Shibboleth_VariableSet.cpp',
+  'src/Shibboleth_LogicModule.cpp',
 ]
 
 module_source_files = [
