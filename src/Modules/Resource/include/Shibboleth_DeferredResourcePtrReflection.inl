@@ -43,6 +43,13 @@ const Refl::IReflection& VarDeferredResourcePtr<T, VarType>::getReflection(void)
 }
 
 template <class T, class VarType>
+const Refl::IReflection& VarDeferredResourcePtr<T, VarType>::getReflection(const void* object) const
+{
+	const DeferredResourcePtr<VarType>* const res_ptr = Refl::IVar<T>::template get< DeferredResourcePtr<VarType> >(object);
+	return res_ptr->getReflectionDefinition()->getReflectionInstance();
+}
+
+template <class T, class VarType>
 const void* VarDeferredResourcePtr<T, VarType>::getData(const void* object) const
 {
 	return const_cast<VarDeferredResourcePtr<T, VarType>*>(this)->getData(const_cast<void*>(object));
